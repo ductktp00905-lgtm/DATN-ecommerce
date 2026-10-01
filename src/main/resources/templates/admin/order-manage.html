@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý đơn hàng</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout/header :: header}"></div>
+    <div class="container">
+        <h2>Quản lý đơn hàng</h2>
+
+        <table>
+            <tr>
+                <th>Mã đơn</th><th>Khách hàng</th><th>Ngày đặt</th><th>Tổng tiền</th><th>Trạng thái</th><th>Cập nhật</th>
+            </tr>
+            <tr th:each="o : ${orders}">
+                <td th:text="${o.orderID}"></td>
+                <td th:text="${o.user.username}"></td>
+                <td th:text="${o.orderDate}"></td>
+                <td th:text="${o.totalAmount}"></td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${o.status == 'PENDING'} ? 'badge-pending' : (${o.status == 'SHIPPING'} ? 'badge-shipping' : (${o.status == 'COMPLETED'} ? 'badge-completed' : 'badge-cancelled'))"
+                          th:text="${o.status}"></span>
+                </td>
+                <td>
+                    <form th:action="@{/admin/orders/update-status/{id}(id=${o.orderID})}" method="post" style="display:flex; gap:5px">
+                        <select name="status">
+                            <option value="PENDING" th:selected="${o.status == 'PENDING'}">PENDING</option>
+                            <option value="SHIPPING" th:selected="${o.status == 'SHIPPING'}">SHIPPING</option>
+                            <option value="COMPLETED" th:selected="${o.status == 'COMPLETED'}">COMPLETED</option>
+                            <option value="CANCELLED" th:selected="${o.status == 'CANCELLED'}">CANCELLED</option>
+                        </select>
+                        <button type="submit">Cập nhật</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
