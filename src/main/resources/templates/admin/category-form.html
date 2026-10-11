@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Danh mục</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('categories')}"></aside>
+
+        <main class="content">
+            <h1 th:text="${category.categoryID != null} ? 'Sửa danh mục' : 'Thêm danh mục mới'"></h1>
+            <div class="sub">Nhập tên danh mục</div>
+
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <form class="form"
+                  th:action="${category.categoryID != null}
+                      ? @{/admin/categories/edit/{id}(id=${category.categoryID})}
+                      : @{/admin/categories/new}"
+                  method="post">
+
+                <label>Tên danh mục</label>
+                <input type="text" name="categoryName" th:value="${category.categoryName}" maxlength="100" required>
+
+                <div class="buttons">
+                    <button type="submit">Lưu</button>
+                    <a class="btn btn-plain" th:href="@{/admin/categories}">Hủy</a>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+</body>
+</html>
