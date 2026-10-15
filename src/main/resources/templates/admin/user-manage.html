@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý người dùng</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('users')}"></aside>
+
+        <main class="content">
+            <h1>Người dùng</h1>
+            <div class="sub">Khóa, mở khóa và phân quyền tài khoản</div>
+
+            <section class="panel">
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Username</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th>Yêu cầu xóa</th><th>Hành động</th></tr>                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${users}">
+                            <td th:text="${u.userID}"></td>
+                            <td th:text="${u.username}"></td>
+                            <td th:text="${u.email}"></td>
+                            <td th:text="${u.role}"></td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${u.isActive} ? 'badge-completed' : 'badge-cancelled'"
+                                      th:text="${u.isActive} ? 'Hoạt động' : 'Đã khóa'"></span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <form th:action="@{/admin/users/toggle-active/{id}(id=${u.userID})}" method="post">
+                                        <button type="submit" class="btn-plain" th:text="${u.isActive} ? 'Khóa' : 'Mở khóa'"></button>
+                                    </form>
+                                    <form th:action="@{/admin/users/change-role/{id}(id=${u.userID})}" method="post">
+                                        <select name="role">
+                                            <option value="CUSTOMER" th:selected="${u.role == 'CUSTOMER'}">CUSTOMER</option>
+                                            <option value="ADMIN" th:selected="${u.role == 'ADMIN'}">ADMIN</option>
+                                        </select>
+                                        <button type="submit">Đổi quyền</button>
+                                    </form>
+                                </div>
+                            </td>
+                                                        <td>
+                                <span th:if="${u.deletionRequested}" class="badge badge-pending"
+                                      th:title="${u.deletionReason}">Có yêu cầu</span>
+                                <small th:if="${u.deletionRequested}"
+                                       th:text="${#temporals.format(u.deletionRequestedDate, 'dd/MM HH:mm')}"></small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>
