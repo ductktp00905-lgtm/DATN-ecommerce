@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý người dùng</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+    <style>
+        .notice { display:flex; align-items:center; gap:10px; padding:10px 14px; margin-bottom:14px; border-radius:10px;
+                  background:rgba(255,149,0,.14); color:#c77700; font-size:13px; font-weight:500; }
+        tr.flagged td { background:rgba(255,149,0,.06); }
+        .u-name { font-weight:600; }
+        .u-sub { color:var(--muted); font-size:12px; }
+        .muted { color:var(--muted); }
+        .req-btn { background:rgba(255,149,0,.16); color:#c77700; border:0; border-radius:999px;
+                   padding:4px 11px; font-size:12px; font-weight:600; cursor:pointer; }
+        .req-date { display:block; color:var(--muted); font-size:11px; margin-top:3px; }
+
+        dialog.req { border:0; border-radius:14px; padding:0; width:min(460px, 92vw);
+                     background:var(--card); color:var(--text); box-shadow:var(--shadow); }
+        dialog.req::backdrop { background:rgba(0,0,0,.38); backdrop-filter:blur(3px); }
+        .req-head { padding:18px 22px 12px; border-bottom:1px solid var(--line); }
+        .req-head h3 { margin:0; font-size:16px; }
+        .req-head p { margin:4px 0 0; color:var(--muted); font-size:12px; }
+        .req-body { padding:16px 22px; }
+        .req-info { display:grid; grid-template-columns:96px 1fr; gap:6px 12px; font-size:13px; margin:0 0 14px; }
+        .req-info dt { color:var(--muted); }
+        .req-info dd { margin:0; word-break:break-word; }
+        .req-label { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase;
+                     letter-spacing:.04em; margin-bottom:6px; }
+        .req-reason { padding:10px 12px; border-radius:10px; background:var(--hover); font-size:13px; line-height:1.5;
+                      white-space:pre-wrap; word-break:break-word; max-height:180px; overflow:auto; }
+        .req-reason.empty-reason { color:var(--muted); font-style:italic; }
+        .req-warn { margin-top:14px; padding:10px 12px; border-radius:10px; background:rgba(255,59,48,.10);
+                    color:#d1281e; font-size:12px; line-height:1.5; }
+        .req-foot { display:flex; justify-content:flex-end; gap:8px; padding:12px 22px 18px; flex-wrap:wrap; }
+        .req-foot form { margin:0; }
+    </style>
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('users')}"></aside>
+
+        <main class="content">
+            <h1>Người dùng</h1>
+            <div class="sub">Khóa, mở khóa, phân quyền và xử lý yêu cầu xóa tài khoản</div>
+
+            <div class="notice" th:if="${#lists.size(users.?[deletionRequested == true]) > 0}">
+                ⚠ Có <b th:text="${#lists.size(users.?[deletionRequested == true])}"></b> yêu cầu xóa tài khoản đang chờ xử lý
+            </div>
+
+            <section class="panel">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Người dùng</th><th>Email</th><th>Vai trò</th>
+                            <th>Trạng thái</th><th>Yêu cầu xóa</th><th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${users}" th:classappend="${u.deletionRequested == true} ? 'flagged'">
+                            <td th:text="${u.userID}"></td>
+                            <td>
+                                <div class="u-name" th:text="${u.username}"></div>
+                                <div class="u-sub" th:text="${u.fullName}"></div>
+                            </td>
+                            <td th:text="${u.email}"></td>
+                            <td th:text="${u.role}"></td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${u.isActive} ? 'badge-completed' : 'badge-cancelled'"
+                                      th:text="${u.isActive} ? 'Hoạt động' : 'Đã khóa'"></span>
+                            </td>
+
+                            <!-- Cột yêu cầu xóa -->
+                            <td>
+                                <div th:if="${u.deletionRequested == true}">
+                                    <button type="button" class="req-btn"
+                                            th:attr="data-dialog='dlg-' + ${u.userID}">Xem yêu cầu</button>
+                                    <span class="req-date"
+                                          th:text="${#temporals.format(u.deletionRequestedDate, 'dd/MM/yyyy HH:mm')}"></span>
+
+                                    <dialog class="req" th:id="'dlg-' + ${u.userID}">
+                                        <div class="req-head">
+                                            <h3>Yêu cầu xóa tài khoản</h3>
+                                            <p>Gửi lúc <span th:text="${#temporals.format(u.deletionRequestedDate, 'dd/MM/yyyy HH:mm')}"></span></p>
+                                        </div>
+                                        <div class="req-body">
+                                            <dl class="req-info">
+                                                <dt>Tên đăng nhập</dt><dd th:text="${u.username}"></dd>
+                                                <dt>Họ tên</dt><dd th:text="${u.fullName}"></dd>
+                                                <dt>Email</dt><dd th:text="${u.email}"></dd>
+                                                <dt>Số điện thoại</dt><dd th:text="${u.phone != null} ? ${u.phone} : '—'"></dd>
+                                            </dl>
+
+                                            <div class="req-label">Lý do</div>
+                                            <div class="req-reason"
+                                                 th:if="${u.deletionReason != null and !#strings.isEmpty(u.deletionReason)}"
+                                                 th:text="${u.deletionReason}"></div>
+                                            <div class="req-reason empty-reason"
+                                                 th:unless="${u.deletionReason != null and !#strings.isEmpty(u.deletionReason)}">
+                                                Người dùng không ghi lý do
+                                            </div>
+
+                                            <div class="req-warn">
+                                                Chấp thuận sẽ xóa vĩnh viễn tài khoản và thông tin cá nhân.
+                                                Các đơn hàng được giữ lại ở dạng ẩn danh để phục vụ thống kê.
+                                            </div>
+                                        </div>
+                                        <div class="req-foot">
+                                            <form method="dialog"><button type="submit" class="btn-plain">Đóng</button></form>
+                                            <form th:action="@{/admin/users/reject-delete/{id}(id=${u.userID})}" method="post">
+                                                <button type="submit" class="btn-plain">Từ chối</button>
+                                            </form>
+                                            <form th:action="@{/admin/users/approve-delete/{id}(id=${u.userID})}" method="post"
+                                                  onsubmit="return confirm('Xác nhận xóa vĩnh viễn tài khoản này?')">
+                                                <button type="submit" class="btn-danger">Chấp thuận xóa</button>
+                                            </form>
+                                        </div>
+                                    </dialog>
+                                </div>
+                                <span class="muted" th:unless="${u.deletionRequested == true}">—</span>
+                            </td>
+
+                            <td>
+                                <div class="actions">
+                                    <form th:action="@{/admin/users/toggle-active/{id}(id=${u.userID})}" method="post">
+                                        <button type="submit" class="btn-plain" th:text="${u.isActive} ? 'Khóa' : 'Mở khóa'"></button>
+                                    </form>
+                                    <form th:action="@{/admin/users/change-role/{id}(id=${u.userID})}" method="post">
+                                        <select name="role">
+                                            <option value="CUSTOMER" th:selected="${u.role == 'CUSTOMER'}">CUSTOMER</option>
+                                            <option value="ADMIN" th:selected="${u.role == 'ADMIN'}">ADMIN</option>
+                                        </select>
+                                        <button type="submit">Đổi quyền</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('[data-dialog]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.getElementById(btn.dataset.dialog).showModal();
+        });
+    });
+    // Bấm ra ngoài hộp thoại để đóng
+    document.querySelectorAll('dialog.req').forEach(function (d) {
+        d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+    });
+</script>
+</body>
+</html>

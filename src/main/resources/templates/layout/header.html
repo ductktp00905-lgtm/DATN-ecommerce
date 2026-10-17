@@ -1,0 +1,20 @@
+<div xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:fragment="header" class="navbar">
+    <div>
+        <a th:href="@{/products}" class="brand">🛍️ ShopCuaTao</a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}">Dashboard Admin</a>
+        <a sec:authorize="isAuthenticated()" th:href="@{/cart}">Giỏ hàng</a>
+        <a sec:authorize="isAuthenticated()" th:href="@{/orders/history}">Đơn hàng của tôi</a>
+        <a sec:authorize="isAuthenticated()" th:href="@{/profile}">Tài khoản</a>
+    </div>
+    <div class="user-info">
+        <span sec:authorize="isAuthenticated()">
+            Xin chào, <b sec:authentication="name"></b>
+            (<span sec:authorize="hasRole('ADMIN')">ADMIN</span><span sec:authorize="hasRole('CUSTOMER')">CUSTOMER</span>)
+            &nbsp;|&nbsp;
+            <a th:href="@{/auth/logout}">Đăng xuất</a>
+        </span>
+        <span sec:authorize="!isAuthenticated()">
+            <a th:href="@{/auth/login}">Đăng nhập</a> | <a th:href="@{/auth/register}">Đăng ký</a>
+        </span>
+    </div>
+</div>

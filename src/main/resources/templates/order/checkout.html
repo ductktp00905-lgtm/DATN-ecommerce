@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh toán</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout/header :: header}"></div>
+    <div class="container">
+        <h2>Xác nhận đơn hàng</h2>
+
+        <p th:if="${errorMessage}" th:text="${errorMessage}" class="alert-error"></p>
+
+        <table th:if="${cart != null and !cart.items.isEmpty()}">
+            <tr>
+                <th>Sản phẩm</th><th>Số lượng</th><th>Thành tiền</th>
+            </tr>
+            <tr th:each="entry : ${cart.items}">
+                <td th:text="${entry.value.productName}"></td>
+                <td th:text="${entry.value.quantity}"></td>
+                <td th:text="${entry.value.subTotal}"></td>
+            </tr>
+        </table>
+
+        <h3 th:if="${cart != null}">Tổng cộng: <span th:text="${cart.totalAmount}"></span> đ</h3>
+
+        <br>
+        <form th:action="@{/orders/checkout}" method="post">
+            <label>Địa chỉ giao hàng:</label><br>
+            <textarea name="shippingAddress" required rows="3" cols="40"></textarea><br><br>
+
+            <label>Phương thức thanh toán:</label><br>
+            <div style="margin:10px 0">
+                <input type="radio" id="cash" name="paymentMethod" value="CASH" checked>
+                <label for="cash" style="text-transform:none; font-weight:400">Tiền mặt khi nhận hàng</label>
+            </div>
+            <div style="margin:10px 0">
+                <input type="radio" id="transfer" name="paymentMethod" value="TRANSFER">
+                <label for="transfer" style="text-transform:none; font-weight:400">Chuyển khoản khi nhận hàng</label>
+            </div>
+
+            <br>
+            <button type="submit">Đặt hàng</button>
+        </form>
+    </div>
+</body>
+</html>

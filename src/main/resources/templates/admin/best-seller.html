@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thống kê sản phẩm bán chạy</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('bestsellers')}"></aside>
+
+        <main class="content">
+            <h1>Sản phẩm bán chạy</h1>
+            <div class="sub">Đơn COMPLETED · <b th:text="${rangeLabel}"></b></div>
+
+            <!-- Bộ lọc chính: kỳ thống kê + loại sản phẩm + top -->
+            <form method="get" th:action="@{/admin/best-sellers}" class="actions" style="margin-bottom:10px">
+                <label>Kỳ</label>
+                <select name="period">
+                    <option value="all" th:selected="${period == 'all'}">Tất cả</option>
+                    <option value="week" th:selected="${period == 'week'}">Theo tuần</option>
+                    <option value="month" th:selected="${period == 'month'}">Theo tháng</option>
+                    <option value="year" th:selected="${period == 'year'}">Theo năm</option>
+                </select>
+                <label>Chứa ngày</label>
+                <input type="date" name="date" th:value="${refDate}">
+                <label>Loại</label>
+                <select name="categoryId">
+                    <option value="">Tất cả loại</option>
+                    <option th:each="c : ${categories}" th:value="${c.categoryID}"
+                            th:text="${c.categoryName}" th:selected="${c.categoryID == categoryId}"></option>
+                </select>
+                <label>Top</label>
+                <select name="limit">
+                    <option value="5" th:selected="${limit == 5}">5</option>
+                    <option value="10" th:selected="${limit == 10}">10</option>
+                    <option value="20" th:selected="${limit == 20}">20</option>
+                    <option value="50" th:selected="${limit == 50}">50</option>
+                </select>
+                <button type="submit">Lọc</button>
+                <a class="btn btn-plain" th:href="@{/admin/best-sellers}">Xóa lọc</a>
+            </form>
+
+            <!-- Khoảng ngày tùy chỉnh: thu gọn, bấm mới hiện -->
+            <details style="margin-bottom:16px" th:attr="open=${period == 'custom'} ? 'open'">
+                <summary style="cursor:pointer">Chọn khoảng ngày tùy chỉnh</summary>
+                <form method="get" th:action="@{/admin/best-sellers}" class="actions" style="margin-top:10px">
+                    <input type="hidden" name="period" value="custom">
+                    <input type="hidden" name="categoryId" th:value="${categoryId}">
+                    <input type="hidden" name="limit" th:value="${limit}">
+                    <label>Từ ngày</label>
+                    <input type="date" name="from" th:value="${from}">
+                    <label>Đến ngày</label>
+                    <input type="date" name="to" th:value="${to}">
+                    <button type="submit">Áp dụng</button>
+                </form>
+            </details>
+
+                        <!-- Doanh thu tổng và theo loại -->
+            <div class="stats" style="margin-bottom:16px">
+                <div class="stat">
+                    <div class="top"><span class="name">Tổng doanh thu</span><span class="ico" style="background:#34c759">₫</span></div>
+                    <div class="num"><span th:text="${#numbers.formatDecimal(totalRevenue, 0, 'POINT', 0, 'COMMA')}">0</span> <small>đ</small></div>
+                </div>
+            </div>
+
+            <section class="panel" style="margin-bottom:16px">
+                <h2>Doanh thu theo loại sản phẩm</h2>
+                <table>
+                    <thead>
+                        <tr><th>Loại</th><th>Đã bán</th><th>Doanh thu</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${revenueByCategory}">
+                            <td th:text="${r.categoryName}"></td>
+                            <td th:text="${r.totalQuantity}"></td>
+                            <td class="nowrap" th:text="${#numbers.formatDecimal(r.totalRevenue, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(revenueByCategory)}">
+                            <td colspan="3" class="empty">Chưa có doanh thu trong kỳ này</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            <section class="panel">
+                <table>
+                    <thead>
+                        <tr><th>#</th><th>Sản phẩm</th><th>Danh mục</th><th>Đã bán</th><th>Doanh thu</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="s, st : ${stats}">
+                            <td th:text="${st.count}"></td>
+                            <td th:text="${s.name}"></td>
+                            <td th:text="${s.categoryName}"></td>
+                            <td th:text="${s.totalQuantity}"></td>
+                            <td class="nowrap" th:text="${#numbers.formatDecimal(s.totalRevenue, 0, 'POINT', 0, 'COMMA')} + ' đ'"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(stats)}">
+                            <td colspan="5" class="empty">Chưa có dữ liệu bán hàng</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>
