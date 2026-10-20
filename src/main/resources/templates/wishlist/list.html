@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>Danh sách yêu thích</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .item a {
+            color: #222;
+            text-decoration: none;
+        }
+
+        button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .message {
+            color: green;
+            margin-bottom: 15px;
+        }
+
+        .price {
+            color: #e53935;
+            font-weight: bold;
+        }
+    </style>
+    </head>
+    <body>
+
+<div th:replace="~{layout/header :: header}"></div>
+
+<div class="container" style="margin-top:30px;">
+
+    <h2>❤️ Danh sách sản phẩm yêu thích</h2>
+
+    <p th:if="${successMessage != null}"
+       th:text="${successMessage}"
+       style="color:green;">
+    </p>
+
+    <div th:if="${#lists.isEmpty(items)}">
+        <p>Bạn chưa có sản phẩm yêu thích nào.</p>
+        <a th:href="@{/products}">Tiếp tục mua sắm</a>
+    </div>
+
+    <div class="product-grid"
+         th:if="${not #lists.isEmpty(items)}">
+
+        <div class="product-card" th:each="item : ${items}">
+
+            <img th:if="${item.product.imageURL != null}"
+                 th:src="${item.product.imageURL}"
+                 th:alt="${item.product.name}"
+                 style="width:100%; max-height:200px; object-fit:contain;">
+
+            <h3 th:text="${item.product.name}"></h3>
+
+            <p class="price">
+                <span th:text="${item.product.price}"></span> đ
+            </p>
+
+            <a th:href="@{/products/{id}(id=${item.product.productID})}">
+                Xem chi tiết
+            </a>
+
+            <form th:action="@{/wishlist/remove/{id}(id=${item.product.productID})}"
+                  method="post"
+                  style="margin-top:10px;">
+
+                <button type="submit"
+                        style="background:#e91e63; color:white;
+                               border:none; padding:8px 12px;
+                               border-radius:5px; cursor:pointer;">
+                    ❤️ Bỏ yêu thích
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
