@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý danh mục</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('categories')}"></aside>
+
+        <main class="content">
+            <div class="toolbar">
+                <div>
+                    <h1>Danh mục</h1>
+                    <div class="sub">Quản lý danh mục sản phẩm</div>
+                </div>
+                <a class="btn" th:href="@{/admin/categories/new}">+ Thêm danh mục</a>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <section class="panel">
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Tên danh mục</th><th>Hành động</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${categories}">
+                            <td th:text="${c.categoryID}"></td>
+                            <td th:text="${c.categoryName}"></td>
+                            <td>
+                                <div class="actions">
+                                    <a class="link" th:href="@{/admin/categories/edit/{id}(id=${c.categoryID})}">Sửa</a>
+                                    <form th:action="@{/admin/categories/delete/{id}(id=${c.categoryID})}" method="post"
+                                          onsubmit="return confirm('Xác nhận xóa danh mục này?');">
+                                        <button type="submit" class="btn-danger">Xóa</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(categories)}">
+                            <td colspan="3" class="empty">Chưa có danh mục nào</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>

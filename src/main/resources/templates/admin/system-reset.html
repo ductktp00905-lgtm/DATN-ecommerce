@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reset dữ liệu</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('reset')}"></aside>
+
+        <main class="content">
+            <h1>Reset dữ liệu hệ thống</h1>
+            <div class="sub">Chỉ dùng khi test</div>
+
+            <div th:if="${param.success}" class="alert alert-success">Đã xóa toàn bộ dữ liệu thành công!</div>
+
+            <div class="alert alert-warn">
+                ⚠️ Cảnh báo: thao tác này sẽ xóa TOÀN BỘ dữ liệu (người dùng, sản phẩm, đơn hàng, thanh toán) và không thể hoàn tác.
+                Chỉ dùng khi test, không dùng khi có dữ liệu thật.
+            </div>
+
+            <form th:action="@{/admin/system/reset-all}" method="post"
+                  onsubmit="return confirm('Bạn CHẮC CHẮN muốn xóa toàn bộ dữ liệu? Hành động này không thể hoàn tác!');">
+                <button type="submit" class="btn-danger">Xóa toàn bộ dữ liệu</button>
+            </form>
+        </main>
+    </div>
+</div>
+</body>
+</html>

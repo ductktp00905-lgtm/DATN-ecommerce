@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>Đánh giá sản phẩm</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 30px 15px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        h1, h2 {
+            margin-top: 0;
+        }
+
+        .rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            width: fit-content;
+        }
+
+        .rating-input input {
+            display: none;
+        }
+
+        .rating-input label {
+            font-size: 35px;
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        .rating-input input:checked ~ label,
+        .rating-input label:hover,
+        .rating-input label:hover ~ label {
+            color: #ffc107;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        button {
+            background: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 20px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        button:hover {
+            background: #0b5ed7;
+        }
+
+        .review {
+            border-bottom: 1px solid #eee;
+            padding: 18px 0;
+        }
+
+        .review:last-child {
+            border-bottom: none;
+        }
+
+        .stars {
+            color: #f0ad00;
+            font-size: 21px;
+            letter-spacing: 2px;
+        }
+
+        .date {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .success {
+            background: #d1e7dd;
+            color: #0f5132;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #842029;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .muted {
+            color: #777;
+        }
+    </style>
+    <body>
+        <div class="container">
+
+    <div class="panel">
+        <h1>Đánh giá sản phẩm</h1>
+
+        <h2 th:text="${product.name}">
+    Tên sản phẩm
+</h2>
+
+        <p>
+            Tổng số đánh giá:
+            <strong th:text="${reviewCount}">0</strong>
+        </p>
+
+        <a th:href="@{/products/{id}(id=${product.productID})}">
+            Quay lại sản phẩm
+        </a>
+    </div>
+
+    <div class="panel">
+
+        <h2>Viết đánh giá của bạn</h2>
+
+        <p class="success"
+           th:if="${successMessage}"
+           th:text="${successMessage}"></p>
+
+        <p class="error"
+           th:if="${errorMessage}"
+           th:text="${errorMessage}"></p>
+
+        <div th:if="${alreadyReviewed}">
+            Bạn đã đánh giá sản phẩm này rồi.
+        </div>
+
+        <form th:if="${!alreadyReviewed}"
+              th:action="@{/reviews/add}"
+              method="post">
+
+            <input type="hidden"
+                   name="productId"
+                   th:value="${product.productID}">
+
+            <label><strong>Chọn số sao:</strong></label>
+
+            <div class="rating-input">
+                <input type="radio" id="star5"
+                       name="rating" value="5" required>
+                <label for="star5" title="5 sao">&#9733;</label>
+
+                <input type="radio" id="star4"
+                       name="rating" value="4" required>
+                <label for="star4" title="4 sao">&#9733;</label>
+
+                <input type="radio" id="star3"
+                       name="rating" value="3" required>
+                <label for="star3" title="3 sao">&#9733;</label>
+
+                <input type="radio" id="star2"
+                       name="rating" value="2" required>
+                <label for="star2" title="2 sao">&#9733;</label>
+
+                <input type="radio" id="star1"
+                       name="rating" value="1" required>
+                <label for="star1" title="1 sao">&#9733;</label>
+            </div>
+
+            <label for="comment">
+                <strong>Nhận xét:</strong>
+            </label>
+
+            <textarea id="comment"
+                      name="comment"
+                      maxlength="1000"
+                      placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."></textarea>
+
+            <button type="submit">Gửi đánh giá</button>
+        </form>
+
+        <div th:if="${!alreadyReviewed}">
+            <p class="muted">
+                Bạn cần đăng nhập để gửi đánh giá.
+            </p>
+            <a th:href="@{/login}">Đăng nhập</a>
+        </div>
+
+    </div>
+
+    <div class="panel">
+        <h2>Đánh giá từ khách hàng</h2>
+
+        <div th:if="${#lists.isEmpty(reviews)}">
+            Chưa có đánh giá nào cho sản phẩm này.
+        </div>
+
+        <div class="review" th:each="review : ${reviews}">
+
+            <strong th:text="${review.user.username}">
+                Khách hàng
+            </strong>
+
+            <div class="stars">
+                <span th:each="i : ${#numbers.sequence(1, 5)}"
+                      th:text="${i <= review.rating ? '★' : '☆'}">
+                </span>
+            </div>
+
+            <p th:if="${review.comment != null
+                       and !review.comment.isEmpty()}"
+               th:text="${review.comment}">
+                Nội dung đánh giá
+            </p>
+
+            <p class="date"
+               th:text="${#temporals.format(review.createdDate, 'dd/MM/yyyy HH:mm')}">
+                Ngày đánh giá
+            </p>
+
+        </div>
+    </div>
+
+</div>
+</body>
+    
+</html>
