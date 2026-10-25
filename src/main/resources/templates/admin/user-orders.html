@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lịch sử mua hàng — FlareHub Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('users')}"></aside>
+        
+        <main class="content">
+            <div class="toolbar">
+                <div>
+                    <h1>Lịch sử mua hàng</h1>
+                    <div class="sub">
+                        Người dùng: <strong th:text="${target.username}">username</strong> (<span th:text="${target.fullName}">Họ tên</span>) —
+                        Tổng chi tiêu: <strong style="color: var(--accent);" th:text="${#numbers.formatDecimal(spent, 0, 'POINT', 0, 'COMMA')} + ' ₫'">0 ₫</strong>
+                    </div>
+                </div>
+                <a class="btn btn-plain" th:href="@{/admin/users}">← Quay lại Quản lý người dùng</a>
+            </div>
+
+            <section class="panel">
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Thời gian đặt</th>
+                                <th>Địa chỉ giao hàng</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="o : ${orders}">
+                                <td><strong th:text="'#' + ${o.orderID}">#1001</strong></td>
+                                <td th:text="${#temporals.format(o.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</td>
+                                <td th:text="${o.shippingAddress}">Địa chỉ</td>
+                                <td class="nowrap" style="font-weight: 700; color: var(--accent);"
+                                    th:text="${#numbers.formatDecimal(o.totalAmount, 0, 'POINT', 0, 'COMMA')} + ' ₫'">0 ₫</td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${o.status == 'PENDING'} ? 'badge-pending' : (${o.status == 'SHIPPING'} ? 'badge-shipping' : (${o.status == 'COMPLETED'} ? 'badge-completed' : 'badge-cancelled'))"
+                                          th:text="${o.status}">PENDING</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(orders)}">
+                                <td colspan="5" class="empty">Người dùng này chưa có đơn hàng nào</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>

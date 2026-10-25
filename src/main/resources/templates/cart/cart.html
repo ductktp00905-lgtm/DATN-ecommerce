@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Giỏ hàng của bạn — FlareHub</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <main class="main-content">
+        <div class="container" style="padding-top: 24px; padding-bottom: 48px;">
+            
+            <div style="margin-bottom: 20px;">
+                <a th:href="@{/products}" class="btn btn-plain btn-sm">
+                    <span>← Tiếp tục mua sắm</span>
+                </a>
+            </div>
+
+            <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 8px;">
+                <h1>🛒 Giỏ hàng của bạn</h1>
+                <span th:if="${cart != null and !cart.items.isEmpty()}" style="color: var(--text-muted); font-size: 0.95rem;">
+                    Có <strong th:text="${cart.items.size()}">0</strong> loại sản phẩm trong giỏ
+                </span>
+            </div>
+
+            <!-- Thông báo lỗi giỏ hàng nếu có -->
+            <div th:if="${cartError}" class="alert alert-error" role="alert">
+                <span th:text="${cartError}"></span>
+            </div>
+
+            <!-- KHI GIỎ HÀNG TRỐNG -->
+            <div th:if="${cart == null or cart.items.isEmpty()}" class="card" style="text-align: center; padding: 60px 20px;">
+                <div style="font-size: 4rem; margin-bottom: 16px;">🛍️</div>
+                <h2>Giỏ hàng của bạn đang trống</h2>
+                <p style="color: var(--text-muted); max-width: 420px; margin: 0 auto 24px auto;">
+                    Bạn chưa chọn mua thiết bị công nghệ nào. Hãy khám phá ngay hàng trăm sản phẩm chính hãng tại FlareHub!
+                </p>
+                <a th:href="@{/products}" class="btn btn-primary btn-lg">
+                    <span>Khám phá sản phẩm ngay</span>
+                </a>
+            </div>
+
+            <!-- KHI GIỎ HÀNG CÓ SẢN PHẨM -->
+            <div th:unless="${cart == null or cart.items.isEmpty()}" style="display: grid; grid-template-columns: 2fr 1fr; gap: 28px; align-items: start;">
+                
+                <!-- Cột bảng danh sách sản phẩm -->
+                <div class="card" style="padding: 24px;">
+                    <div class="table-responsive" style="margin-bottom: 0;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Đơn giá</th>
+                                    <th style="min-width: 140px;">Số lượng</th>
+                                    <th>Thành tiền</th>
+                                    <th style="text-align: center;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="entry : ${cart.items}">
+                                    <!-- Cột thông tin & Ảnh -->
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 14px;">
+                                            <img th:if="${entry.value.imageURL != null and entry.value.imageURL != ''}"
+                                                 th:src="${entry.value.imageURL}"
+                                                 th:alt="${entry.value.productName}"
+                                                 style="width: 54px; height: 54px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); flex-shrink: 0;">
+                                            <div th:unless="${entry.value.imageURL != null and entry.value.imageURL != ''}"
+                                                 style="width: 54px; height: 54px; background: var(--card-subtle); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 1px dashed var(--border); flex-shrink: 0;">
+                                                📱
+                                            </div>
+                                            <div>
+                                                <a th:href="@{/products/{id}(id=${entry.key})}" style="font-weight: 600; color: var(--text-heading); display: block; line-height: 1.35;">
+                                                    <span th:text="${entry.value.productName}">Tên sản phẩm</span>
+                                                </a>
+                                                <small style="color: var(--text-muted);">Mã SP: #<span th:text="${entry.key}"></span></small>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Cột Đơn giá -->
+                                    <td class="nowrap" style="font-weight: 500;">
+                                        <span th:text="${#numbers.formatDecimal(entry.value.price, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                                    </td>
+
+                                    <!-- Cột Số lượng (Form Cập nhật) -->
+                                    <td>
+                                        <form th:action="@{/cart/update}" method="post" style="display: flex; gap: 6px; align-items: center;">
+                                            <input type="hidden" name="productId" th:value="${entry.key}">
+                                            <input type="number"
+                                                   name="quantity"
+                                                   th:value="${entry.value.quantity}"
+                                                   min="1"
+                                                   required
+                                                   style="width: 70px; padding: 6px 8px; text-align: center;">
+                                            <button type="submit" class="btn btn-secondary btn-sm" title="Cập nhật số lượng">
+                                                <span>✓</span>
+                                            </button>
+                                        </form>
+                                    </td>
+
+                                    <!-- Cột Thành tiền -->
+                                    <td class="nowrap" style="font-weight: 700; color: var(--primary);">
+                                        <span th:text="${#numbers.formatDecimal(entry.value.subTotal, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                                    </td>
+
+                                    <!-- Cột Xóa khỏi giỏ -->
+                                    <td style="text-align: center;">
+                                        <form th:action="@{/cart/remove}" method="post" style="display: inline;"
+                                              onsubmit="return confirm('Bạn chắc chắn muốn bỏ sản phẩm này khỏi giỏ hàng?');">
+                                            <input type="hidden" name="productId" th:value="${entry.key}">
+                                            <button type="submit" class="btn btn-danger-sm btn-sm" title="Xóa sản phẩm">
+                                                <span>🗑️ Xóa</span>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Cột tóm tắt đơn hàng & nút Thanh toán -->
+                <div class="card" style="padding: 24px; position: sticky; top: 90px;">
+                    <h3 style="margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+                        Tóm tắt thanh toán
+                    </h3>
+
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; color: var(--text-muted);">
+                        <span>Tạm tính hàng hóa:</span>
+                        <span style="font-weight: 600; color: var(--text);">
+                            <span th:text="${#numbers.formatDecimal(cart.totalAmount, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                        </span>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px; color: var(--text-muted);">
+                        <span>Phí vận chuyển:</span>
+                        <span style="font-weight: 600; color: var(--success);">Miễn phí 100%</span>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 14px; border-top: 1px solid var(--border); margin-bottom: 24px;">
+                        <span style="font-size: 1.1rem; font-weight: 700;">Tổng thanh toán:</span>
+                        <span class="price" style="font-size: 1.6rem; margin: 0;">
+                            <span th:text="${#numbers.formatDecimal(cart.totalAmount, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                        </span>
+                    </div>
+
+                    <a th:href="@{/orders/checkout}" class="btn btn-primary btn-block btn-lg">
+                        <span>Tiến hành đặt hàng →</span>
+                    </a>
+
+                    <div style="margin-top: 16px; text-align: center;">
+                        <small style="color: var(--text-muted); font-size: 0.8rem;">
+                            🔒 Cam kết bảo mật thông tin &amp; thanh toán an toàn
+                        </small>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

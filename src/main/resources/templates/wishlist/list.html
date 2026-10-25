@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách yêu thích — FlareHub</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <main class="main-content">
+        <div class="container" style="padding-top: 24px; padding-bottom: 48px;">
+            
+            <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 8px;">
+                <div>
+                    <h1>❤️ Sản phẩm yêu thích</h1>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">Danh sách các thiết bị bạn đã lưu lại để theo dõi và mua sắm sau</p>
+                </div>
+                <a th:href="@{/products}" class="btn btn-outline btn-sm">
+                    <span>+ Khám phá thêm sản phẩm</span>
+                </a>
+            </div>
+
+            <!-- Thông báo thành công nếu có -->
+            <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                <span th:text="${successMessage}"></span>
+            </div>
+
+            <!-- KHI DANH SÁCH YÊU THÍCH TRỐNG -->
+            <div th:if="${#lists.isEmpty(items)}" class="card" style="text-align: center; padding: 60px 20px;">
+                <div style="font-size: 4rem; margin-bottom: 16px;">💔</div>
+                <h2>Chưa có sản phẩm yêu thích nào</h2>
+                <p style="color: var(--text-muted); max-width: 420px; margin: 0 auto 24px auto;">
+                    Hãy bấm vào biểu tượng trái tim ở trang chi tiết sản phẩm để lưu lại những thiết bị bạn quan tâm!
+                </p>
+                <a th:href="@{/products}" class="btn btn-primary btn-lg">
+                    <span>Khám phá sản phẩm ngay</span>
+                </a>
+            </div>
+
+            <!-- LƯỚI SẢN PHẨM YÊU THÍCH -->
+            <div class="product-grid" th:unless="${#lists.isEmpty(items)}">
+                <div class="product-card" th:each="item : ${items}">
+                    <!-- Ảnh sản phẩm -->
+                    <div style="position: relative;">
+                        <img class="product-img"
+                             th:if="${item.product.imageURL != null and item.product.imageURL != ''}"
+                             th:src="${item.product.imageURL}"
+                             th:alt="${item.product.name}"
+                             loading="lazy">
+                        <div class="product-noimg"
+                             th:unless="${item.product.imageURL != null and item.product.imageURL != ''}">
+                            <span style="font-size: 2rem;">📱</span>
+                            <span>Chưa có ảnh</span>
+                        </div>
+                    </div>
+
+                    <!-- Tên sản phẩm -->
+                    <h3 th:text="${item.product.name}">Tên sản phẩm</h3>
+
+                    <!-- Giá sản phẩm -->
+                    <div class="price">
+                        <span th:text="${#numbers.formatDecimal(item.product.price, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                    </div>
+
+                    <!-- Hành động: Xem chi tiết & Nút bỏ yêu thích -->
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
+                        <a th:href="@{/products/{id}(id=${item.product.productID})}" class="btn btn-outline btn-block btn-sm">
+                            <span>Xem chi tiết →</span>
+                        </a>
+
+                        <form th:action="@{/wishlist/remove/{productId}(productId=${item.product.productID})}" method="post">
+                            <button type="submit" class="btn btn-danger-sm btn-block btn-sm">
+                                <span>💔 Bỏ yêu thích</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

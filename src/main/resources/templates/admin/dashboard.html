@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tổng quan hệ thống — FlareHub Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('overview')}"></aside>
+        
+        <main class="content">
+            <h1>Tổng quan hoạt động</h1>
+            <div class="sub">Số liệu thống kê thời gian thực của cửa hàng điện tử FlareHub</div>
+
+            <!-- Thống kê 4 chỉ số chính -->
+            <div class="stats">
+                <div class="stat">
+                    <div class="top">
+                        <span class="name">Tổng doanh thu</span>
+                        <span class="ico" style="background:#34c759">₫</span>
+                    </div>
+                    <div class="num">
+                        <span th:text="${#numbers.formatDecimal(totalRevenue, 0, 'POINT', 0, 'COMMA')}">0</span>
+                        <small>₫</small>
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="top">
+                        <span class="name">Tổng đơn hàng</span>
+                        <span class="ico" style="background:#007aff">✓</span>
+                    </div>
+                    <div class="num" th:text="${totalOrders}">0</div>
+                </div>
+
+                <div class="stat">
+                    <div class="top">
+                        <span class="name">Tổng sản phẩm</span>
+                        <span class="ico" style="background:#FF6B1A">▣</span>
+                    </div>
+                    <div class="num" th:text="${totalProducts}">0</div>
+                </div>
+
+                <div class="stat">
+                    <div class="top">
+                        <span class="name">Tổng người dùng</span>
+                        <span class="ico" style="background:#5ac8fa">☺</span>
+                    </div>
+                    <div class="num" th:text="${totalUsers}">0</div>
+                </div>
+            </div>
+
+            <!-- Đơn hàng gần đây -->
+            <section class="panel">
+                <h2>Đơn hàng gần đây</h2>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Thời gian</th>
+                                <th>Khách hàng</th>
+                                <th>Tổng tiền</th>
+                                <th style="text-align: center;">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="o : ${recentOrders}">
+                                <td><strong th:text="'#' + ${o.orderID}">#1001</strong></td>
+                                <td th:text="${#temporals.format(o.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</td>
+                                <td th:text="${o.user != null ? o.user.username : 'Khách vãng lai'}">username</td>
+                                <td class="nowrap" style="font-weight: 700; color: var(--accent);">
+                                    <span th:text="${#numbers.formatDecimal(o.totalAmount, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                                </td>
+                                <td style="text-align: center;">
+                                    <span class="badge"
+                                          th:classappend="${o.status == 'PENDING'} ? 'badge-pending' : (${o.status == 'SHIPPING'} ? 'badge-shipping' : (${o.status == 'COMPLETED'} ? 'badge-completed' : 'badge-cancelled'))">
+                                        <th:block th:switch="${o.status}">
+                                            <span th:case="'PENDING'">⏳ Chờ xử lý</span>
+                                            <span th:case="'SHIPPING'">🚚 Đang giao</span>
+                                            <span th:case="'COMPLETED'">✅ Hoàn thành</span>
+                                            <span th:case="'CANCELLED'">❌ Đã hủy</span>
+                                            <span th:case="*" th:text="${o.status}"></span>
+                                        </th:block>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(recentOrders)}">
+                                <td colspan="5" class="empty">Chưa có đơn hàng nào trong hệ thống</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>

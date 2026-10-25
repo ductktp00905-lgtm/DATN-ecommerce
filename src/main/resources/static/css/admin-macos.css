@@ -1,0 +1,564 @@
+/* ==========================================================================
+   FLAREHUB ADMIN — MACOS DESKTOP & SHELL DESIGN SYSTEM
+   Phong cách macOS Sonoma / Sequoia kết hợp bản sắc công nghệ FlareHub
+   ========================================================================== */
+
+:root {
+    /* Token FlareHub macOS */
+    --wallpaper: linear-gradient(135deg, #0d1224 0%, #171d36 40%, #2b1b36 75%, #3d1c24 100%);
+    --window: rgba(255, 255, 255, 0.94);
+    --window-header: rgba(248, 249, 250, 0.96);
+    --sidebar: #f5f6f9;
+    --card: #ffffff;
+    --text: #1b1f3b;
+    --text-heading: #0f1222;
+    --muted: #64748b;
+    --line: rgba(0, 0, 0, 0.08);
+    --line-subtle: rgba(0, 0, 0, 0.05);
+
+    /* Màu nhấn Flare */
+    --accent: #FF6B1A;
+    --accent-hover: #E85A0C;
+    --accent-light: rgba(255, 107, 26, 0.12);
+    --accent-text: #ffffff;
+
+    --hover: rgba(0, 0, 0, 0.04);
+    --select: rgba(255, 107, 26, 0.12);
+    --field: #ffffff;
+    --field-line: #d1d5db;
+
+    /* Màu chức năng */
+    --danger: #dc2626;
+    --danger-light: #fee2e2;
+    --success: #16a34a;
+    --success-light: #dcfce7;
+    --warning: #f59e0b;
+    --warning-light: #fef3c7;
+    --info: #2563eb;
+    --info-light: #dbeafe;
+
+    --radius-win: 14px;
+    --radius-control: 8px;
+    --shadow: 0 24px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.15);
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Dark mode tự động */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --wallpaper: linear-gradient(135deg, #070913 0%, #0d1124 50%, #1e1124 100%);
+        --window: rgba(24, 28, 48, 0.96);
+        --window-header: rgba(18, 21, 38, 0.98);
+        --sidebar: #14172a;
+        --card: #1c213a;
+        --text: #f1f5f9;
+        --text-heading: #ffffff;
+        --muted: #94a3b8;
+        --line: rgba(255, 255, 255, 0.09);
+        --line-subtle: rgba(255, 255, 255, 0.05);
+
+        --hover: rgba(255, 255, 255, 0.05);
+        --select: rgba(255, 107, 26, 0.22);
+        --field: #141729;
+        --field-line: rgba(255, 255, 255, 0.16);
+
+        --danger-light: rgba(220, 38, 38, 0.2);
+        --success-light: rgba(22, 163, 74, 0.2);
+        --warning-light: rgba(245, 158, 11, 0.2);
+        --info-light: rgba(37, 99, 235, 0.2);
+
+        --shadow: 0 24px 70px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--wallpaper) fixed;
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ==========================================================================
+   CỬA SỔ WINDOW & SHELL
+   ========================================================================== */
+.window {
+    width: min(1180px, 100%);
+    min-height: 640px;
+    display: flex;
+    flex-direction: column;
+    background: var(--window);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border-radius: var(--radius-win);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+/* Khi được mở bên trong iframe của desktop.html */
+html.embedded, html.embedded body {
+    padding: 0;
+    background: transparent;
+    height: 100%;
+}
+
+html.embedded .window {
+    width: 100%;
+    min-height: 100%;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+html.embedded .titlebar {
+    display: none;
+}
+
+/* Thanh tiêu đề macOS */
+.titlebar {
+    height: 42px;
+    background: var(--window-header);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    position: relative;
+    user-select: none;
+}
+
+.lights {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.lights i, .lights b {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+}
+
+.lights i:nth-child(1), .lights b[data-act="close"] { background: #ff5f57; border: 1px solid #e0443e; }
+.lights i:nth-child(2), .lights b[data-act="min"] { background: #febc2e; border: 1px solid #d89e24; }
+.lights i:nth-child(3), .lights b[data-act="max"] { background: #28c840; border: 1px solid #1aab29; }
+
+.titlebar .title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: -0.01em;
+}
+
+/* Thân cửa sổ */
+.body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+/* ==========================================================================
+   SIDEBAR ADMIN
+   ========================================================================== */
+.sidebar {
+    width: 220px;
+    background: var(--sidebar);
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    padding: 16px 12px;
+    flex-shrink: 0;
+}
+
+.sidebar .label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    padding: 8px 10px 4px;
+    text-transform: uppercase;
+}
+
+.sidebar .nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar .nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius-control);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 120ms ease;
+}
+
+.sidebar .nav a:hover {
+    background: var(--hover);
+}
+
+.sidebar .nav a.active {
+    background: var(--select);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.sidebar .ico {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.sidebar .nav a.danger:hover {
+    color: var(--danger);
+}
+
+.sidebar .spacer {
+    flex: 1;
+}
+
+.sidebar .user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 8px;
+    border-top: 1px solid var(--line);
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.sidebar .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+/* ==========================================================================
+   CONTENT AREA
+   ========================================================================== */
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+    min-width: 0;
+}
+
+.content h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 4px;
+}
+
+.content .sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 22px;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* Thẻ thống kê Dashboard */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-control);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-card);
+}
+
+.stat .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stat .name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.stat .ico {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+}
+
+.stat .num {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-heading);
+}
+
+.stat .num small {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--muted);
+}
+
+/* Bảng dữ liệu */
+.panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-control);
+    padding: 20px 22px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 24px;
+}
+
+.panel h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 16px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+}
+
+th {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--hover);
+}
+
+tbody tr:hover {
+    background: var(--hover);
+}
+
+td.empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 32px 14px;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.badge-pending { background: var(--warning-light); color: #b45309; }
+.badge-shipping { background: var(--info-light); color: var(--info); }
+.badge-completed { background: var(--success-light); color: var(--success); }
+.badge-cancelled { background: var(--danger-light); color: var(--danger); }
+
+/* Buttons & Links */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius-control);
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    background: var(--accent);
+    color: var(--accent-text);
+    cursor: pointer;
+    transition: all 120ms ease;
+}
+
+.btn:hover {
+    background: var(--accent-hover);
+}
+
+.btn-plain {
+    background: var(--hover);
+    color: var(--text);
+    border: 1px solid var(--line);
+}
+
+.btn-plain:hover {
+    background: var(--line);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.actions a.link {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* Alerts */
+.alert {
+    padding: 10px 14px;
+    border-radius: var(--radius-control);
+    margin-bottom: 18px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.alert-success { background: var(--success-light); color: var(--success); }
+.alert-error { background: var(--danger-light); color: var(--danger); }
+
+/* Form */
+.form {
+    max-width: 560px;
+}
+
+.form label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 14px;
+    margin-bottom: 6px;
+}
+
+.form input, .form textarea, .form select {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--field);
+    border: 1px solid var(--field-line);
+    border-radius: var(--radius-control);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.form input:focus, .form textarea:focus, .form select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+.form .buttons {
+    margin-top: 22px;
+    display: flex;
+    gap: 10px;
+}
+
+/* Dialog macOS */
+dialog.ud {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-win);
+    background: var(--card);
+    color: var(--text);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    max-width: 480px;
+    width: 100%;
+    margin: auto;
+}
+
+dialog.ud::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body { padding: 0; }
+    .window { border-radius: 0; min-height: 100vh; }
+    .body { flex-direction: column; }
+    .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--line); }
+    .content { padding: 20px 16px; }
+}
