@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sản phẩm công nghệ — FlareHub</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <main class="main-content">
+        <div class="container" style="padding-top: 24px; padding-bottom: 48px;">
+            
+            <!-- Banner công nghệ FlareHub -->
+            <div class="card" style="background: linear-gradient(135deg, #1B1F3B 0%, #2A1F45 50%, #3B1F2B 100%); color: #FFFFFF; padding: 32px; border-radius: var(--radius-xl); border: none; margin-bottom: 28px; position: relative; overflow: hidden;">
+                <div style="position: relative; z-index: 2; max-width: 640px;">
+                    <span class="badge" style="background: rgba(255,107,26,0.25); color: #FFA066; border: 1px solid rgba(255,107,26,0.4); margin-bottom: 12px;">
+                        🔥 FLAREHUB ƯU ĐÃI CÔNG NGHỆ 2026
+                    </span>
+                    <h1 style="color: #FFFFFF; font-size: 2.1rem; margin-bottom: 8px;">Khám Phá Thiết Bị Đỉnh Cao</h1>
+                    <p style="color: #CBD5E1; font-size: 1rem; margin-bottom: 0;">
+                        Điện thoại thông minh, laptop chuyên nghiệp và phụ kiện chính hãng 100% với chính sách bảo hành 12 tháng tận tâm.
+                    </p>
+                </div>
+                <div style="position: absolute; right: -20px; bottom: -30px; font-size: 10rem; opacity: 0.07; user-select: none; pointer-events: none;">
+                    ⚡
+                </div>
+            </div>
+
+            <!-- KHỐI SẢN PHẨM BÁN CHẠY & ĐỀ XUẤT -->
+            <section class="panel"
+                     th:if="${bestSellingProducts != null and !#lists.isEmpty(bestSellingProducts)}"
+                     style="margin-bottom: 32px; border-color: rgba(255, 107, 26, 0.25);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <h2>🔥 Sản phẩm bán chạy &amp; Đề xuất</h2>
+                        <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;">Được khách hàng FlareHub tin dùng và đánh giá cao nhất</p>
+                    </div>
+                    <span class="badge badge-completed">Nổi bật</span>
+                </div>
+
+                <div class="product-grid" style="margin-top: 12px; margin-bottom: 0;">
+                    <div class="product-card" th:each="item : ${bestSellingProducts}">
+                        <!-- Ảnh sản phẩm hoặc khung thay thế -->
+                        <div style="position: relative;">
+                            <img class="product-img"
+                                 th:if="${item.imageURL != null and item.imageURL != ''}"
+                                 th:src="${item.imageURL}"
+                                 th:alt="${item.name}"
+                                 loading="lazy">
+                            <div class="product-noimg"
+                                 th:unless="${item.imageURL != null and item.imageURL != ''}">
+                                <span style="font-size: 2rem;">📱</span>
+                                <span>Chưa có ảnh</span>
+                            </div>
+                            <!-- Nhãn tồn kho -->
+                            <span class="badge badge-cancelled" th:if="${item.stock <= 0}" style="position: absolute; top: 8px; left: 8px;">Hết hàng</span>
+                            <span class="badge badge-pending" th:if="${item.stock > 0 and item.stock <= 5}" style="position: absolute; top: 8px; left: 8px;">Sắp hết</span>
+                        </div>
+
+                        <!-- Thông tin sản phẩm -->
+                        <h3 th:text="${item.name}">Tên sản phẩm</h3>
+
+                        <!-- Đánh giá sao -->
+                        <div th:if="${ratings != null and ratings[item.productID] != null}" style="color: #F59E0B; margin: 4px 0 8px 0; font-size: 0.88rem; display: flex; align-items: center; gap: 4px;">
+                            <span>★</span>
+                            <strong th:text="${#numbers.formatDecimal(ratings[item.productID].avg, 1, 1)}">5.0</strong>
+                            <span style="color: var(--text-muted); font-size: 0.8rem;">(<span th:text="${ratings[item.productID].count}">0</span>)</span>
+                        </div>
+                        <div th:unless="${ratings != null and ratings[item.productID] != null}" style="color: var(--text-muted); font-size: 0.8rem; margin: 4px 0 8px 0;">
+                            <span>☆ Chưa có đánh giá</span>
+                        </div>
+
+                        <p class="product-desc" th:text="${item.description}"></p>
+
+                        <div class="price">
+                            <span th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                        </div>
+
+                        <div class="stock-tag">
+                            <span>Kho: </span>
+                            <strong th:text="${item.stock}">0</strong> sản phẩm
+                        </div>
+
+                        <a th:href="@{/products/{id}(id=${item.productID})}" class="btn btn-outline btn-block">
+                            <span>Xem chi tiết →</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BỘ LỌC TÌM KIẾM VÀ TẤT CẢ SẢN PHẨM -->
+            <div style="margin-bottom: 24px;">
+                <h2>Danh sách sản phẩm</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Tìm kiếm và lựa chọn sản phẩm phù hợp với nhu cầu của bạn</p>
+            </div>
+
+            <!-- BỘ LỌC TÌM KIẾM -->
+            <div class="card" style="padding: 20px; margin-bottom: 28px;">
+                <form th:action="@{/products}" method="get" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) 120px 100px; gap: 12px; align-items: end;">
+                    <div>
+                        <label for="filter-keyword">Từ khóa tìm kiếm</label>
+                        <input type="text"
+                               id="filter-keyword"
+                               name="keyword"
+                               th:value="${keyword}"
+                               placeholder="Tìm theo tên sản phẩm...">
+                    </div>
+
+                    <div>
+                        <label for="filter-category">Danh mục</label>
+                        <select id="filter-category" name="categoryId">
+                            <option value="">-- Tất cả danh mục --</option>
+                            <option th:each="cat : ${categories}"
+                                    th:value="${cat.categoryID}"
+                                    th:text="${cat.categoryName}"
+                                    th:selected="${cat.categoryID == selectedCategoryId}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="filter-minPrice">Giá tối thiểu (₫)</label>
+                        <input type="number"
+                               id="filter-minPrice"
+                               name="minPrice"
+                               min="0"
+                               step="1000"
+                               th:value="${minPrice}"
+                               placeholder="0">
+                    </div>
+
+                    <div>
+                        <label for="filter-maxPrice">Giá tối đa (₫)</label>
+                        <input type="number"
+                               id="filter-maxPrice"
+                               name="maxPrice"
+                               min="0"
+                               step="1000"
+                               th:value="${maxPrice}"
+                               placeholder="Không giới hạn">
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-block" style="height: 42px;">
+                            <span>🔍 Lọc</span>
+                        </button>
+                    </div>
+
+                    <div>
+                        <a th:href="@{/products}" class="btn btn-plain btn-block" style="height: 42px;">
+                            <span>Xóa lọc</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- THÔNG BÁO KHÔNG CÓ SẢN PHẨM -->
+            <div th:if="${#lists.isEmpty(products)}" class="card" style="text-align: center; padding: 48px 20px;">
+                <div style="font-size: 3.5rem; margin-bottom: 12px;">🔍</div>
+                <h3>Không tìm thấy sản phẩm nào</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">Hãy thử tìm với từ khóa khác hoặc xóa bộ lọc để xem toàn bộ sản phẩm.</p>
+                <a th:href="@{/products}" class="btn btn-primary">Xóa bộ lọc tìm kiếm</a>
+            </div>
+
+            <!-- DANH SÁCH TẤT CẢ SẢN PHẨM -->
+            <div class="product-grid" th:unless="${#lists.isEmpty(products)}">
+                <div class="product-card" th:each="product : ${products}">
+                    <!-- Ảnh sản phẩm hoặc khung thay thế -->
+                    <div style="position: relative;">
+                        <img class="product-img"
+                             th:if="${product.imageURL != null and product.imageURL != ''}"
+                             th:src="${product.imageURL}"
+                             th:alt="${product.name}"
+                             loading="lazy">
+                        <div class="product-noimg"
+                             th:unless="${product.imageURL != null and product.imageURL != ''}">
+                            <span style="font-size: 2rem;">⚡</span>
+                            <span>Chưa có ảnh</span>
+                        </div>
+                        <span class="badge badge-cancelled" th:if="${product.stock <= 0}" style="position: absolute; top: 8px; left: 8px;">Hết hàng</span>
+                        <span class="badge badge-pending" th:if="${product.stock > 0 and product.stock <= 5}" style="position: absolute; top: 8px; left: 8px;">Sắp hết</span>
+                    </div>
+
+                    <!-- Tên sản phẩm -->
+                    <h3 th:text="${product.name}">Tên sản phẩm</h3>
+
+                    <!-- Đánh giá sao nếu có -->
+                    <div th:if="${ratings != null and ratings[product.productID] != null}" style="color: #F59E0B; margin: 4px 0 8px 0; font-size: 0.88rem; display: flex; align-items: center; gap: 4px;">
+                        <span>★</span>
+                        <strong th:text="${#numbers.formatDecimal(ratings[product.productID].avg, 1, 1)}">5.0</strong>
+                        <span style="color: var(--text-muted); font-size: 0.8rem;">(<span th:text="${ratings[product.productID].count}">0</span>)</span>
+                    </div>
+
+                    <p class="product-desc" th:text="${product.description}"></p>
+
+                    <div class="price">
+                        <span th:text="${#numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                    </div>
+
+                    <div class="stock-tag">
+                        <span>Kho: </span>
+                        <strong th:text="${product.stock}">0</strong> sản phẩm
+                    </div>
+
+                    <a th:href="@{/products/{id}(id=${product.productID})}" class="btn btn-outline btn-block">
+                        <span>Xem chi tiết →</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

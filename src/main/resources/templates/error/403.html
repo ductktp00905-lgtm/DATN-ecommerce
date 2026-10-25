@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>403 — Không có quyền truy cập | FlareHub</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="error-page">
+                <div class="error-code" style="color: var(--danger);">403</div>
+                <h1 class="error-title">Truy cập bị từ chối</h1>
+                <p class="error-desc">
+                    Bạn không có quyền truy cập vào tài nguyên hoặc khu vực quản trị này. Vui lòng đăng nhập với tài khoản phù hợp hoặc quay về trang chủ.
+                </p>
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <a th:href="@{/products}" class="btn btn-primary">
+                        <span>Trang chủ sản phẩm</span>
+                    </a>
+                    <a th:href="@{/auth/login}" class="btn btn-secondary">
+                        <span>Đăng nhập lại</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

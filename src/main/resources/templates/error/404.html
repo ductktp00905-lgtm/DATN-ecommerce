@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>404 — Không tìm thấy trang | FlareHub</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="error-page">
+                <div class="error-code">404</div>
+                <h1 class="error-title">Không tìm thấy trang yêu cầu</h1>
+                <p class="error-desc">
+                    Trang bạn đang tìm kiếm có thể đã bị xóa, thay đổi tên hoặc tạm thời không khả dụng.
+                </p>
+                <div>
+                    <a th:href="@{/products}" class="btn btn-primary btn-lg">
+                        <span>🛍️ Khám phá sản phẩm</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>
