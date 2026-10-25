@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý người dùng</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+    <style>
+        .notice { display:flex; align-items:center; gap:10px; padding:10px 14px; margin-bottom:14px; border-radius:10px;
+                  background:rgba(255,149,0,.14); color:#c77700; font-size:13px; font-weight:500; }
+        tr.flagged td { background:rgba(255,149,0,.06); }
+        .u-name { font-weight:600; }
+        .u-sub { color:var(--muted); font-size:12px; }
+        .muted { color:var(--muted); }
+        .lock-sub { display:block; color:var(--muted); font-size:11px; margin-top:3px; }
+        .tag-del { display:inline-block; margin-left:6px; padding:1px 8px; border-radius:999px; font-size:10px;
+                   font-weight:600; background:rgba(255,149,0,.16); color:#c77700; }
+
+        .filters { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
+        .filters input[type=text] { min-width:240px; }
+        .filters .spacer { flex:1; }
+
+        dialog.ud { border:0; border-radius:14px; padding:0; width:min(540px, 94vw); max-height:88vh;
+                    background:var(--card); color:var(--text); box-shadow:var(--shadow); }
+        dialog.ud::backdrop { background:rgba(0,0,0,.38); backdrop-filter:blur(3px); }
+        .ud-head { padding:18px 22px 12px; border-bottom:1px solid var(--line); }
+        .ud-head h3 { margin:0; font-size:16px; }
+        .ud-head p { margin:4px 0 0; color:var(--muted); font-size:12px; }
+        .ud-body { padding:8px 22px 4px; overflow:auto; max-height:calc(88vh - 140px); }
+        .ud-body details { border-bottom:1px solid var(--line); padding:4px 0; }
+        .ud-body summary { cursor:pointer; padding:10px 0; font-weight:600; font-size:14px; list-style:none; }
+        .ud-body summary::-webkit-details-marker { display:none; }
+        .ud-body summary::after { content:'▸'; float:right; color:var(--muted); }
+        .ud-body details[open] > summary::after { content:'▾'; }
+        .ud-link { display:block; padding:12px 0; border-bottom:1px solid var(--line); font-weight:600; font-size:14px;
+                   color:var(--text); text-decoration:none; }
+        .ud-link::after { content:'›'; float:right; color:var(--muted); }
+        .ud-sec { padding:2px 0 12px; }
+        .ud-sec label { display:block; font-size:12px; font-weight:600; color:var(--muted); margin:10px 0 4px; }
+        .ud-sec input[type=text], .ud-sec select { width:100%; box-sizing:border-box; }
+        .ud-sec .row { display:flex; gap:8px; margin-top:12px; justify-content:flex-end; }
+        .ud-sec form { margin:0; }
+        .ud-info { display:grid; grid-template-columns:110px 1fr; gap:4px 12px; font-size:13px; margin:0 0 6px; }
+        .ud-info dt { color:var(--muted); }
+        .ud-info dd { margin:0; word-break:break-word; }
+        .ud-note { font-size:12px; color:var(--muted); margin:6px 0 0; }
+        .ud-reason { padding:10px 12px; border-radius:10px; background:var(--hover); font-size:13px; line-height:1.5;
+                     white-space:pre-wrap; word-break:break-word; max-height:140px; overflow:auto; }
+        .ud-warn { margin-top:10px; padding:10px 12px; border-radius:10px; background:rgba(255,59,48,.10);
+                   color:#d1281e; font-size:12px; line-height:1.5; }
+        .ud-foot { display:flex; justify-content:flex-end; padding:12px 22px 16px; }
+    </style>
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('users')}"></aside>
+
+        <main class="content">
+            <h1>Người dùng</h1>
+            <div class="sub">Tìm kiếm và quản lý tài khoản người dùng</div>
+
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+
+            <div class="notice" th:if="${pendingDeletes > 0}">
+                ⚠ Có <b th:text="${pendingDeletes}"></b> yêu cầu xóa tài khoản đang chờ xử lý
+            </div>
+
+            <!-- Tìm kiếm / lọc -->
+            <form method="get" th:action="@{/admin/users}" class="filters">
+                <input type="text" name="q" th:value="${q}" placeholder="Tìm ID, tên đăng nhập, họ tên, email, SĐT...">
+                <select name="role">
+                    <option value="">Mọi vai trò</option>
+                    <option value="CUSTOMER" th:selected="${role == 'CUSTOMER'}">CUSTOMER</option>
+                    <option value="ADMIN" th:selected="${role == 'ADMIN'}">ADMIN</option>
+                </select>
+                <select name="status">
+                    <option value="">Mọi trạng thái</option>
+                    <option value="active" th:selected="${status == 'active'}">Hoạt động</option>
+                    <option value="locked" th:selected="${status == 'locked'}">Đã khóa</option>
+                    <option value="deletion" th:selected="${status == 'deletion'}">Yêu cầu xóa</option>
+                </select>
+                <button type="submit">Tìm</button>
+                <a class="btn btn-plain" th:href="@{/admin/users}">Xóa lọc</a>
+                <span class="spacer"></span>
+                <a class="btn btn-plain" th:href="@{/admin/users/logs}">Lịch sử quản trị</a>
+            </form>
+
+            <section class="panel">
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Người dùng</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th>Thao tác</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${users}" th:classappend="${u.deletionRequested == true} ? 'flagged'"
+                            th:with="locked=${u.currentlyLocked}">
+                            <td th:text="${u.userID}"></td>
+                            <td>
+                                <div class="u-name">
+                                    <span th:text="${u.username}"></span>
+                                    <span class="tag-del" th:if="${u.deletionRequested == true}">Yêu cầu xóa</span>
+                                </div>
+                                <div class="u-sub" th:text="${u.fullName}"></div>
+                            </td>
+                            <td th:text="${u.email}"></td>
+                            <td th:text="${u.role}"></td>
+                            <td>
+                                <span class="badge" th:classappend="${locked} ? 'badge-cancelled' : 'badge-completed'"
+                                      th:text="${locked} ? 'Đã khóa' : 'Hoạt động'"></span>
+                                <span class="lock-sub" th:if="${locked}"
+                                      th:text="${u.lockedUntil != null} ? ('đến ' + ${#temporals.format(u.lockedUntil, 'dd/MM/yyyy HH:mm')}) : 'vĩnh viễn'"></span>
+                            </td>
+                            <td>
+                                <button type="button" class="btn-plain" th:attr="data-dialog='ud-' + ${u.userID}">Thao tác ▾</button>
+
+                                <dialog class="ud" th:id="'ud-' + ${u.userID}">
+                                    <div class="ud-head">
+                                        <h3 th:text="${u.username}"></h3>
+                                        <p th:text="${u.email}"></p>
+                                    </div>
+
+                                    <div class="ud-body">
+                                        <!-- 1. Xem & chỉnh sửa -->
+                                        <details>
+                                            <summary>Xem &amp; chỉnh sửa thông tin</summary>
+                                            <div class="ud-sec">
+                                                <dl class="ud-info">
+                                                    <dt>Tên đăng nhập</dt><dd th:text="${u.username}"></dd>
+                                                    <dt>Ngày tạo</dt><dd th:text="${u.createdDate != null} ? ${#temporals.format(u.createdDate, 'dd/MM/yyyy HH:mm')} : '—'"></dd>
+                                                    <dt>Email xác minh</dt><dd th:text="${u.emailVerified == true} ? 'Đã xác minh' : 'Chưa'"></dd>
+                                                    <dt>SĐT xác minh</dt><dd th:text="${u.phoneVerified == true} ? 'Đã xác minh' : 'Chưa'"></dd>
+                                                </dl>
+                                                <form th:action="@{/admin/users/update/{id}(id=${u.userID})}" method="post">
+                                                    <label>Họ tên</label>
+                                                    <input type="text" name="fullName" th:value="${u.fullName}" required>
+                                                    <label>Email</label>
+                                                    <input type="text" name="email" th:value="${u.email}" required>
+                                                    <label>Số điện thoại</label>
+                                                    <input type="text" name="phone" th:value="${u.phone}">
+                                                    <p class="ud-note">Đổi email/SĐT sẽ đặt lại trạng thái xác minh.</p>
+                                                    <div class="row"><button type="submit">Lưu thay đổi</button></div>
+                                                </form>
+                                            </div>
+                                        </details>
+
+                                        <!-- 2. Phân quyền -->
+                                        <details>
+                                            <summary>Phân quyền người dùng</summary>
+                                            <div class="ud-sec">
+                                                <p class="ud-note" th:if="${u.username == currentUsername}">Không thể tự đổi quyền của chính mình.</p>
+                                                <form th:unless="${u.username == currentUsername}"
+                                                      th:action="@{/admin/users/change-role/{id}(id=${u.userID})}" method="post">
+                                                    <label>Vai trò</label>
+                                                    <select name="role">
+                                                        <option value="CUSTOMER" th:selected="${u.role == 'CUSTOMER'}">CUSTOMER</option>
+                                                        <option value="ADMIN" th:selected="${u.role == 'ADMIN'}">ADMIN</option>
+                                                    </select>
+                                                    <div class="row"><button type="submit">Đổi quyền</button></div>
+                                                </form>
+                                            </div>
+                                        </details>
+
+                                        <!-- 3. Khóa / mở khóa -->
+                                        <details>
+                                            <summary th:text="${locked} ? 'Mở khóa tài khoản' : 'Khóa tài khoản'"></summary>
+                                            <div class="ud-sec">
+                                                <div th:if="${locked}">
+                                                    <dl class="ud-info">
+                                                        <dt>Thời hạn</dt>
+                                                        <dd th:text="${u.lockedUntil != null} ? ('đến ' + ${#temporals.format(u.lockedUntil, 'dd/MM/yyyy HH:mm')}) : 'Vĩnh viễn'"></dd>
+                                                        <dt>Lý do</dt>
+                                                        <dd th:text="${u.lockReason != null} ? ${u.lockReason} : '—'"></dd>
+                                                    </dl>
+                                                    <form th:action="@{/admin/users/unlock/{id}(id=${u.userID})}" method="post">
+                                                        <div class="row"><button type="submit">Mở khóa ngay</button></div>
+                                                    </form>
+                                                </div>
+                                                <div th:unless="${locked}">
+                                                    <p class="ud-note" th:if="${u.username == currentUsername}">Không thể tự khóa tài khoản của mình.</p>
+                                                    <form th:unless="${u.username == currentUsername}"
+                                                          th:action="@{/admin/users/lock/{id}(id=${u.userID})}" method="post"
+                                                          onsubmit="return confirm('Khóa tài khoản này?')">
+                                                        <label>Thời gian khóa</label>
+                                                        <select name="days">
+                                                            <option value="1">1 ngày</option>
+                                                            <option value="3">3 ngày</option>
+                                                            <option value="7" selected>7 ngày</option>
+                                                            <option value="30">30 ngày</option>
+                                                            <option value="0">Vĩnh viễn</option>
+                                                        </select>
+                                                        <label>Lý do (không bắt buộc)</label>
+                                                        <input type="text" name="reason" maxlength="300">
+                                                        <div class="row"><button type="submit" class="btn-danger">Khóa tài khoản</button></div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </details>
+
+                                        <!-- 4, 5. Lịch sử -->
+                                        <a class="ud-link" th:href="@{/admin/users/{id}/orders(id=${u.userID})}">Lịch sử mua hàng</a>
+                                        <a class="ud-link" th:href="@{/admin/users/{id}/history(id=${u.userID})}">Lịch sử hoạt động &amp; quản trị</a>
+
+                                        <!-- Yêu cầu xóa -->
+                                        <details th:if="${u.deletionRequested == true}" open>
+                                            <summary style="color:#c77700">Yêu cầu xóa tài khoản</summary>
+                                            <div class="ud-sec">
+                                                <p class="ud-note" th:text="'Gửi lúc ' + ${#temporals.format(u.deletionRequestedDate, 'dd/MM/yyyy HH:mm')}"></p>
+                                                <label>Lý do</label>
+                                                <div class="ud-reason"
+                                                     th:text="${u.deletionReason != null and !#strings.isEmpty(u.deletionReason)} ? ${u.deletionReason} : 'Người dùng không ghi lý do'"></div>
+                                                <div class="ud-warn">
+                                                    Chấp thuận sẽ xóa vĩnh viễn tài khoản và thông tin cá nhân.
+                                                    Các đơn hàng được giữ lại ở dạng ẩn danh để phục vụ thống kê.
+                                                </div>
+                                                <div class="row">
+                                                    <form th:action="@{/admin/users/reject-delete/{id}(id=${u.userID})}" method="post">
+                                                        <button type="submit" class="btn-plain">Từ chối</button>
+                                                    </form>
+                                                    <form th:action="@{/admin/users/approve-delete/{id}(id=${u.userID})}" method="post"
+                                                          onsubmit="return confirm('Xác nhận xóa vĩnh viễn tài khoản này?')">
+                                                        <button type="submit" class="btn-danger">Chấp thuận xóa</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </details>
+                                    </div>
+
+                                    <div class="ud-foot">
+                                        <form method="dialog"><button type="submit" class="btn-plain">Đóng</button></form>
+                                    </div>
+                                </dialog>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(users)}"><td colspan="6" class="empty">Không tìm thấy người dùng nào</td></tr>
+                    </tbody>
+                </table>
+            </section>
+            <p class="u-sub" style="margin-top:10px" th:text="'Hiển thị ' + ${#lists.size(users)} + ' / ' + ${totalUsers} + ' người dùng'"></p>
+        </main>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('[data-dialog]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.getElementById(btn.dataset.dialog).showModal();
+        });
+    });
+    document.querySelectorAll('dialog.ud').forEach(function (d) {
+        d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+    });
+</script>
+</body>
+</html>

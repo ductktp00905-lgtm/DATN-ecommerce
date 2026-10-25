@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Báo cáo tồn kho — FlareHub Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('inventory')}"></aside>
+        
+        <main class="content">
+            <div class="toolbar">
+                <div>
+                    <h1>Báo cáo kho hàng thiết bị</h1>
+                    <div class="sub">Quản lý định mức tồn, cảnh báo hết hàng và giá trị lưu kho</div>
+                </div>
+            </div>
+
+            <!-- 4 THẺ CHỈ SỐ KHO HÀNG -->
+            <div class="stats">
+                <div class="stat">
+                    <div class="top"><span class="name">Tổng chủng loại SP</span><span class="ico" style="background:#007aff">▣</span></div>
+                    <div class="num" th:text="${productCount}">0</div>
+                </div>
+                <div class="stat">
+                    <div class="top"><span class="name">Tổng thiết bị lưu kho</span><span class="ico" style="background:#5856d6">📦</span></div>
+                    <div class="num" th:text="${totalUnits}">0</div>
+                </div>
+                <div class="stat">
+                    <div class="top"><span class="name">Cảnh báo sắp hết</span><span class="ico" style="background:#ff9500">⚠️</span></div>
+                    <div class="num" style="color: #ff9500;" th:text="${lowCount}">0</div>
+                </div>
+                <div class="stat">
+                    <div class="top"><span class="name">Đã hết hàng</span><span class="ico" style="background:#ff3b30">❌</span></div>
+                    <div class="num" style="color: #ff3b30;" th:text="${outCount}">0</div>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-bottom: 20px; padding: 16px 20px;">
+                <div style="font-size: 15px; font-weight: 600;">
+                    Tổng giá trị hàng tồn kho ước tính:
+                    <strong style="color: var(--accent); font-size: 18px;" th:text="${#numbers.formatDecimal(totalValue, 0, 'POINT', 0, 'COMMA')} + ' ₫'">0 ₫</strong>
+                </div>
+            </div>
+
+            <!-- BỘ LỌC TỒN KHO -->
+            <section class="panel" style="padding: 14px 18px; margin-bottom: 20px;">
+                <form method="get" th:action="@{/admin/inventory}" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <label style="margin: 0; font-size: 13px; font-weight: 600;">Danh mục:</label>
+                    <select name="categoryId" style="width: 160px; padding: 6px 10px;">
+                        <option value="">-- Mọi danh mục --</option>
+                        <option th:each="c : ${categories}" th:value="${c.categoryID}" th:text="${c.categoryName}" th:selected="${c.categoryID == categoryId}"></option>
+                    </select>
+
+                    <label style="margin: 0; font-size: 13px; font-weight: 600;">Tình trạng kho:</label>
+                    <select name="status" style="width: 160px; padding: 6px 10px;">
+                        <option value="all" th:selected="${status == 'all'}">Tất cả sản phẩm</option>
+                        <option value="low" th:selected="${status == 'low'}">Sắp hết hàng</option>
+                        <option value="out" th:selected="${status == 'out'}">Hết hàng (0 chiếc)</option>
+                    </select>
+
+                    <label style="margin: 0; font-size: 13px; font-weight: 600;">Ngưỡng cảnh báo (&lt;=):</label>
+                    <input type="number" name="threshold" th:value="${threshold}" min="1" max="100" style="width: 70px; padding: 6px 8px; text-align: center;">
+
+                    <button type="submit" class="btn">Lọc kho</button>
+                    <a th:href="@{/admin/inventory}" class="btn btn-plain">Đặt lại</a>
+                </form>
+            </section>
+
+            <!-- THEO DÕI TỒN KHO SẢN PHẨM BÁN CHẠY (đã khôi phục) -->
+            <section class="panel" style="margin-bottom: 20px;">
+                <h2>Theo dõi tồn kho sản phẩm bán chạy (top 10)</h2>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr><th>#</th><th>Sản phẩm</th><th>Danh mục</th><th>Đã bán</th><th>Tồn kho</th><th>Tình trạng</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="b, st : ${bestSellers}">
+                                <td th:text="${st.count}">1</td>
+                                <td><strong th:text="${b.name}">Sản phẩm</strong></td>
+                                <td th:text="${b.categoryName}">Danh mục</td>
+                                <td th:text="${b.totalQuantity}">0</td>
+                                <td th:text="${b.stock}">0</td>
+                                <td>
+                                    <span th:if="${b.stock <= 0}" class="badge badge-cancelled">Hết hàng - cần nhập gấp</span>
+                                    <span th:if="${b.stock > 0 and b.stock <= threshold}" class="badge badge-pending">Sắp hết - nên nhập thêm</span>
+                                    <span th:if="${b.stock > threshold}" class="badge badge-completed">Ổn định</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(bestSellers)}">
+                                <td colspan="6" style="text-align: center; padding: 1.5rem; color: var(--muted);">Chưa có dữ liệu bán hàng</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- BẢNG CHI TIẾT TỒN KHO -->
+            <section class="panel">
+                <h2>Chi tiết sản phẩm lưu kho</h2>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">ID</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Danh mục</th>
+                                <th>Đơn giá</th>
+                                <th>Số lượng tồn</th>
+                                <th>Trạng thái kho</th>
+                                <th style="text-align: center; width: 100px;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="p : ${products}">
+                                <td th:text="'#' + ${p.productID}">#1</td>
+                                <td><strong style="color: var(--text-heading);" th:text="${p.name}">Tên SP</strong></td>
+                                <td th:text="${p.category.categoryName}">Danh mục</td>
+                                <td class="nowrap" th:text="${#numbers.formatDecimal(p.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'">0 ₫</td>
+                                <td><strong style="font-size: 15px;" th:text="${p.stock}">0</strong> chiếc</td>
+                                <td>
+                                    <span th:if="${p.stock <= 0}" class="badge badge-cancelled">Hết hàng</span>
+                                    <span th:if="${p.stock > 0 and p.stock <= threshold}" class="badge badge-pending">Sắp hết hàng</span>
+                                    <span th:if="${p.stock > threshold}" class="badge badge-completed">Đủ hàng</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <a class="link" th:href="@{/admin/products/edit/{id}(id=${p.productID})}">Nhập thêm</a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(products)}">
+                                <td colspan="7" class="empty">Không có sản phẩm nào theo tiêu chí lọc hiện tại</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>
