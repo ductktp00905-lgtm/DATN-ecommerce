@@ -5,6 +5,13 @@
 
 package com.example.DATN.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import com.example.DATN.service.VnPayService;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import com.example.DATN.entity.Voucher;
+import com.example.DATN.service.VoucherService;
 import com.example.DATN.dto.Cart;
 import com.example.DATN.entity.Order;
 import com.example.DATN.entity.User;
@@ -29,6 +36,12 @@ public class OrderController {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private VoucherService voucherService;
+    
+    @Autowired
+    private VnPayService vnPayService;
 
     private User getCurrentUser(Authentication authentication) {
         String username = authentication.getName();
@@ -48,6 +61,8 @@ public String checkoutPage(HttpSession session, Model model) {
 
 @PostMapping("/checkout")
 public String placeOrder(@RequestParam String shippingAddress, @RequestParam String paymentMethod,
+                         @RequestParam(required = false) String voucherCode,
+                         HttpServletRequest request,
                          HttpSession session, Authentication authentication, Model model) {
     Cart cart = (Cart) session.getAttribute("cart");
     if (cart == null || cart.getItems().isEmpty()) {
@@ -55,15 +70,44 @@ public String placeOrder(@RequestParam String shippingAddress, @RequestParam Str
     }
     User user = getCurrentUser(authentication);
     try {
-        orderService.checkout(user.getUserID(), cart, shippingAddress.trim(), paymentMethod);
+        Order order = orderService.checkout(user.getUserID(), cart, shippingAddress.trim(), paymentMethod, voucherCode);
+        if ("VNPAY".equals(paymentMethod)) {
+            return "redirect:" + vnPayService.createPaymentUrl(order, request.getRemoteAddr());
+        }
         return "redirect:/orders/history";
     } catch (IllegalStateException | ResourceNotFoundException e) {
         model.addAttribute("errorMessage", e.getMessage());
         model.addAttribute("cart", cart);
+        model.addAttribute("voucherCode", voucherCode);
         return "order/checkout";
     }
 }
 
+    @GetMapping("/voucher/check")
+    @ResponseBody
+    public Map<String, Object> checkVoucher(@RequestParam String code, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Cart cart = (Cart) session.getAttribute("cart");
+        if (cart == null || cart.getItems().isEmpty()) {
+            result.put("valid", false);
+            result.put("message", "Giỏ hàng đang trống");
+            return result;
+        }
+        try {
+            BigDecimal total = cart.getTotalAmount();
+            Voucher v = voucherService.validate(code, total);
+            BigDecimal discount = voucherService.calculateDiscount(v, total);
+            result.put("valid", true);
+            result.put("message", "Áp dụng mã " + v.getCode() + " thành công");
+            result.put("discount", discount);
+            result.put("finalTotal", total.subtract(discount));
+        } catch (IllegalStateException e) {
+            result.put("valid", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+    
     @GetMapping("/history")
     public String history(Authentication authentication, Model model) {
         User user = getCurrentUser(authentication);

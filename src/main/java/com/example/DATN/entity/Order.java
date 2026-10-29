@@ -34,6 +34,13 @@ public class Order {
     private String shippingAddress;
 
     private LocalDateTime orderDate = LocalDateTime.now();
+    
+    @ManyToOne
+    @JoinColumn(name = "VoucherID")
+    private Voucher voucher;
+
+    @Column(precision = 18, scale = 2)
+    private BigDecimal discountAmount = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;

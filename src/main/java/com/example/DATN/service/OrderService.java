@@ -10,9 +10,10 @@ import com.example.DATN.entity.Order;
 import java.util.List;
 
 public interface OrderService {
-    Order checkout(Integer userId, Cart cart, String shippingAddress, String paymentMethod);
+        Order checkout(Integer userId, Cart cart, String shippingAddress, String paymentMethod, String voucherCode);
     List<Order> getOrdersByUser(Integer userId);
     Order getById(Integer orderId);
     Order updateStatus(Integer orderId, String status);
     List<Order> getAll();
+        void markPaymentSuccess(Integer orderId, String transactionCode);
 }

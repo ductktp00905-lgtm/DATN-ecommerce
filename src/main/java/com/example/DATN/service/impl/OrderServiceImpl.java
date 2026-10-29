@@ -1,5 +1,7 @@
 package com.example.DATN.service.impl;
 
+import com.example.DATN.repository.VoucherRepository;
+import com.example.DATN.service.VoucherService;
 import com.example.DATN.dto.Cart;
 import com.example.DATN.dto.CartItem;
 import com.example.DATN.entity.*;
@@ -31,10 +33,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private PaymentRepository paymentRepository;
+    
+    @Autowired
+    private VoucherService voucherService;
+
+    @Autowired
+    private VoucherRepository voucherRepository;
 
     @Override
     @Transactional
-    public Order checkout(Integer userId, Cart cart, String shippingAddress, String paymentMethod) {
+        public Order checkout(Integer userId, Cart cart, String shippingAddress, String paymentMethod, String voucherCode) {
         if (cart == null || cart.getItems().isEmpty()) {
             throw new IllegalStateException("Giỏ hàng đang trống");
         }
@@ -67,6 +75,16 @@ public class OrderServiceImpl implements OrderService {
             total = total.add(product.getPrice().multiply(java.math.BigDecimal.valueOf(item.getQuantity())));
         }
 
+                if (voucherCode != null && !voucherCode.trim().isEmpty()) {
+            Voucher voucher = voucherService.validate(voucherCode, total);
+            if (voucherRepository.increaseUsedCount(voucher.getVoucherID()) == 0) {
+                throw new IllegalStateException("Mã khuyến mãi đã hết lượt sử dụng");
+            }
+            java.math.BigDecimal discount = voucherService.calculateDiscount(voucher, total);
+            order.setVoucher(voucher);
+            order.setDiscountAmount(discount);
+            total = total.subtract(discount);
+        }
         order.setTotalAmount(total);
         order.setOrderDetails(details);
 
@@ -116,6 +134,9 @@ public class OrderServiceImpl implements OrderService {
             for (OrderDetail d : order.getOrderDetails()) {
                 productService.restoreStock(d.getProduct().getProductID(), d.getQuantity());
             }
+                        if (order.getVoucher() != null) {
+                voucherRepository.decreaseUsedCount(order.getVoucher().getVoucherID());
+            }
             Payment payment = paymentRepository.findByOrder_OrderID(orderId);
             if (payment != null) {
                 payment.setStatus("CANCELLED");
@@ -136,7 +157,17 @@ public class OrderServiceImpl implements OrderService {
         }
         return updated;
     }
-
+    @Override
+    @Transactional
+    public void markPaymentSuccess(Integer orderId, String transactionCode) {
+        Payment payment = paymentRepository.findByOrder_OrderID(orderId);
+        if (payment != null && "PENDING".equals(payment.getStatus())) {
+            payment.setStatus("SUCCESS");
+            payment.setTransactionCode(transactionCode);
+            payment.setPaymentDate(LocalDateTime.now());
+            paymentRepository.save(payment);
+        }
+    }
     @Override
     public List<Order> getAll() {
         return orderRepository.findAll();
