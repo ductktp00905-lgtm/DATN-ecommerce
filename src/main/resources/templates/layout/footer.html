@@ -57,7 +57,15 @@
                 © 2026 <strong>FlareHub</strong> — Bản quyền thuộc về Đồ án Tốt nghiệp Nhóm HP-5. 
             </div>
             <div>
-                Hệ thống thương mại điện tử công nghệ thế hệ mới
+                Hệ thống thương mại điện tử công nghệ thế hệ mới 
+                        BigDecimal totalRevenue = orders.stream()
+                .filter(o -> "COMPLETED".equals(o.getStatus()))
+                .map(Order::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        ...
+        model.addAttribute("recentOrders", orders.stream()
+                .sorted(Comparator.comparing(Order::getOrderDate, Comparator.nullsLast(Comparator.reverseOrder())))
+                .limit(5).toList());
             </div>
         </div>
     </div>
