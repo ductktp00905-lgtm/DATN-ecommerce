@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "Vouchers")
@@ -36,7 +37,10 @@ public class Voucher {
     @Column(nullable = false)
     private Integer usedCount = 0;
 
+       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime startDate;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endDate;
 
     @Column(nullable = false)

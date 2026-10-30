@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý voucher — FlareHub Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('vouchers')}"></aside>
+
+        <main class="content">
+            <div class="toolbar">
+                <div>
+                    <h1>Mã khuyến mãi</h1>
+                    <div class="sub">Tạo và quản lý voucher giảm giá cho khách hàng</div>
+                </div>
+                <a class="btn" th:href="@{/admin/vouchers/new}">+ Thêm voucher mới</a>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <section class="panel">
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Mức giảm</th>
+                                <th>Đơn tối thiểu</th>
+                                <th style="text-align: center;">Đã dùng</th>
+                                <th>Thời hạn</th>
+                                <th style="text-align: center;">Trạng thái</th>
+                                <th style="text-align: center; width: 160px;">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="v : ${vouchers}">
+                                <td><strong style="color: var(--text-heading);" th:text="${v.code}">GIAM10</strong></td>
+                                <td>
+                                    <span th:if="${v.discountType == 'PERCENT'}">
+                                        <span th:text="${#numbers.formatDecimal(v.discountValue, 0, 'POINT', 0, 'COMMA')}"></span>%
+                                        <small th:if="${v.maxDiscount != null}">
+                                            (tối đa <span th:text="${#numbers.formatDecimal(v.maxDiscount, 0, 'POINT', 0, 'COMMA')}"></span> ₫)
+                                        </small>
+                                    </span>
+                                    <span th:if="${v.discountType != 'PERCENT'}">
+                                        <span th:text="${#numbers.formatDecimal(v.discountValue, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                                    </span>
+                                </td>
+                                <td>
+                                    <span th:text="${#numbers.formatDecimal(v.minOrderAmount != null ? v.minOrderAmount : 0, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                                </td>
+                                <td style="text-align: center;" th:text="${v.usedCount} + ' / ' + ${v.quantity}">0 / 100</td>
+                                <td>
+                                    <small>
+                                        <span th:text="${v.startDate != null ? #temporals.format(v.startDate, 'dd/MM/yyyy HH:mm') : '—'}"></span>
+                                        →
+                                        <span th:text="${v.endDate != null ? #temporals.format(v.endDate, 'dd/MM/yyyy HH:mm') : '—'}"></span>
+                                    </small>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span class="badge badge-cancelled" th:if="${!v.active}">Đã tắt</span>
+                                    <span class="badge badge-pending"
+                                          th:if="${v.active and v.endDate != null and v.endDate.isBefore(#temporals.createNow())}">Hết hạn</span>
+                                    <span class="badge badge-pending"
+                                          th:if="${v.active and v.usedCount >= v.quantity and (v.endDate == null or !v.endDate.isBefore(#temporals.createNow()))}">Hết lượt</span>
+                                    <span class="badge badge-completed"
+                                          th:if="${v.active and v.usedCount < v.quantity and (v.endDate == null or !v.endDate.isBefore(#temporals.createNow()))}">Đang hoạt động</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="actions" style="justify-content: center;">
+                                        <a class="link" th:href="@{/admin/vouchers/edit/{id}(id=${v.voucherID})}">✏️ Sửa</a>
+                                        <form th:action="@{/admin/vouchers/toggle/{id}(id=${v.voucherID})}" method="post" style="display: inline;">
+                                            <button type="submit" class="btn-danger" th:text="${v.active} ? 'Tắt' : 'Bật'">Tắt</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(vouchers)}">
+                                <td colspan="7" class="empty">Chưa có voucher nào</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>

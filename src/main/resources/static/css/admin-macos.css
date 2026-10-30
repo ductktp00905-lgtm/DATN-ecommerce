@@ -179,7 +179,7 @@ button:active, .btn:active { filter: brightness(.92); }
 }
 .btn-danger { background: var(--danger); color: #fff; }
 .link { color: var(--accent); font-weight: 500; }
-input[type=text], input[type=number], textarea, select {
+input[type=text], input[type=number], input[type=datetime-local], textarea, select {
     font: inherit; color: var(--text); background: var(--field);
     border: 1px solid var(--field-line); border-radius: 7px;
     padding: 7px 10px; outline: none;
@@ -189,7 +189,7 @@ input:focus, textarea:focus, select:focus {
 }
 .form { max-width: 520px; }
 .form label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin: 14px 0 5px; }
-.form input[type=text], .form input[type=number], .form textarea, .form select { width: 100%; }
+.form input[type=text], .form input[type=number], .form input[type=datetime-local], .form textarea, .form select { width: 100%; }
 .form .buttons { margin-top: 22px; display: flex; gap: 10px; align-items: center; }
 
 /* ---- Thông báo ---- */

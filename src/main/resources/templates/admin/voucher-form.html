@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Voucher — FlareHub Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin-macos.css}">
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('vouchers')}"></aside>
+
+        <main class="content">
+            <h1 th:text="${voucher.voucherID != null} ? 'Sửa voucher' : 'Thêm voucher mới'"></h1>
+            <div class="sub">Thiết lập mã giảm giá áp dụng ở trang thanh toán</div>
+
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <form class="form"
+                  th:action="${voucher.voucherID != null}
+                      ? @{/admin/vouchers/edit/{id}(id=${voucher.voucherID})}
+                      : @{/admin/vouchers/new}"
+                  method="post">
+
+                <label for="v-code">Mã voucher *</label>
+                <input type="text" id="v-code" name="code" th:value="${voucher.code}"
+                       maxlength="50" required style="text-transform: uppercase;" placeholder="VD: GIAM10">
+
+                <label for="v-type">Loại giảm giá *</label>
+                <select id="v-type" name="discountType">
+                    <option value="PERCENT" th:selected="${voucher.discountType == 'PERCENT'}">Giảm theo phần trăm (%)</option>
+                    <option value="AMOUNT" th:selected="${voucher.discountType == 'AMOUNT'}">Giảm số tiền cố định (₫)</option>
+                </select>
+
+                <label for="v-value">Giá trị giảm * (số % hoặc số tiền)</label>
+                <input type="number" id="v-value" name="discountValue" th:value="${voucher.discountValue}"
+                       min="1" step="1" required>
+
+                <label for="v-min">Đơn hàng tối thiểu (₫)</label>
+                <input type="number" id="v-min" name="minOrderAmount" th:value="${voucher.minOrderAmount}"
+                       min="0" step="1">
+
+                <label for="v-max">Giảm tối đa (₫), chỉ áp dụng cho loại phần trăm</label>
+                <input type="number" id="v-max" name="maxDiscount" th:value="${voucher.maxDiscount}"
+                       min="0" step="1" placeholder="Để trống = không giới hạn">
+
+                <label for="v-qty">Số lượng phát hành *</label>
+                <input type="number" id="v-qty" name="quantity" th:value="${voucher.quantity}"
+                       min="1" step="1" required>
+
+                <label for="v-start">Bắt đầu</label>
+                <input type="datetime-local" id="v-start" name="startDate"
+                       th:value="${voucher.startDate != null ? #temporals.formatISO(voucher.startDate).substring(0, 16) : ''}">
+
+                <label for="v-end">Kết thúc</label>
+                <input type="datetime-local" id="v-end" name="endDate"
+                       th:value="${voucher.endDate != null ? #temporals.formatISO(voucher.endDate).substring(0, 16) : ''}">
+
+                <div class="buttons">
+                    <button type="submit" class="btn">Lưu voucher</button>
+                    <a class="btn btn-plain" th:href="@{/admin/vouchers}">Hủy</a>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+</body>
+</html>
