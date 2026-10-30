@@ -177,6 +177,75 @@
 
     <div th:replace="~{layout/footer :: footer}"></div>
     <script th:src="@{/js/app.js}"></script>
-    
+        <script th:src="@{/js/app.js}"></script>
+
+    <!-- THÊM MỚI: xử lý nút Áp dụng voucher -->
+    <script th:inline="javascript">
+        (function () {
+            var checkUrl = /*[[@{/orders/voucher/check}]]*/ '/orders/voucher/check';
+            var btn = document.getElementById('btnApplyVoucher');
+            var input = document.getElementById('voucherCode');
+            var msg = document.getElementById('voucherMessage');
+            var discountRow = document.getElementById('discountRow');
+            var discountValue = document.getElementById('discountValue');
+            var finalTotal = document.getElementById('finalTotal');
+
+            if (!btn || !input) { return; }
+
+            var originalTotal = finalTotal ? finalTotal.textContent : '';
+
+            function fmt(n) {
+                return Number(n).toLocaleString('en-US');
+            }
+
+            function resetDiscount() {
+                if (discountRow) { discountRow.style.display = 'none'; }
+                if (finalTotal) { finalTotal.textContent = originalTotal; }
+            }
+
+            btn.addEventListener('click', function () {
+                var code = input.value.trim().toUpperCase();
+                input.value = code;
+                if (!code) {
+                    msg.style.color = '#dc2626';
+                    msg.textContent = 'Vui lòng nhập mã khuyến mãi';
+                    resetDiscount();
+                    return;
+                }
+                msg.style.color = '';
+                msg.textContent = 'Đang kiểm tra...';
+
+                fetch(checkUrl + '?code=' + encodeURIComponent(code), {
+                    headers: { 'Accept': 'application/json' },
+                    credentials: 'same-origin'
+                })
+                .then(function (res) {
+                    if (!res.ok) { throw new Error('HTTP ' + res.status); }
+                    return res.json();
+                })
+                .then(function (data) {
+                    if (data.valid) {
+                        msg.style.color = '#16a34a';
+                        msg.textContent = data.message;
+                        discountValue.textContent = fmt(data.discount);
+                        discountRow.style.display = 'flex';
+                        finalTotal.textContent = fmt(data.finalTotal);
+                    } else {
+                        msg.style.color = '#dc2626';
+                        msg.textContent = data.message;
+                        resetDiscount();
+                    }
+                })
+                .catch(function (err) {
+                    console.error('Lỗi kiểm tra voucher:', err);
+                    msg.style.color = '#dc2626';
+                    msg.textContent = 'Không kiểm tra được mã, vui lòng thử lại';
+                    resetDiscount();
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
 </body>
 </html>
