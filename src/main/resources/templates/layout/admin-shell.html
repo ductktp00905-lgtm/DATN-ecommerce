@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Thanh trên cùng: cùng màu đỏ & logo với cửa hàng -->
+<header th:fragment="titlebar" class="titlebar">
+    <a th:href="@{/admin/dashboard}" class="tb-brand" aria-label="FlareHub quản trị">
+        <span class="tb-badge">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0 0 12 0c0-3.5-2.5-6-6-11zm0 16a4 4 0 0 1-4-4c0-1.8 1.2-3.6 2.8-5.3.3.8.8 1.6 1.4 2.2.4.4.8.7 1.3 1 0 0 .5.3.5.8a2 2 0 0 1-2 2z"/>
+            </svg>
+        </span>
+        <span class="tb-text">
+            <span class="tb-name">FLARE<span>HUB</span></span>
+            <span class="tb-sub">Trang quản trị</span>
+        </span>
+    </a>
+    <div class="tb-right">
+        <a th:href="@{/products}" class="tb-link">Xem cửa hàng</a>
+        <span class="tb-user">
+            <span class="avatar" th:text="${#strings.toUpperCase(#strings.substring(#authentication.name,0,1))}">A</span>
+            <b th:text="${#authentication.name}">admin</b>
+        </span>
+        <form th:action="@{/auth/logout}" method="post" style="margin:0">
+            <button type="submit" class="tb-logout">Đăng xuất</button>
+        </form>
+    </div>
+</header>
+
+<!-- Menu trái; active = overview | orders | products | categories | vouchers | inventory | bestsellers | reviews | users | reset -->
+<aside th:fragment="sidebar(active)" class="sidebar">
+    <nav class="nav">
+        <a th:href="@{/admin/dashboard}" title="Tổng quan" th:classappend="${active == 'overview'} ? 'active'">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span class="t">Tổng quan</span>
+        </a>
+    </nav>
+
+    <div class="label">Bán hàng</div>
+    <nav class="nav">
+        <a th:href="@{/admin/orders}" title="Đơn hàng" th:classappend="${active == 'orders'} ? 'active'">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span class="t">Đơn hàng</span>
+        </a>
+        <a th:href="@{/admin/products}" title="Sản phẩm" th:classappend="${active == 'products'} ? 'active'">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            <span class="t">Sản phẩm</span>
+        </a>
+        <a th:href="@{/admin/categories}" title="Danh mục" th:classappend="${active == 'categories'} ? 'active'">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            <span class="t">Danh mục</span>
+        </a>
+        <a th:href="@{/admin/vouchers}" title="Voucher" th:classappend="${active == 'vouchers'} ? 'active'">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+            <span class="t">Voucher</span>
+        </a>
+    </nav>
+
+    <div class="label">Kho &amp; báo cáo</div>
+    <nav class="nav">
+        <a th:href="@{/admin/inventory}" title="Tồn kho" th:classappend="${active == 'inventory'} ? 'active'">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+            <span class="t">Tồn kho</span>
+        </a>
+        <a th:href="@{/admin/best-sellers}" title="Bán chạy" th:classappend="${active == 'bestsellers'} ? 'active'">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            <span class="t">Bán chạy</span>
+        </a>
+        <a th:href="@{/admin/reviews}" title="Đánh giá" th:classappend="${active == 'reviews'} ? 'active'">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span class="t">Đánh giá</span>
+        </a>
+    </nav>
+
+    <div class="label">Hệ thống</div>
+    <nav class="nav">
+        <a th:href="@{/admin/users}" title="Người dùng" th:classappend="${active == 'users'} ? 'active'">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span class="t">Người dùng</span>
+        </a>
+        <a class="danger" th:href="@{/admin/system/reset}" title="Reset dữ liệu" th:classappend="${active == 'reset'} ? 'active'">
+            <svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span class="t">Reset dữ liệu</span>
+        </a>
+    </nav>
+</aside>
+
+</body>
+</html>

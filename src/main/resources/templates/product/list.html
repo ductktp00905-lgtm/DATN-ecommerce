@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FlareHub — Hệ Thống Bán Lẻ Công Nghệ Chính Hãng</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/cellphones.css}">
+</head>
+<body>
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <main class="main-content">
+        <div class="container" style="padding-top: 16px; padding-bottom: 48px;">
+            
+            <!-- KHU VỰC HERO TRANG CHỦ CELLPHONES: MENU + BANNER + KHUYẾN MÃI -->
+            <section class="cps-hero-grid">
+                <!-- Cột 1: Danh mục điều hướng dọc (Lấy danh mục thực tế từ DB) -->
+                <nav class="cps-sidebar-menu" aria-label="Danh mục công nghệ">
+                    <a th:href="@{/products}" class="cps-menu-item" style="color: var(--cps-red); font-weight: 800;">
+                        <span class="cps-menu-icon">⚡ Tất cả sản phẩm</span>
+                        <span>&rsaquo;</span>
+                    </a>
+                    <a th:each="cat : ${categories}"
+                       th:href="@{/products(categoryId=${cat.categoryID})}"
+                       class="cps-menu-item">
+                        <span class="cps-menu-icon">
+                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'điện thoại') or #strings.containsIgnoreCase(cat.categoryName, 'phone')}">📱</span>
+                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'laptop') or #strings.containsIgnoreCase(cat.categoryName, 'máy tính')}">💻</span>
+                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'âm thanh') or #strings.containsIgnoreCase(cat.categoryName, 'tai nghe')}">🎧</span>
+                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'đồng hồ') or #strings.containsIgnoreCase(cat.categoryName, 'watch')}">⌚</span>
+                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'phụ kiện')}">🔌</span>
+                            <span th:unless="${#strings.containsIgnoreCase(cat.categoryName, 'điện thoại') or #strings.containsIgnoreCase(cat.categoryName, 'phone') or #strings.containsIgnoreCase(cat.categoryName, 'laptop') or #strings.containsIgnoreCase(cat.categoryName, 'máy tính') or #strings.containsIgnoreCase(cat.categoryName, 'âm thanh') or #strings.containsIgnoreCase(cat.categoryName, 'tai nghe') or #strings.containsIgnoreCase(cat.categoryName, 'đồng hồ') or #strings.containsIgnoreCase(cat.categoryName, 'watch') or #strings.containsIgnoreCase(cat.categoryName, 'phụ kiện')}">📦</span>
+                            <span th:text="${cat.categoryName}">Danh mục</span>
+                        </span>
+                        <span style="color: #9CA3AF; font-size: 14px;">&rsaquo;</span>
+                    </a>
+                    <a th:href="@{/products}" class="cps-menu-item" style="color: #059669;">
+                        <span class="cps-menu-icon">🔄 Thu cũ đổi mới</span>
+                        <span style="background: #DCFCE7; color: #16A34A; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 4px;">Trợ giá</span>
+                    </a>
+                    <a th:href="@{/products}" class="cps-menu-item" style="color: #DC2626;">
+                        <span class="cps-menu-icon">🔥 Khuyến mãi Hot</span>
+                        <span style="background: #FEE2E2; color: #DC2626; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 4px;">Giảm 50%</span>
+                    </a>
+                </nav>
+
+                <!-- Cột 2: Banner Slider công nghệ lớn -->
+                <div class="cps-slider-box">
+                    <div class="cps-slider-screen">
+                        <!-- Banner hình ảnh công nghệ sắc nét -->
+                        <img th:src="@{/assets/images/banner_flagship_phone_1794099547793.jpg}"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1200&q=80';"
+                             alt="Titanium Flagship Phone"
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="cps-slider-overlay">
+                            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                <span style="background: #D70018; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 900; text-transform: uppercase;">
+                                    MỞ BÁN SIÊU PHẨM
+                                </span>
+                                <span style="color: #FDE047; font-size: 12px; font-weight: 700;">★ Chính hãng FlareHub</span>
+                            </div>
+                            <h2 style="color: #FFFFFF; font-size: 1.6rem; margin-bottom: 4px; font-weight: 900;">
+                                Titanium Flagship Series — Kỷ Nguyên AI Mới
+                            </h2>
+                            <p style="color: #E2E8F0; font-size: 13px; margin: 0; font-weight: 600;">
+                                🔥 Trợ giá thu cũ lên đời 2.500.000₫ · Trả góp 0% lãi suất qua thẻ
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 4 Tabs điều hướng bên dưới banner (Đặc trưng CellphoneS) -->
+                    <div class="cps-slider-tabs">
+                        <div class="cps-slider-tab active">
+                            <span>iPhone 16 Pro Max</span>
+                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Mua ngay giá sốc</small>
+                        </div>
+                        <div class="cps-slider-tab">
+                            <span>Galaxy S24 Ultra</span>
+                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Galaxy AI đỉnh cao</small>
+                        </div>
+                        <div class="cps-slider-tab">
+                            <span>MacBook M3 Series</span>
+                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Siêu mỏng nhẹ</small>
+                        </div>
+                        <div class="cps-slider-tab">
+                            <span>Tai nghe Chống ồn</span>
+                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Giảm đến 35%</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột 3: Bộ 3 banner khuyến mãi độc quyền -->
+                <div class="cps-side-promos">
+                    <a th:href="@{/products}" class="cps-side-promo" style="background: linear-gradient(135deg, #DC2626 0%, #D70018 100%); color: #FFFFFF;">
+                        <span style="font-size: 10px; font-weight: 800; color: #FDE047; text-transform: uppercase; margin-bottom: 2px;">Chương trình độc quyền</span>
+                        <strong style="font-size: 14px; margin-bottom: 2px;">Thu Cũ Đổi Mới</strong>
+                        <span style="font-size: 11.5px; opacity: 0.95;">Trợ giá lên đời đến 2.500.000₫</span>
+                    </a>
+
+                    <a th:href="@{/products}" class="cps-side-promo" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #FFFFFF;">
+                        <span style="font-size: 10px; font-weight: 800; color: #4ADE80; text-transform: uppercase; margin-bottom: 2px;">Xả kho cuối tuần</span>
+                        <strong style="font-size: 14px; margin-bottom: 2px;">Phụ Kiện Chính Hãng</strong>
+                        <span style="font-size: 11.5px; opacity: 0.95;">Cáp sạc, ốp lưng giảm tới 50%</span>
+                    </a>
+
+                    <a th:href="@{/products}" class="cps-side-promo" style="background: linear-gradient(135deg, #D97706 0%, #EA580C 100%); color: #FFFFFF;">
+                        <span style="font-size: 10px; font-weight: 800; color: #FFFFFF; text-transform: uppercase; margin-bottom: 2px;">Đặc quyền Smember</span>
+                        <strong style="font-size: 14px; margin-bottom: 2px;">Smember Day</strong>
+                        <span style="font-size: 11.5px; opacity: 0.95;">Giảm thêm đến 500.000₫</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- THANH THƯƠNG HIỆU HÀNG ĐẦU -->
+            <div style="background: #FFFFFF; border-radius: var(--cps-radius); padding: 12px 18px; border: 1px solid var(--cps-border); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; overflow-x: auto; gap: 12px;">
+                <span style="font-size: 12.5px; font-weight: 800; text-transform: uppercase; color: #111827; white-space: nowrap;">
+                    🔥 Hãng công nghệ:
+                </span>
+                <div style="display: flex; gap: 8px; flex-wrap: nowrap;">
+                    <a th:href="@{/products(keyword='Apple')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
+                        Apple VN/A
+                    </a>
+                    <a th:href="@{/products(keyword='Samsung')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
+                        Samsung Galaxy
+                    </a>
+                    <a th:href="@{/products(keyword='Xiaomi')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
+                        Xiaomi Leica
+                    </a>
+                    <a th:href="@{/products(keyword='ASUS')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
+                        ASUS ROG
+                    </a>
+                    <a th:href="@{/products(keyword='Sony')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
+                        Sony Hi-Res
+                    </a>
+                    <a th:href="@{/products(keyword='Anker')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
+                        Anker Prime
+                    </a>
+                </div>
+            </div>
+
+            <!-- KHỐI DEAL SỐC MỖI NGÀY (FLASH SALE) -->
+            <section class="cps-flashsale" th:if="${bestSellingProducts != null and !#lists.isEmpty(bestSellingProducts)}">
+                <div class="cps-flashsale-header">
+                    <div class="cps-flashsale-title">
+                        <span style="font-size: 1.8rem;">🔥</span>
+                        <div>
+                            <span>DEAL SỐC MỖI NGÀY</span>
+                            <small style="display: block; font-size: 11px; text-transform: none; color: #FEF08A; font-weight: 600;">
+                                Giảm giá sốc giờ vàng · Số lượng có hạn
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Grid của Flash Sale -->
+                <div class="cps-product-grid" style="margin-bottom: 0;">
+                    <a th:each="item : ${bestSellingProducts}"
+                       th:href="@{/products/{id}(id=${item.productID})}"
+                       class="cps-product-card">
+                        
+                        <!-- Badges -->
+                        <div class="cps-card-badges">
+                            <span class="cps-badge-discount">Bán chạy</span>
+                            <span class="cps-badge-installment">Trả góp 0%</span>
+                        </div>
+
+                        <!-- Ảnh -->
+                        <div class="cps-card-img-wrap">
+                            <img th:if="${item.imageURL != null and item.imageURL != ''}"
+                                 th:src="${item.imageURL}"
+                                 th:alt="${item.name}"
+                                 loading="lazy">
+                            <div th:unless="${item.imageURL != null and item.imageURL != ''}" style="color: #9CA3AF; text-align: center;">
+                                <span style="font-size: 2.5rem; display: block;">📱</span>
+                                <span style="font-size: 11px;">Chưa có ảnh</span>
+                            </div>
+                        </div>
+
+                        <!-- Tên sản phẩm -->
+                        <h3 class="cps-card-title" th:text="${item.name}">Tên sản phẩm</h3>
+
+                        <!-- Giá sản phẩm -->
+                        <div class="cps-card-price-wrap">
+                            <span class="cps-card-price">
+                                <span th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                            </span>
+                        </div>
+
+                        <!-- Footer card -->
+                        <div class="cps-card-footer">
+                            <div class="cps-card-rating">
+                                <span th:if="${ratings != null and ratings[item.productID] != null}">★</span>
+                                <span th:if="${ratings != null and ratings[item.productID] != null}"
+                                      th:text="${#numbers.formatDecimal(ratings[item.productID].avg, 1, 1)}">5.0</span>
+                                <span th:unless="${ratings != null and ratings[item.productID] != null}" style="color: #9CA3AF; font-size: 11px; font-weight: normal;">Chưa có đánh giá</span>
+                            </div>
+                            <span style="color: var(--cps-red); font-weight: 700;">Xem chi tiết &rarr;</span>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- TIÊU ĐỀ KHỐI VÀ BỘ LỌC TÌM KIẾM SẢN PHẨM -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+                <h2 style="font-size: 1.4rem; font-weight: 900; text-transform: uppercase; color: #111827; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 4px; height: 20px; background: var(--cps-red); border-radius: 4px;"></span>
+                    Tất cả sản phẩm công nghệ
+                </h2>
+                <span th:unless="${#lists.isEmpty(products)}" style="font-size: 12.5px; color: #6B7280;">
+                    Hiển thị <strong style="color: #111827;" th:text="${#lists.size(products)}"></strong> sản phẩm chính hãng
+                </span>
+            </div>
+
+            <!-- BỘ LỌC TÌM KIẾM (CHUẨN BẢN LẺ) -->
+            <div class="card" style="padding: 18px; border-radius: var(--cps-radius); margin-bottom: 24px; background: #FFFFFF; border: 1px solid var(--cps-border);">
+                <form th:action="@{/products}" method="get" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) 110px 90px; gap: 12px; align-items: end;">
+                    <div>
+                        <label for="filter-keyword" style="font-size: 12px; font-weight: 700; color: #374151;">Tìm theo từ khóa</label>
+                        <input type="text"
+                               id="filter-keyword"
+                               name="keyword"
+                               th:value="${keyword}"
+                               placeholder="iPhone 16, M3, Sony..."
+                               style="height: 38px; font-size: 13px;">
+                    </div>
+
+                    <div>
+                        <label for="filter-category" style="font-size: 12px; font-weight: 700; color: #374151;">Danh mục</label>
+                        <select id="filter-category" name="categoryId" style="height: 38px; font-size: 13px;">
+                            <option value="">-- Tất cả danh mục --</option>
+                            <option th:each="cat : ${categories}"
+                                    th:value="${cat.categoryID}"
+                                    th:text="${cat.categoryName}"
+                                    th:selected="${cat.categoryID == selectedCategoryId}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="filter-minPrice" style="font-size: 12px; font-weight: 700; color: #374151;">Giá tối thiểu (₫)</label>
+                        <input type="number"
+                               id="filter-minPrice"
+                               name="minPrice"
+                               min="0"
+                               step="500000"
+                               th:value="${minPrice}"
+                               placeholder="0"
+                               style="height: 38px; font-size: 13px;">
+                    </div>
+
+                    <div>
+                        <label for="filter-maxPrice" style="font-size: 12px; font-weight: 700; color: #374151;">Giá tối đa (₫)</label>
+                        <input type="number"
+                               id="filter-maxPrice"
+                               name="maxPrice"
+                               min="0"
+                               step="500000"
+                               th:value="${maxPrice}"
+                               placeholder="Không giới hạn"
+                               style="height: 38px; font-size: 13px;">
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-block" style="height: 38px; font-size: 12.5px; font-weight: 800; background: var(--cps-red);">
+                            <span>🔍 Lọc giá</span>
+                        </button>
+                    </div>
+
+                    <div>
+                        <a th:href="@{/products}" class="btn btn-plain btn-block" style="height: 38px; font-size: 12px;">
+                            <span>Xóa lọc</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- THÔNG BÁO KHÔNG CÓ SẢN PHẨM -->
+            <div th:if="${#lists.isEmpty(products)}" class="card" style="text-align: center; padding: 48px 20px; background: white; border-radius: var(--cps-radius);">
+                <div style="font-size: 3.5rem; margin-bottom: 12px;">🔍</div>
+                <h3 style="color: #111827; font-size: 1.25rem;">Không tìm thấy sản phẩm nào phù hợp</h3>
+                <p style="color: #6B7280; font-size: 13px; margin-bottom: 16px;">
+                    Vui lòng thử tìm kiếm bằng từ khóa khác hoặc xóa bộ lọc để xem toàn bộ danh mục sản phẩm.
+                </p>
+                <a th:href="@{/products}" class="btn btn-primary" style="background: var(--cps-red);">
+                    Xem tất cả sản phẩm
+                </a>
+            </div>
+
+            <!-- GRID TẤT CẢ SẢN PHẨM -->
+            <div class="cps-product-grid" th:unless="${#lists.isEmpty(products)}">
+                <a th:each="product : ${products}"
+                   th:href="@{/products/{id}(id=${product.productID})}"
+                   class="cps-product-card">
+                    
+                    <!-- Nhãn giảm giá & tồn kho -->
+                    <div class="cps-card-badges">
+                        <span class="cps-badge-discount" th:if="${product.stock > 0}">Trả góp 0%</span>
+                        <span class="badge badge-cancelled" th:if="${product.stock <= 0}" style="font-size: 10px;">Hết hàng</span>
+                        <span class="badge badge-pending" th:if="${product.stock > 0 and product.stock <= 5}" style="font-size: 10px;">Chỉ còn <span th:text="${product.stock}"></span> máy</span>
+                    </div>
+
+                    <!-- Ảnh sản phẩm -->
+                    <div class="cps-card-img-wrap">
+                        <img th:if="${product.imageURL != null and product.imageURL != ''}"
+                             th:src="${product.imageURL}"
+                             th:alt="${product.name}"
+                             loading="lazy">
+                        <div th:unless="${product.imageURL != null and product.imageURL != ''}" style="color: #9CA3AF; text-align: center;">
+                            <span style="font-size: 2.5rem; display: block;">⚡</span>
+                            <span style="font-size: 11px;">Chưa có ảnh</span>
+                        </div>
+                    </div>
+
+                    <!-- Tên sản phẩm -->
+                    <h3 class="cps-card-title" th:text="${product.name}">Tên sản phẩm</h3>
+
+                    <!-- Giá bán đỏ đậm -->
+                    <div class="cps-card-price-wrap">
+                        <span class="cps-card-price">
+                            <span th:text="${#numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                        </span>
+                    </div>
+
+                    <!-- Đánh giá và số lượng kho -->
+                    <div class="cps-card-footer">
+                        <div class="cps-card-rating">
+                            <span th:if="${ratings != null and ratings[product.productID] != null}">★</span>
+                            <span th:if="${ratings != null and ratings[product.productID] != null}"
+                                  th:text="${#numbers.formatDecimal(ratings[product.productID].avg, 1, 1)}">5.0</span>
+                            <span th:unless="${ratings != null and ratings[product.productID] != null}" style="color: #9CA3AF; font-size: 11px; font-weight: normal;">Chưa có đánh giá</span>
+                            <span style="color: #9CA3AF; font-size: 11px; font-weight: normal;">
+                                (<span th:text="${product.stock}"></span> tồn)
+                            </span>
+                        </div>
+                        <span style="color: var(--cps-red); font-weight: 700;">Xem chi tiết &rarr;</span>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<footer xmlns:th="http://www.thymeleaf.org"
+        th:fragment="footer"
+        class="cps-footer">
+    
+    <!-- Dải 4 Cam Kết Giá Trị (CellphoneS Value Props) -->
+    <div class="cps-footer-props">
+        <div class="container">
+            <div class="cps-props-grid">
+                <div class="cps-prop-card">
+                    <div class="cps-prop-icon">🛡️</div>
+                    <div>
+                        <strong style="font-size: 13.5px; color: #111827; display: block;">Chính Hãng 100%</strong>
+                        <span style="font-size: 11.5px; color: #6B7280;">Bảo hành 12 - 24 tháng tại hãng</span>
+                    </div>
+                </div>
+
+                <div class="cps-prop-card">
+                    <div class="cps-prop-icon">⚡</div>
+                    <div>
+                        <strong style="font-size: 13.5px; color: #111827; display: block;">Giao Siêu Tốc 2H</strong>
+                        <span style="font-size: 11.5px; color: #6B7280;">Nội thành miễn phí từ 500k</span>
+                    </div>
+                </div>
+
+                <div class="cps-prop-card">
+                    <div class="cps-prop-icon">🔄</div>
+                    <div>
+                        <strong style="font-size: 13.5px; color: #111827; display: block;">1 Đổi 1 Trong 30 Ngày</strong>
+                        <span style="font-size: 11.5px; color: #6B7280;">Lỗi do nhà sản xuất đổi ngay</span>
+                    </div>
+                </div>
+
+                <div class="cps-prop-card">
+                    <div class="cps-prop-icon">💳</div>
+                    <div>
+                        <strong style="font-size: 13.5px; color: #111827; display: block;">Trả Góp 0% Lãi Suất</strong>
+                        <span style="font-size: 11.5px; color: #6B7280;">Thủ tục tiện lợi, xét duyệt nhanh</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5 Cột Thông Tin Footer CellphoneS -->
+    <div class="container">
+        <div class="cps-footer-grid">
+            <!-- Cột 1: Thông tin tổng đài & Hotline FlareHub -->
+            <div class="cps-footer-col">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <div style="width: 32px; height: 32px; background: #D70018; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                        ⚡
+                    </div>
+                    <span style="font-size: 1.25rem; font-weight: 900; color: #111827;">FLARE<span style="color: #D70018;">HUB</span></span>
+                </div>
+                <p style="font-size: 12px; line-height: 1.6; color: #6B7280; margin-bottom: 14px;">
+                    Hệ thống bán lẻ thiết bị công nghệ, điện thoại, laptop, thiết bị âm thanh và phụ kiện chính hãng 100%.
+                </p>
+
+                <div style="font-size: 12px; line-height: 1.8;">
+                    <div>Gọi mua hàng: <a href="tel:18002097" style="color: #D70018; font-weight: 800; font-size: 14px;">1800.2097</a> (Miễn phí)</div>
+                    <div>Khiếu nại, góp ý: <strong>1800.2063</strong></div>
+                    <div>Bảo hành &amp; Kỹ thuật: <strong>1800.2064</strong></div>
+                    <div>Email: <strong>cskh@flarehub.vn</strong></div>
+                </div>
+            </div>
+
+            <!-- Cột 2: Danh mục công nghệ -->
+            <div class="cps-footer-col">
+                <h4>Danh mục sản phẩm</h4>
+                <ul>
+                    <li><a th:href="@{/products}">Điện thoại iPhone chính hãng</a></li>
+                    <li><a th:href="@{/products}">Samsung Galaxy AI Series</a></li>
+                    <li><a th:href="@{/products}">Laptop Gaming &amp; Ultrabook</a></li>
+                    <li><a th:href="@{/products}">Máy tính bảng &amp; iPad</a></li>
+                    <li><a th:href="@{/products}">Tai nghe chống ồn Hi-Res</a></li>
+                    <li><a th:href="@{/products}">Đồng hồ thông minh thể thao</a></li>
+                    <li><a th:href="@{/products}">Phụ kiện sạc nhanh GaN</a></li>
+                </ul>
+            </div>
+
+            <!-- Cột 3: Chính sách & Bảo hành -->
+            <div class="cps-footer-col">
+                <h4>Chính sách bán hàng</h4>
+                <ul>
+                    <li><a href="javascript:void(0)">Chính sách bảo hành 12 tháng</a></li>
+                    <li><a href="javascript:void(0)">Chính sách 1 đổi 1 30 ngày</a></li>
+                    <li><a href="javascript:void(0)">Chính sách giao hàng siêu tốc 2h</a></li>
+                    <li><a href="javascript:void(0)">Chính sách thanh toán an toàn</a></li>
+                    <li><a href="javascript:void(0)">Chính sách bảo mật thông tin</a></li>
+                    <li><a href="javascript:void(0)">Chương trình thu cũ đổi mới</a></li>
+                    <li><a href="javascript:void(0)">Đặc quyền hội viên Smember</a></li>
+                </ul>
+            </div>
+
+            <!-- Cột 4: Hệ thống cửa hàng -->
+            <div class="cps-footer-col">
+                <h4>Hệ thống cửa hàng</h4>
+                <p style="font-size: 12px; color: #4B5563; line-height: 1.6; margin-bottom: 10px;">
+                    Hệ thống hơn <strong>115 cửa hàng</strong> trên toàn quốc: TP. Hồ Chí Minh, Hà Nội, Đà Nẵng, Cần Thơ, Hải Phòng, Bình Dương.
+                </p>
+                <a th:href="@{/products}" style="display: inline-block; background: #FFF5F5; border: 1px solid #FECDD3; color: #D70018; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 11.5px; text-decoration: none;">
+                    Tìm cửa hàng gần bạn &rarr;
+                </a>
+            </div>
+
+            <!-- Cột 5: Thanh toán & Chứng nhận -->
+            <div class="cps-footer-col">
+                <h4>Hỗ trợ thanh toán</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;">
+                    <span style="background: #F3F4F6; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 10.5px;">VietQR</span>
+                    <span style="background: #F3F4F6; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 10.5px;">VNPay</span>
+                    <span style="background: #F3F4F6; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 10.5px;">MoMo</span>
+                    <span style="background: #F3F4F6; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 10.5px;">Visa / Master</span>
+                </div>
+
+                <div style="border-top: 1px solid var(--cps-border); padding-top: 12px;">
+                    <span style="display: inline-block; background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 10.5px;">
+                        ✓ Đã thông báo Bộ Công Thương
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thanh Bản Quyền Dưới Cùng -->
+    <div class="cps-footer-bottom">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div>
+                © 2026 <strong>FlareHub Technology Retail Platform</strong>. Tất cả quyền được bảo lưu.
+            </div>
+            <div>
+                Giao dịch an toàn mã hóa SSL 256-bit · Bảo mật thông tin thanh toán chuẩn quốc tế
+            </div>
+        </div>
+    </div>
+</footer>

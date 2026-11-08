@@ -1,0 +1,131 @@
+<header xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        th:fragment="header"
+        class="cps-header-wrapper">
+    
+    <!-- Dải thông báo trên cùng (CellphoneS Top Announcement Bar) -->
+    <div class="cps-topbar">
+        <div class="container">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <span>🛡️ Cam kết hàng chính hãng 100% · Bảo hành 12-24 tháng</span>
+                <span style="opacity: 0.6;">|</span>
+                <span>⚡ Giao siêu tốc 2h nội thành</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}" 
+                   style="background: #FDE047; color: #111827; padding: 2px 10px; border-radius: 4px; font-weight: 800; font-size: 11px; text-decoration: none;">
+                    ⚡ VÀO TRANG QUẢN TRỊ ADMIN
+                </a>
+                <span sec:authorize="hasRole('ADMIN')" style="opacity: 0.6;">|</span>
+                <span>Hotline: <strong>1800.2097</strong> (Miễn phí)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thanh Header Đỏ CellphoneS -->
+    <div class="cps-header">
+        <div class="container">
+            <!-- Logo FlareHub -->
+            <a th:href="@{/products}" class="cps-brand" aria-label="FlareHub Trang chủ">
+                <div class="cps-brand-badge">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 2C8.5 7 6 9.5 6 13a6 6 0 0 0 12 0c0-3.5-2.5-6-6-11zm0 16a4 4 0 0 1-4-4c0-1.8 1.2-3.6 2.8-5.3.3.8.8 1.6 1.4 2.2.4.4.8.7 1.3 1 0 0 .5.3.5.8a2 2 0 0 1-2 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="cps-brand-name">FLARE<span>HUB</span></div>
+                    <div class="cps-brand-sub">Bán Lẻ Công Nghệ</div>
+                </div>
+            </a>
+
+            <!-- Thanh tìm kiếm lớn ở giữa -->
+            <div class="cps-search-wrap">
+                <form th:action="@{/products}" method="get" role="search" style="margin: 0;">
+                    <input type="text"
+                           name="keyword"
+                           th:value="${keyword}"
+                           class="cps-search-input"
+                           placeholder="Bạn cần tìm gì? (iPhone 16, MacBook, S24 Ultra...)"
+                           aria-label="Tìm kiếm sản phẩm">
+                    <button type="submit" class="cps-search-btn" aria-label="Tìm kiếm">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Các nút hành động bên phải -->
+            <div class="cps-nav-actions">
+                <!-- Tra cứu đơn hàng -->
+                <a th:href="@{/orders/history}" class="cps-action-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="1" y="3" width="15" height="13"></rect>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                    </svg>
+                    <div class="cps-hide-md" style="line-height: 1.2;">
+                        <span style="font-size: 10px; opacity: 0.85; display: block;">Tra cứu</span>
+                        <strong style="font-size: 12px;">Đơn hàng</strong>
+                    </div>
+                </a>
+
+                <!-- Yêu thích -->
+                <a th:href="@{/wishlist}" class="cps-action-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    <span class="cps-hide-md">Yêu thích</span>
+                </a>
+
+                <!-- Giỏ hàng -->
+                <a th:href="@{/cart}" class="cps-cart-btn" aria-label="Giỏ hàng FlareHub">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span>Giỏ hàng</span>
+                    <span class="cps-cart-badge"
+                          th:text="${session.cart != null and session.cart.items != null ? session.cart.items.size() : 0}">0</span>
+                </a>
+
+                <!-- Đã đăng nhập: Smember & Menu User -->
+                <th:block sec:authorize="isAuthenticated()">
+                    <a th:href="@{/profile}" class="cps-user-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <div>
+                            <span style="font-size: 10px; opacity: 0.85; display: block;">Smember</span>
+                            <strong sec:authentication="name" style="max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></strong>
+                        </div>
+                    </a>
+
+                    <form th:action="@{/auth/logout}" method="post" style="display: inline; margin: 0;">
+                        <button type="submit" class="btn-logout" title="Đăng xuất" style="color: #FFFFFF; font-weight: 700; font-size: 11px; background: rgba(0,0,0,0.25); border-radius: 6px; padding: 6px 10px;">
+                            Thoát
+                        </button>
+                    </form>
+                </th:block>
+
+                <!-- Chưa đăng nhập -->
+                <th:block sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/auth/login}" class="cps-user-btn" style="background: rgba(255,255,255,0.2); font-weight: 700;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span>Đăng nhập</span>
+                    </a>
+                    <a th:href="@{/auth/register}" class="cps-user-btn" style="font-weight: 700; color: #FFFFFF; background: rgba(0,0,0,0.25);">
+                        <span>Đăng ký</span>
+                    </a>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</header>

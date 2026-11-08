@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Xác nhận đặt hàng &amp; Thanh toán — FlareHub</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/cellphones.css}">
+</head>
+<body>
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <main class="main-content">
+        <div class="container" style="padding-top: 20px; padding-bottom: 48px; max-width: 1040px;">
+            
+            <div style="margin-bottom: 16px;">
+                <a th:href="@{/cart}" class="btn btn-plain btn-sm" style="border-radius: var(--cps-radius-sm);">
+                    <span>&larr; Quay lại giỏ hàng</span>
+                </a>
+            </div>
+
+            <h1 style="font-size: 1.55rem; font-weight: 900; color: #111827; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                <span style="color: var(--cps-red);">📦</span> Xác nhận thông tin đặt hàng &amp; Thanh toán
+            </h1>
+
+            <!-- Thông báo lỗi nếu có -->
+            <div th:if="${errorMessage}" class="alert alert-error" role="alert" style="border-radius: var(--cps-radius);">
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 28px; align-items: start;">
+                
+                <!-- CỘT 1: FORM THÔNG TIN NHẬN HÀNG VÀ THANH TOÁN -->
+                <div class="card" style="padding: 24px; background: white; border-radius: var(--cps-radius-lg); border: 1px solid var(--cps-border);">
+                    <h3 style="font-size: 1.15rem; font-weight: 800; color: #111827; margin-bottom: 18px; border-bottom: 1px solid var(--cps-border); padding-bottom: 10px;">
+                        1. Thông tin giao nhận
+                    </h3>
+
+                    <form th:action="@{/orders/checkout}" method="post">
+                        <!-- Địa chỉ nhận hàng -->
+                        <div class="form-group">
+                            <label for="shippingAddress" style="font-size: 12.5px; font-weight: 700; color: #374151;">
+                                Địa chỉ giao hàng chi tiết <span style="color: var(--cps-red);">*</span>
+                            </label>
+                            <textarea id="shippingAddress"
+                                      name="shippingAddress"
+                                      required
+                                      rows="3"
+                                      placeholder="Ví dụ: Số 134 Nguyễn Thái Học, Phường Phạm Ngũ Lão, Quận 1, TP. Hồ Chí Minh"
+                                      style="border-radius: var(--cps-radius); font-size: 13px; line-height: 1.5;"></textarea>
+                            <small style="color: #6B7280; font-size: 11px; display: block; margin-top: 4px;">
+                                Nhân viên FlareHub sẽ liên hệ xác nhận và giao hàng nhanh trong 2h.
+                            </small>
+                        </div>
+
+                        <!-- Phương thức thanh toán -->
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label style="margin-bottom: 10px; font-size: 12.5px; font-weight: 700; color: #374151;">
+                                2. Chọn phương thức thanh toán <span style="color: var(--cps-red);">*</span>
+                            </label>
+
+                            <!-- Tiền mặt (CASH) -->
+                            <div style="border: 2px solid var(--cps-border); border-radius: var(--cps-radius); padding: 12px 16px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px; cursor: pointer; transition: all 150ms ease; background: #FFFFFF;"
+                                 onclick="document.getElementById('cash').checked = true;">
+                                <input type="radio"
+                                       id="cash"
+                                       name="paymentMethod"
+                                       value="CASH"
+                                       checked
+                                       style="width: 18px; height: 18px; margin-top: 2px; accent-color: var(--cps-red);">
+                                <label for="cash" style="margin-bottom: 0; cursor: pointer; flex: 1;">
+                                    <div style="font-weight: 800; color: #111827; font-size: 13px;">💵 Thanh toán tiền mặt khi nhận hàng (COD)</div>
+                                    <div style="color: #6B7280; font-size: 11px; margin-top: 2px;">
+                                        Được kiểm tra máy nguyên seal, đầy đủ phụ kiện trước khi thanh toán.
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- VNPay / VietQR -->
+                            <div style="border: 2px solid var(--cps-border); border-radius: var(--cps-radius); padding: 12px 16px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px; cursor: pointer; transition: all 150ms ease; background: #FFFFFF;"
+                                 onclick="document.getElementById('vnpay').checked = true;">
+                                <input type="radio"
+                                       id="vnpay"
+                                       name="paymentMethod"
+                                       value="VNPAY"
+                                       style="width: 18px; height: 18px; margin-top: 2px; accent-color: var(--cps-red);">
+                                <label for="vnpay" style="margin-bottom: 0; cursor: pointer; flex: 1;">
+                                    <div style="font-weight: 800; color: #111827; font-size: 13px;">💳 Chuyển khoản online qua VNPAY / VietQR</div>
+                                    <div style="color: #6B7280; font-size: 11px; margin-top: 2px;">
+                                        Quét mã VietQR chuyển khoản nhanh 24/7 từ tất cả các app ngân hàng hoặc thẻ ATM/Visa.
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Mã khuyến mãi -->
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label for="voucherCode" style="font-size: 12.5px; font-weight: 700; color: #374151;">
+                                3. Mã giảm giá / Voucher FlareHub
+                            </label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="voucherCode" name="voucherCode"
+                                       th:value="${voucherCode}"
+                                       placeholder="Nhập mã: GIAM10, SALE200K..."
+                                       style="text-transform: uppercase; border-radius: var(--cps-radius); height: 40px; font-weight: 700; font-size: 13px;" autocomplete="off">
+                                <button type="button" id="btnApplyVoucher" class="btn btn-outline" style="border-radius: var(--cps-radius); height: 40px; font-weight: 800; border-color: var(--cps-red); color: var(--cps-red);">
+                                    <span>Áp dụng</span>
+                                </button>
+                            </div>
+                            <small id="voucherMessage" style="display: block; margin-top: 6px; font-size: 11.5px; font-weight: 600;"></small>
+                        </div>
+
+                        <!-- Nút hoàn tất đặt hàng -->
+                        <button type="submit" class="cps-btn-buynow" style="margin-top: 24px; padding: 14px; font-size: 14px;">
+                            <span>HOÀN TẤT ĐẶT HÀNG NGAY 🚀</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- CỘT 2: TÓM TẮT GIỎ HÀNG -->
+                <div class="card" style="padding: 24px; background: white; border-radius: var(--cps-radius-lg); border: 1px solid var(--cps-border);">
+                    <h3 style="font-size: 1.15rem; font-weight: 800; color: #111827; margin-bottom: 16px; border-bottom: 1px solid var(--cps-border); padding-bottom: 10px;">
+                        Kiểm tra đơn hàng
+                    </h3>
+
+                    <div th:if="${cart != null and !cart.items.isEmpty()}">
+                        <div style="margin-bottom: 16px;">
+                            <div th:each="entry : ${cart.items}" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #F3F4F6;">
+                                <div style="flex: 1; padding-right: 12px;">
+                                    <div style="font-weight: 700; color: #111827; font-size: 13px;" th:text="${entry.value.productName}">Tên SP</div>
+                                    <small style="color: #6B7280; font-size: 11px;">Số lượng: x<span th:text="${entry.value.quantity}">1</span></small>
+                                </div>
+                                <div style="font-weight: 800; color: var(--cps-red); font-size: 13.5px; white-space: nowrap;">
+                                    <span th:text="${#numbers.formatDecimal(entry.value.subTotal, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tổng cộng chi phí -->
+                        <div style="padding-top: 14px; border-top: 1px dashed var(--cps-border); font-size: 13px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #6B7280;">
+                                <span>Tạm tính tiền hàng:</span>
+                                <strong style="color: #111827;"><span th:text="${#numbers.formatDecimal(cart.totalAmount, 0, 'POINT', 0, 'COMMA')}"></span> ₫</strong>
+                            </div>
+                            <div id="discountRow" style="display: none; justify-content: space-between; margin-bottom: 8px; color: #16A34A; font-weight: 700;">
+                                <span>Giảm giá Voucher:</span>
+                                <span>- <span id="discountValue">0</span> ₫</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; color: #6B7280;">
+                                <span>Phí vận chuyển 2h:</span>
+                                <strong style="color: #16A34A;">Miễn phí</strong>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 10px; border-top: 1px solid var(--cps-border);">
+                                <span style="font-size: 1rem; font-weight: 800; color: #111827;">Tổng thanh toán:</span>
+                                <div style="font-size: 1.6rem; font-weight: 900; color: var(--cps-red); line-height: 1;">
+                                    <span id="finalTotal" th:text="${#numbers.formatDecimal(cart.totalAmount, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 18px; padding: 12px; background: #F8FAFC; border-radius: var(--cps-radius); border: 1px solid var(--cps-border); font-size: 11.5px; color: #4B5563; line-height: 1.5;">
+                            🚚 <strong>Giao hàng an toàn:</strong> Thiết bị được dán tem niêm phong và bảo hành chính hãng 100%.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+    <script th:src="@{/js/app.js}"></script>
+
+    <!-- Script xử lý Voucher kiểm tra AJAX -->
+    <script th:inline="javascript">
+        (function () {
+            var checkUrl = /*[[@{/orders/voucher/check}]]*/ '/orders/voucher/check';
+            var btn = document.getElementById('btnApplyVoucher');
+            var input = document.getElementById('voucherCode');
+            var msg = document.getElementById('voucherMessage');
+            var discountRow = document.getElementById('discountRow');
+            var discountValue = document.getElementById('discountValue');
+            var finalTotal = document.getElementById('finalTotal');
+
+            if (!btn || !input) { return; }
+
+            var originalTotal = finalTotal ? finalTotal.textContent : '';
+
+            function fmt(n) {
+                return Number(n).toLocaleString('en-US');
+            }
+
+            function resetDiscount() {
+                if (discountRow) { discountRow.style.display = 'none'; }
+                if (finalTotal) { finalTotal.textContent = originalTotal; }
+            }
+
+            btn.addEventListener('click', function () {
+                var code = input.value.trim().toUpperCase();
+                input.value = code;
+                if (!code) {
+                    msg.style.color = '#dc2626';
+                    msg.textContent = 'Vui lòng nhập mã khuyến mãi';
+                    resetDiscount();
+                    return;
+                }
+                msg.style.color = '';
+                msg.textContent = 'Đang kiểm tra mã voucher...';
+
+                fetch(checkUrl + '?code=' + encodeURIComponent(code), {
+                    headers: { 'Accept': 'application/json' },
+                    credentials: 'same-origin'
+                })
+                .then(function (res) {
+                    if (!res.ok) { throw new Error('HTTP ' + res.status); }
+                    return res.json();
+                })
+                .then(function (data) {
+                    if (data.valid) {
+                        msg.style.color = '#16a34a';
+                        msg.textContent = data.message;
+                        discountValue.textContent = fmt(data.discount);
+                        discountRow.style.display = 'flex';
+                        finalTotal.textContent = fmt(data.finalTotal);
+                    } else {
+                        msg.style.color = '#dc2626';
+                        msg.textContent = data.message;
+                        resetDiscount();
+                    }
+                })
+                .catch(function (err) {
+                    console.error('Lỗi kiểm tra voucher:', err);
+                    msg.style.color = '#dc2626';
+                    msg.textContent = 'Không kiểm tra được mã, vui lòng thử lại';
+                    resetDiscount();
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
