@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <rect width="600" height="450" fill="#f8fafc"/>
+  <!-- Tower Body -->
+  <rect x="230" y="50" width="140" height="300" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+  <!-- Circular OLED Display -->
+  <circle cx="300" cy="115" r="26" fill="#0f172a" stroke="#22c55e" stroke-width="3"/>
+  <text x="300" y="120" font-family="monospace" font-size="13" font-weight="bold" fill="#22c55e" text-anchor="middle">012</text>
+  <!-- Air grille holes -->
+  <rect x="245" y="170" width="110" height="150" rx="6" fill="#f1f5f9"/>
+  <line x1="255" y1="185" x2="345" y2="185" stroke="#94a3b8" stroke-width="2" stroke-dasharray="3,3"/>
+  <line x1="255" y1="210" x2="345" y2="210" stroke="#94a3b8" stroke-width="2" stroke-dasharray="3,3"/>
+  <line x1="255" y1="235" x2="345" y2="235" stroke="#94a3b8" stroke-width="2" stroke-dasharray="3,3"/>
+  <line x1="255" y1="260" x2="345" y2="260" stroke="#94a3b8" stroke-width="2" stroke-dasharray="3,3"/>
+  <line x1="255" y1="285" x2="345" y2="285" stroke="#94a3b8" stroke-width="2" stroke-dasharray="3,3"/>
+  <!-- Text -->
+  <text x="300" y="385" font-family="Arial, sans-serif" font-size="18" font-weight="900" fill="#0f172a" text-anchor="middle">XIAOMI SMART AIR PURIFIER 4 PRO</text>
+  <text x="300" y="410" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b" text-anchor="middle">CADR 500m³/h • Màng lọc HEPA diệt 99.97% bụi mịn</text>
+</svg>

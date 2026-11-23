@@ -4,9 +4,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="${product.name} + ' — FlareHub'"></title>
+    <title th:text="${product.name} + ' — FlareHub Điện Máy'"></title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/cellphones.css}">
+    <style>
+        .gallery-thumbs {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+        .gallery-thumb-item {
+            width: 70px;
+            height: 70px;
+            border-radius: var(--cps-radius-sm);
+            border: 2px solid var(--cps-border);
+            padding: 4px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gallery-thumb-item img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .gallery-thumb-item:hover, .gallery-thumb-item.active {
+            border-color: var(--cps-red);
+            box-shadow: 0 0 0 1px var(--cps-red);
+        }
+        .variant-group-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .variant-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .variant-pill-btn {
+            padding: 8px 14px;
+            border: 1.5px solid var(--cps-border);
+            border-radius: var(--cps-radius);
+            background: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+        }
+        .variant-pill-btn:hover {
+            border-color: #9ca3af;
+            background: #f9fafb;
+        }
+        .variant-pill-btn.active {
+            border-color: var(--cps-red);
+            background: #fff5f5;
+            color: var(--cps-red);
+            font-weight: 700;
+            box-shadow: 0 0 0 1px var(--cps-red);
+        }
+        .color-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+        .spec-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        .spec-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--cps-border);
+        }
+        .spec-table td:first-child {
+            width: 35%;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        .spec-table td:last-child {
+            color: #111827;
+        }
+    </style>
 </head>
 <body>
     <div th:replace="~{layout/header :: header}"></div>
@@ -32,42 +134,63 @@
             <div class="cps-pdp-container">
                 <div class="cps-pdp-grid">
                     
-                    <!-- Cột trái: Ảnh sản phẩm lớn & Cam kết bảo hành -->
+                    <!-- CỘT TRÁI: GALLERY NHIỀU ẢNH + BẢO HÀNH CHÍNH HÃNG -->
                     <div>
-                        <div class="cps-pdp-gallery-main">
-                            <img th:if="${product.imageURL != null and product.imageURL != ''}"
+                        <!-- Khung ảnh chính lớn -->
+                        <div class="cps-pdp-gallery-main" style="background: white; border: 1px solid var(--cps-border); border-radius: var(--cps-radius); padding: 16px; text-align: center; height: 380px; display: flex; align-items: center; justify-content: center;">
+                            <img id="mainProductImg"
+                                 th:if="${product.imageURL != null and product.imageURL != ''}"
                                  th:src="${product.imageURL}"
-                                 th:alt="${product.name}">
+                                 th:alt="${product.name}"
+                                 style="max-width: 100%; max-height: 100%; object-fit: contain;">
                             <div th:unless="${product.imageURL != null and product.imageURL != ''}"
                                  style="height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; gap: 8px;">
-                                <span style="font-size: 3.5rem;">📱</span>
+                                <span style="font-size: 3.5rem;">📺</span>
                                 <span>Chưa có hình ảnh sản phẩm</span>
                             </div>
                         </div>
 
-                        <!-- Dải 3 bảo chứng dịch vụ -->
+                        <!-- Danh sách thumbnail nhiều góc chụp (Gallery) -->
+                        <div class="gallery-thumbs" th:if="${product.images != null and !product.images.isEmpty()}">
+                            <!-- Ảnh chính -->
+                            <div class="gallery-thumb-item active"
+                                 th:attr="data-src=${product.imageURL}"
+                                 onclick="switchGalleryImage(this)">
+                                <img th:src="${product.imageURL}" alt="Ảnh chính">
+                            </div>
+                            <!-- Các ảnh góc chụp khác -->
+                            <div th:each="img : ${product.images}"
+                                 th:if="${img.imageURL != product.imageURL}"
+                                 class="gallery-thumb-item"
+                                 th:attr="data-src=${img.imageURL}"
+                                 onclick="switchGalleryImage(this)">
+                                <img th:src="${img.imageURL}" alt="Ảnh chi tiết">
+                            </div>
+                        </div>
+
+                        <!-- Dải 3 bảo chứng dịch vụ điện máy -->
                         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px;">
                             <div style="background: #F8FAFC; border: 1px solid var(--cps-border); border-radius: var(--cps-radius-sm); padding: 10px; text-align: center; font-size: 11px; font-weight: 700; color: #374151;">
-                                <div style="font-size: 16px; margin-bottom: 2px;">🛡️</div>
-                                <span>Bảo hành 12 tháng</span>
+                                <div style="font-size: 18px; margin-bottom: 2px;">🛡️</div>
+                                <span>Bảo hành 24 tháng</span>
                             </div>
                             <div style="background: #F8FAFC; border: 1px solid var(--cps-border); border-radius: var(--cps-radius-sm); padding: 10px; text-align: center; font-size: 11px; font-weight: 700; color: #374151;">
-                                <div style="font-size: 16px; margin-bottom: 2px;">🔄</div>
+                                <div style="font-size: 18px; margin-bottom: 2px;">🔄</div>
                                 <span>1 đổi 1 30 ngày</span>
                             </div>
                             <div style="background: #F8FAFC; border: 1px solid var(--cps-border); border-radius: var(--cps-radius-sm); padding: 10px; text-align: center; font-size: 11px; font-weight: 700; color: #374151;">
-                                <div style="font-size: 16px; margin-bottom: 2px;">⚡</div>
-                                <span>Giao nhanh 2h</span>
+                                <div style="font-size: 18px; margin-bottom: 2px;">🚚</div>
+                                <span>Giao &amp; Lắp tận nơi</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Cột phải: Thông tin, Khuyến mãi & Mua hàng -->
+                    <!-- CỘT PHẢI: THÔNG TIN, CHỌN BIẾN THỂ & ĐẶT HÀNG -->
                     <div>
                         <!-- Category tag -->
                         <div style="margin-bottom: 6px;">
-                            <span style="background: var(--cps-red-light); color: var(--cps-red); font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;"
-                                  th:text="${product.category != null ? product.category.categoryName : 'Thiết bị công nghệ'}">
+                            <span style="background: #e0f2fe; color: #0369a1; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;"
+                                  th:text="${product.category != null ? product.category.categoryName : 'Điện máy & Gia dụng'}">
                             </span>
                         </div>
 
@@ -76,47 +199,82 @@
                             Tên sản phẩm
                         </h1>
 
-                        <!-- Hộp giá CellphoneS -->
-                        <div class="cps-pdp-price-box">
+                        <!-- Hộp giá CellphoneS tự động đổi theo biến thể -->
+                        <div class="cps-pdp-price-box" style="margin-bottom: 16px;">
                             <div>
                                 <div class="cps-pdp-price">
-                                    <span th:text="${#numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                                    <span id="displayPrice" th:text="${#numbers.formatDecimal(product.minPrice, 0, 'POINT', 0, 'COMMA')}">8,490,000</span> ₫
                                 </div>
                                 <span style="font-size: 12px; color: #6B7280; font-weight: 500;">
-                                    Giá đã bao gồm VAT
+                                    Đã bao gồm thuế VAT &amp; Miễn phí vận chuyển
                                 </span>
                             </div>
                         </div>
 
-                        <!-- Tình trạng kho -->
+                        <!-- Tình trạng kho hàng theo biến thể -->
                         <div style="margin-bottom: 16px; font-size: 12.5px; display: flex; align-items: center; gap: 8px;">
-                            <span style="color: #4B5563; font-weight: 600;">Tình trạng máy:</span>
-                            <span th:if="${product.stock > 5}" style="background: #DCFCE7; color: #16A34A; padding: 2px 8px; border-radius: 6px; font-weight: 800;">
-                                ✓ Còn hàng tại siêu thị (<span th:text="${product.stock}"></span> sản phẩm)
-                            </span>
-                            <span th:if="${product.stock > 0 and product.stock <= 5}" style="background: #FEF3C7; color: #B45309; padding: 2px 8px; border-radius: 6px; font-weight: 800;">
-                                ⚠️ Sắp hết hàng (Chỉ còn <span th:text="${product.stock}"></span> sản phẩm)
-                            </span>
-                            <span th:if="${product.stock <= 0}" style="background: #FEE2E2; color: #DC2626; padding: 2px 8px; border-radius: 6px; font-weight: 800;">
-                                ✕ Tạm hết hàng
+                            <span style="color: #4B5563; font-weight: 600;">Tình trạng kho:</span>
+                            <span id="stockStatusBadge" style="background: #DCFCE7; color: #16A34A; padding: 3px 10px; border-radius: 6px; font-weight: 800;">
+                                ✓ Còn hàng tại siêu thị
                             </span>
                         </div>
 
-                        <!-- Hộp ưu đãi độc quyền (CellphoneS Promotion Box) -->
-                        <div style="border: 1px solid #FECDD3; background: #FFF5F5; border-radius: var(--cps-radius); padding: 16px; margin-bottom: 20px;">
-                            <div style="color: var(--cps-red); font-weight: 800; font-size: 13px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
-                                <span>🎁</span> Khuyến mại đặc quyền tại FlareHub:
+                        <!-- KHU VỰC CHỌN BIẾN THỂ SẢN PHẨM (VARIANTS) -->
+                        <div th:if="${product.variants != null and !product.variants.isEmpty()}" style="margin-bottom: 20px; padding: 14px; background: #f8fafc; border: 1px solid var(--cps-border); border-radius: var(--cps-radius);">
+                            
+                            <!-- TIÊU ĐỀ BIẾN THỂ -->
+                            <div class="variant-group-title">
+                                <span>⚙️ Chọn phiên bản &amp; Tùy chọn:</span>
+                                <span id="selectedVariantLabel" style="color: var(--cps-red); font-weight: 800;"></span>
+                            </div>
+
+                            <!-- DANH SÁCH CÁC THẺ BIẾN THỂ TRỰC QUAN -->
+                            <div class="variant-pills" id="variantButtonsContainer">
+                                <button type="button"
+                                        th:each="v, iterStat : ${product.variants}"
+                                        class="variant-pill-btn"
+                                        th:classappend="${iterStat.index == 0} ? ' active' : ''"
+                                        th:attr="data-id=${v.variantID},
+                                                 data-name=${v.variantName},
+                                                 data-size=${v.attributeSize},
+                                                 data-color=${v.attributeColor},
+                                                 data-price=${v.price},
+                                                 data-stock=${v.stock},
+                                                 data-image=${v.imageURL}"
+                                        onclick="selectVariant(this)">
+                                    <span class="color-dot"
+                                          th:if="${v.colorHex != null and v.colorHex != ''}"
+                                          th:style="'background-color: ' + ${v.colorHex}">
+                                    </span>
+                                    <div>
+                                        <div style="font-size: 13px;" th:text="${v.variantName}">Biến thể</div>
+                                        <div style="font-size: 11px; opacity: 0.85;"
+                                             th:text="${#numbers.formatDecimal(v.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'">
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Hộp ưu đãi độc quyền -->
+                        <div style="border: 1px solid #FECDD3; background: #FFF5F5; border-radius: var(--cps-radius); padding: 14px; margin-bottom: 20px;">
+                            <div style="color: var(--cps-red); font-weight: 800; font-size: 13px; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <span>🎁</span> Ưu đãi độc quyền tại FlareHub:
                             </div>
                             <ul style="font-size: 12px; color: #374151; line-height: 1.8; padding-left: 18px; margin: 0;">
-                                <li>Trả góp 0% lãi suất xét duyệt nhanh qua thẻ tín dụng và công ty tài chính</li>
+                                <li>Hỗ trợ trả góp 0% lãi suất duyệt nhanh qua thẻ tín dụng hoặc công ty tài chính</li>
+                                <li>Miễn phí công lắp đặt và khảo sát vị trí đối với Tivi, Tủ lạnh, Máy giặt, Điều hòa</li>
+                                <li>Tặng gói bảo hành vàng thêm 12 tháng khi đăng ký thành viên VIP</li>
                             </ul>
                         </div>
 
                         <!-- Form thêm vào giỏ hàng và mua ngay -->
                         <form th:action="@{/cart/add}" method="post" style="margin-bottom: 16px;">
                             <input type="hidden" name="productId" th:value="${product.productID}">
+                            <input type="hidden" name="variantId" id="selectedVariantId"
+                                   th:value="${product.variants != null and !product.variants.isEmpty()} ? ${product.variants[0].variantID} : ''">
 
-                            <div th:if="${product.stock > 0}">
+                            <div id="buyActionsWrap">
                                 <div style="display: flex; gap: 12px; align-items: flex-end; margin-bottom: 12px;">
                                     <div style="max-width: 120px;">
                                         <label for="quantity" style="font-size: 12px; font-weight: 700; color: #374151;">Số lượng:</label>
@@ -130,16 +288,16 @@
                                                style="height: 44px; text-align: center; font-weight: 800; border-radius: var(--cps-radius);">
                                     </div>
                                     <div style="flex: 1;">
-                                        <button type="submit" class="cps-btn-buynow" style="height: 44px;">
+                                        <button type="submit" id="addToCartBtn" class="cps-btn-buynow" style="height: 44px;">
                                             <span>🛒 THÊM VÀO GIỎ HÀNG</span>
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <div th:if="${product.stock <= 0}">
+                            <div id="outOfStockWrap" style="display: none;">
                                 <button type="button" class="btn btn-plain btn-block" disabled style="height: 44px; border-radius: var(--cps-radius);">
-                                    <span>TẠM HẾT HÀNG — VUI LÒNG LIÊN HỆ 1800.2097</span>
+                                    <span>TẠM HẾT HÀNG — VUI LÒNG LIÊN HỆ HOTLINE 1800.2097</span>
                                 </button>
                             </div>
                         </form>
@@ -175,18 +333,62 @@
                 </div>
 
                 <!-- MÔ TẢ VÀ THÔNG SỐ KỸ THUẬT -->
-                <div style="border-top: 1px solid var(--cps-border); margin-top: 36px; padding-top: 28px;">
-                    <h3 style="font-size: 1.25rem; font-weight: 800; color: #111827; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                        <span style="color: var(--cps-red);">📱</span> Đặc điểm nổi bật &amp; Mô tả sản phẩm
-                    </h3>
-                    <div style="color: #4B5563; font-size: 13.5px; line-height: 1.8; white-space: pre-line; background: #F8FAFC; padding: 20px; border-radius: var(--cps-radius); border: 1px solid var(--cps-border);" th:text="${product.description}">
-                        Mô tả chi tiết cấu hình và công nghệ đỉnh cao của thiết bị.
+                <div style="border-top: 1px solid var(--cps-border); margin-top: 36px; padding-top: 28px; display: grid; grid-template-columns: 3fr 2fr; gap: 32px;">
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: 800; color: #111827; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <span style="color: var(--cps-red);">📺</span> Đặc điểm nổi bật &amp; Mô tả sản phẩm
+                        </h3>
+                        <div style="color: #4B5563; font-size: 13.5px; line-height: 1.8; white-space: pre-line; background: #F8FAFC; padding: 20px; border-radius: var(--cps-radius); border: 1px solid var(--cps-border);" th:text="${product.description}">
+                            Mô tả chi tiết tính năng, công nghệ thông minh của thiết bị.
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="font-size: 1.25rem; font-weight: 800; color: #111827; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <span>📋</span> Thông số kỹ thuật
+                        </h3>
+                        <div style="background: white; border: 1px solid var(--cps-border); border-radius: var(--cps-radius); overflow: hidden;">
+                            <table class="spec-table">
+                                <tbody>
+                                    <tr>
+                                        <td>Danh mục</td>
+                                        <td th:text="${product.category != null ? product.category.categoryName : 'Điện máy'}">Điện máy</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Thương hiệu / Xuất xứ</td>
+                                        <td>Chính hãng phân phối tại Việt Nam</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bảo hành</td>
+                                        <td>24 tháng chính hãng tại nhà</td>
+                                    </tr>
+                                    <tr th:if="${product.variants != null and !product.variants.isEmpty()}">
+                                        <td>Các tùy chọn kích thước</td>
+                                        <td>
+                                            <span th:each="s, sStat : ${product.uniqueSizes}"
+                                                  th:text="${s} + (${sStat.last} ? '' : ', ')"></span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${product.variants != null and !product.variants.isEmpty()}">
+                                        <td>Màu sắc có sẵn</td>
+                                        <td>
+                                            <span th:each="c, cStat : ${product.uniqueColors}"
+                                                  th:text="${c} + (${cStat.last} ? '' : ', ')"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tình trạng hàng</td>
+                                        <td>Mới 100% nguyên hộp</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- SẢN PHẨM LIÊN QUAN -->
-            <section th:if="${not #lists.isEmpty(relatedProducts)}" style="margin-top: 32px;">
+            <section th:if="${not #lists.isEmpty(relatedProducts)}" style="margin-top: 36px;">
                 <h3 style="font-size: 1.3rem; font-weight: 900; color: #111827; margin-bottom: 16px; text-transform: uppercase;">
                     Sản phẩm cùng danh mục bạn có thể thích
                 </h3>
@@ -202,7 +404,7 @@
                                  th:alt="${item.name}"
                                  loading="lazy">
                             <div th:unless="${item.imageURL != null and item.imageURL != ''}" style="color: #9CA3AF;">
-                                <span>📱</span>
+                                <span>📺</span>
                             </div>
                         </div>
 
@@ -210,7 +412,7 @@
 
                         <div class="cps-card-price-wrap">
                             <span class="cps-card-price">
-                                <span th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                                <span th:text="${#numbers.formatDecimal(item.minPrice, 0, 'POINT', 0, 'COMMA')}"></span> ₫
                             </span>
                         </div>
 
@@ -226,5 +428,87 @@
 
     <div th:replace="~{layout/footer :: footer}"></div>
     <script th:src="@{/js/app.js}"></script>
+
+    <script>
+    function formatMoney(amount) {
+        return Number(amount).toLocaleString('vi-VN');
+    }
+
+    function switchGalleryImage(thumbElement) {
+        const src = thumbElement.getAttribute('data-src');
+        if (src) {
+            document.getElementById('mainProductImg').src = src;
+            document.querySelectorAll('.gallery-thumb-item').forEach(el => el.classList.remove('active'));
+            thumbElement.classList.add('active');
+        }
+    }
+
+    function selectVariant(button) {
+        document.querySelectorAll('.variant-pill-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        const variantId = button.getAttribute('data-id');
+        const variantName = button.getAttribute('data-name');
+        const price = parseFloat(button.getAttribute('data-price'));
+        const stock = parseInt(button.getAttribute('data-stock'), 10);
+        const image = button.getAttribute('data-image');
+
+        // Cập nhật input ẩn
+        const varInput = document.getElementById('selectedVariantId');
+        if (varInput) varInput.value = variantId;
+
+        // Cập nhật nhãn biến thể đang chọn
+        const labelEl = document.getElementById('selectedVariantLabel');
+        if (labelEl) labelEl.textContent = '(' + variantName + ')';
+
+        // Cập nhật giá
+        const priceEl = document.getElementById('displayPrice');
+        if (priceEl && !isNaN(price)) {
+            priceEl.textContent = formatMoney(price);
+        }
+
+        // Cập nhật tình trạng tồn kho
+        const badge = document.getElementById('stockStatusBadge');
+        const buyWrap = document.getElementById('buyActionsWrap');
+        const outWrap = document.getElementById('outOfStockWrap');
+        const qtyInput = document.getElementById('quantity');
+
+        if (stock > 5) {
+            badge.style.background = '#DCFCE7';
+            badge.style.color = '#16A34A';
+            badge.textContent = '✓ Còn hàng tại siêu thị (' + stock + ' sản phẩm)';
+            if (buyWrap) buyWrap.style.display = 'block';
+            if (outWrap) outWrap.style.display = 'none';
+            if (qtyInput) qtyInput.max = stock;
+        } else if (stock > 0) {
+            badge.style.background = '#FEF3C7';
+            badge.style.color = '#B45309';
+            badge.textContent = '⚠️ Sắp hết hàng (Chỉ còn ' + stock + ' sản phẩm)';
+            if (buyWrap) buyWrap.style.display = 'block';
+            if (outWrap) outWrap.style.display = 'none';
+            if (qtyInput) qtyInput.max = stock;
+        } else {
+            badge.style.background = '#FEE2E2';
+            badge.style.color = '#DC2626';
+            badge.textContent = '✕ Tạm hết phiên bản này';
+            if (buyWrap) buyWrap.style.display = 'none';
+            if (outWrap) outWrap.style.display = 'block';
+        }
+
+        // Nếu biến thể có ảnh riêng, chuyển ảnh chính sang ảnh đó
+        if (image && image.trim() !== '') {
+            const mainImg = document.getElementById('mainProductImg');
+            if (mainImg) mainImg.src = image;
+        }
+    }
+
+    // Tự động kích hoạt biến thể đầu tiên khi tải trang
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstVariantBtn = document.querySelector('.variant-pill-btn');
+        if (firstVariantBtn) {
+            selectVariant(firstVariantBtn);
+        }
+    });
+    </script>
 </body>
 </html>

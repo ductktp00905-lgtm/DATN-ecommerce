@@ -68,7 +68,10 @@ public class ProductReviewController {
 
     // ---------- Xem đánh giá ----------
     @GetMapping
-    public String list(@RequestParam Integer productId, Authentication auth, Model model) {
+    public String list(@RequestParam(required = false) Integer productId, Authentication auth, Model model) {
+        if (productId == null) {
+            return "redirect:/products";
+        }
         Product product = productRepository.findById(productId).orElse(null);
         if (product == null) {
             return "redirect:/products";

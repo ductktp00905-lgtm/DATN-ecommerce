@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FlareHub — Hệ Thống Bán Lẻ Công Nghệ Chính Hãng</title>
+    <title>FlareHub — Hệ Thống Điện Máy & Gia Dụng Thông Minh</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/cellphones.css}">
 </head>
@@ -17,184 +17,153 @@
             <!-- KHU VỰC HERO TRANG CHỦ CELLPHONES: MENU + BANNER + KHUYẾN MÃI -->
             <section class="cps-hero-grid">
                 <!-- Cột 1: Danh mục điều hướng dọc (Lấy danh mục thực tế từ DB) -->
-                <nav class="cps-sidebar-menu" aria-label="Danh mục công nghệ">
+                <nav class="cps-sidebar-menu" aria-label="Danh mục điện máy">
                     <a th:href="@{/products}" class="cps-menu-item" style="color: var(--cps-red); font-weight: 800;">
                         <span class="cps-menu-icon">⚡ Tất cả sản phẩm</span>
                         <span>&rsaquo;</span>
                     </a>
                     <a th:each="cat : ${categories}"
                        th:href="@{/products(categoryId=${cat.categoryID})}"
-                       class="cps-menu-item">
+                       class="cps-menu-item"
+                       th:classappend="${selectedCategoryId == cat.categoryID} ? ' active' : ''">
                         <span class="cps-menu-icon">
-                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'điện thoại') or #strings.containsIgnoreCase(cat.categoryName, 'phone')}">📱</span>
-                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'laptop') or #strings.containsIgnoreCase(cat.categoryName, 'máy tính')}">💻</span>
-                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'âm thanh') or #strings.containsIgnoreCase(cat.categoryName, 'tai nghe')}">🎧</span>
-                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'đồng hồ') or #strings.containsIgnoreCase(cat.categoryName, 'watch')}">⌚</span>
-                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'phụ kiện')}">🔌</span>
-                            <span th:unless="${#strings.containsIgnoreCase(cat.categoryName, 'điện thoại') or #strings.containsIgnoreCase(cat.categoryName, 'phone') or #strings.containsIgnoreCase(cat.categoryName, 'laptop') or #strings.containsIgnoreCase(cat.categoryName, 'máy tính') or #strings.containsIgnoreCase(cat.categoryName, 'âm thanh') or #strings.containsIgnoreCase(cat.categoryName, 'tai nghe') or #strings.containsIgnoreCase(cat.categoryName, 'đồng hồ') or #strings.containsIgnoreCase(cat.categoryName, 'watch') or #strings.containsIgnoreCase(cat.categoryName, 'phụ kiện')}">📦</span>
+                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'tivi') or #strings.containsIgnoreCase(cat.categoryName, 'nghe nhìn')}">📺</span>
+                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'tủ lạnh') or #strings.containsIgnoreCase(cat.categoryName, 'tủ đông')}">🧊</span>
+                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'máy giặt') or #strings.containsIgnoreCase(cat.categoryName, 'máy sấy')}">🧺</span>
+                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'điều hòa') or #strings.containsIgnoreCase(cat.categoryName, 'làm mát')}">❄️</span>
+                            <span th:if="${#strings.containsIgnoreCase(cat.categoryName, 'robot') or #strings.containsIgnoreCase(cat.categoryName, 'thông minh')}">🤖</span>
+                            <span th:unless="${#strings.containsIgnoreCase(cat.categoryName, 'tivi') or #strings.containsIgnoreCase(cat.categoryName, 'nghe nhìn') or #strings.containsIgnoreCase(cat.categoryName, 'tủ lạnh') or #strings.containsIgnoreCase(cat.categoryName, 'tủ đông') or #strings.containsIgnoreCase(cat.categoryName, 'máy giặt') or #strings.containsIgnoreCase(cat.categoryName, 'máy sấy') or #strings.containsIgnoreCase(cat.categoryName, 'điều hòa') or #strings.containsIgnoreCase(cat.categoryName, 'làm mát') or #strings.containsIgnoreCase(cat.categoryName, 'robot') or #strings.containsIgnoreCase(cat.categoryName, 'thông minh')}">🔌</span>
                             <span th:text="${cat.categoryName}">Danh mục</span>
                         </span>
                         <span style="color: #9CA3AF; font-size: 14px;">&rsaquo;</span>
                     </a>
-                    <a th:href="@{/products}" class="cps-menu-item" style="color: #059669;">
+                    <a th:href="@{/info/thu-cu-doi-moi}" class="cps-menu-item" style="color: #059669;">
                         <span class="cps-menu-icon">🔄 Thu cũ đổi mới</span>
                         <span style="background: #DCFCE7; color: #16A34A; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 4px;">Trợ giá</span>
                     </a>
-                    <a th:href="@{/products}" class="cps-menu-item" style="color: #DC2626;">
-                        <span class="cps-menu-icon">🔥 Khuyến mãi Hot</span>
-                        <span style="background: #FEE2E2; color: #DC2626; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 4px;">Giảm 50%</span>
+                    <a th:href="@{/info/tra-gop}" class="cps-menu-item" style="color: #DC2626;">
+                        <span class="cps-menu-icon">💳 Trả góp 0%</span>
+                        <span style="background: #FEE2E2; color: #DC2626; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 4px;">Duyệt 5p</span>
                     </a>
                 </nav>
 
-                <!-- Cột 2: Banner Slider công nghệ lớn -->
-                <div class="cps-slider-box">
-                    <div class="cps-slider-screen">
-                        <!-- Banner hình ảnh công nghệ sắc nét -->
-                        <img th:src="@{/assets/images/banner_flagship_phone_1794099547793.jpg}"
-                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1200&q=80';"
-                             alt="Titanium Flagship Phone"
+                <!-- Cột 2: Banner Slider công nghệ & Điện máy lớn (Tương tác click chuyển tab thời gian thực) -->
+                <div class="cps-slider-box" id="cpsHeroSlider">
+                    <a th:href="@{/products/1}" id="cpsSliderLink" class="cps-slider-screen" style="text-decoration: none; display: block; cursor: pointer;">
+                        <img id="cpsSliderImg"
+                             th:src="@{/uploads/products/tv-samsung-crystal.svg}"
+                             alt="Thiết bị điện máy thông minh"
                              style="width: 100%; height: 100%; object-fit: cover;">
                         <div class="cps-slider-overlay">
                             <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                                <span style="background: #D70018; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 900; text-transform: uppercase;">
-                                    MỞ BÁN SIÊU PHẨM
+                                <span id="cpsSliderBadge" style="background: #D70018; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 900; text-transform: uppercase;">
+                                    ĐẠI TIỆC ĐIỆN MÁY 2026
                                 </span>
                                 <span style="color: #FDE047; font-size: 12px; font-weight: 700;">★ Chính hãng FlareHub</span>
                             </div>
-                            <h2 style="color: #FFFFFF; font-size: 1.6rem; margin-bottom: 4px; font-weight: 900;">
-                                Titanium Flagship Series — Kỷ Nguyên AI Mới
+                            <h2 id="cpsSliderTitle" style="color: #FFFFFF; font-size: 1.55rem; margin-bottom: 4px; font-weight: 900;">
+                                Smart Tivi Samsung Crystal UHD 4K 2024
                             </h2>
-                            <p style="color: #E2E8F0; font-size: 13px; margin: 0; font-weight: 600;">
-                                🔥 Trợ giá thu cũ lên đời 2.500.000₫ · Trả góp 0% lãi suất qua thẻ
+                            <p id="cpsSliderSub" style="color: #E2E8F0; font-size: 13px; margin: 0 0 10px 0; font-weight: 600;">
+                                🔥 Giảm sốc chỉ từ 8.490.000₫ · Tặng gói bảo hành chính hãng 2 năm &amp; Miễn phí treo tường
                             </p>
+                            <div>
+                                <span style="display: inline-block; background: #D70018; color: white; padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 800;">
+                                    Xem Sản Phẩm &rarr;
+                                </span>
+                            </div>
                         </div>
-                    </div>
+                    </a>
 
-                    <!-- 4 Tabs điều hướng bên dưới banner (Đặc trưng CellphoneS) -->
+                    <!-- 4 Tabs điều hướng bên dưới banner (Đặc trưng CellphoneS: Click chuyển nội dung ngay lập tức) -->
                     <div class="cps-slider-tabs">
-                        <div class="cps-slider-tab active">
-                            <span>iPhone 16 Pro Max</span>
-                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Mua ngay giá sốc</small>
+                        <div class="cps-slider-tab active" data-index="0" title="Bấm xem Smart Tivi 4K">
+                            <span>Smart Tivi 4K</span>
+                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Sắc nét sống động</small>
                         </div>
-                        <div class="cps-slider-tab">
-                            <span>Galaxy S24 Ultra</span>
-                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Galaxy AI đỉnh cao</small>
+                        <div class="cps-slider-tab" data-index="1" title="Bấm xem Tủ Lạnh Inverter">
+                            <span>Tủ Lạnh Inverter</span>
+                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Tiết kiệm điện 40%</small>
                         </div>
-                        <div class="cps-slider-tab">
-                            <span>MacBook M3 Series</span>
-                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Siêu mỏng nhẹ</small>
+                        <div class="cps-slider-tab" data-index="2" title="Bấm xem Máy Giặt AI DD">
+                            <span>Máy Giặt AI DD</span>
+                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Bảo vệ sợi vải</small>
                         </div>
-                        <div class="cps-slider-tab">
-                            <span>Tai nghe Chống ồn</span>
-                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Giảm đến 35%</small>
+                        <div class="cps-slider-tab" data-index="3" title="Bấm xem Robot Dreame">
+                            <span>Robot Dreame</span>
+                            <small style="display: block; font-size: 9.5px; opacity: 0.8; font-weight: normal;">Tự giặt &amp; sấy khô</small>
                         </div>
                     </div>
                 </div>
 
-                <!-- Cột 3: Bộ 3 banner khuyến mãi độc quyền -->
+                <!-- Cột 3: Bộ 3 banner khuyến mãi độc quyền có link ra bài viết chi tiết -->
                 <div class="cps-side-promos">
-                    <a th:href="@{/products}" class="cps-side-promo" style="background: linear-gradient(135deg, #DC2626 0%, #D70018 100%); color: #FFFFFF;">
+                    <a th:href="@{/info/thu-cu-doi-moi}" class="cps-side-promo" style="background: linear-gradient(135deg, #DC2626 0%, #D70018 100%); color: #FFFFFF; text-decoration: none;">
                         <span style="font-size: 10px; font-weight: 800; color: #FDE047; text-transform: uppercase; margin-bottom: 2px;">Chương trình độc quyền</span>
                         <strong style="font-size: 14px; margin-bottom: 2px;">Thu Cũ Đổi Mới</strong>
-                        <span style="font-size: 11.5px; opacity: 0.95;">Trợ giá lên đời đến 2.500.000₫</span>
+                        <span style="font-size: 11.5px; opacity: 0.95;">Trợ giá lên đời tivi, máy lạnh đến 2.500.000₫ &rarr;</span>
                     </a>
 
-                    <a th:href="@{/products}" class="cps-side-promo" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); color: #FFFFFF;">
-                        <span style="font-size: 10px; font-weight: 800; color: #4ADE80; text-transform: uppercase; margin-bottom: 2px;">Xả kho cuối tuần</span>
-                        <strong style="font-size: 14px; margin-bottom: 2px;">Phụ Kiện Chính Hãng</strong>
-                        <span style="font-size: 11.5px; opacity: 0.95;">Cáp sạc, ốp lưng giảm tới 50%</span>
+                    <a th:href="@{/info/tra-gop}" class="cps-side-promo" style="background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); color: #FFFFFF; text-decoration: none;">
+                        <span style="font-size: 10px; font-weight: 800; color: #93C5FD; text-transform: uppercase; margin-bottom: 2px;">Ưu đãi tài chính</span>
+                        <strong style="font-size: 14px; margin-bottom: 2px;">Trả Góp 0% Lãi Suất</strong>
+                        <span style="font-size: 11.5px; opacity: 0.95;">Duyệt hồ sơ nhanh chỉ 5 phút &rarr;</span>
                     </a>
 
-                    <a th:href="@{/products}" class="cps-side-promo" style="background: linear-gradient(135deg, #D97706 0%, #EA580C 100%); color: #FFFFFF;">
-                        <span style="font-size: 10px; font-weight: 800; color: #FFFFFF; text-transform: uppercase; margin-bottom: 2px;">Đặc quyền Smember</span>
-                        <strong style="font-size: 14px; margin-bottom: 2px;">Smember Day</strong>
-                        <span style="font-size: 11.5px; opacity: 0.95;">Giảm thêm đến 500.000₫</span>
+                    <a th:href="@{/info/giao-hang-lap-dat}" class="cps-side-promo" style="background: linear-gradient(135deg, #065F46 0%, #059669 100%); color: #FFFFFF; text-decoration: none;">
+                        <span style="font-size: 10px; font-weight: 800; color: #A7F3D0; text-transform: uppercase; margin-bottom: 2px;">Dịch vụ tận tâm</span>
+                        <strong style="font-size: 14px; margin-bottom: 2px;">Miễn Phí Giao &amp; Lắp</strong>
+                        <span style="font-size: 11.5px; opacity: 0.95;">Kỹ thuật viên chuyên nghiệp hỗ trợ tận nhà &rarr;</span>
                     </a>
                 </div>
             </section>
 
-            <!-- THANH THƯƠNG HIỆU HÀNG ĐẦU -->
-            <div style="background: #FFFFFF; border-radius: var(--cps-radius); padding: 12px 18px; border: 1px solid var(--cps-border); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; overflow-x: auto; gap: 12px;">
-                <span style="font-size: 12.5px; font-weight: 800; text-transform: uppercase; color: #111827; white-space: nowrap;">
-                    🔥 Hãng công nghệ:
-                </span>
-                <div style="display: flex; gap: 8px; flex-wrap: nowrap;">
-                    <a th:href="@{/products(keyword='Apple')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
-                        Apple VN/A
-                    </a>
-                    <a th:href="@{/products(keyword='Samsung')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
-                        Samsung Galaxy
-                    </a>
-                    <a th:href="@{/products(keyword='Xiaomi')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
-                        Xiaomi Leica
-                    </a>
-                    <a th:href="@{/products(keyword='ASUS')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
-                        ASUS ROG
-                    </a>
-                    <a th:href="@{/products(keyword='Sony')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
-                        Sony Hi-Res
-                    </a>
-                    <a th:href="@{/products(keyword='Anker')}" style="padding: 6px 14px; border: 1px solid var(--cps-border); border-radius: 8px; font-size: 12px; font-weight: 700; color: #1F2937; text-decoration: none; white-space: nowrap; background: #F8FAFC;">
-                        Anker Prime
-                    </a>
-                </div>
-            </div>
-
-            <!-- KHỐI DEAL SỐC MỖI NGÀY (FLASH SALE) -->
-            <section class="cps-flashsale" th:if="${bestSellingProducts != null and !#lists.isEmpty(bestSellingProducts)}">
-                <div class="cps-flashsale-header">
-                    <div class="cps-flashsale-title">
-                        <span style="font-size: 1.8rem;">🔥</span>
-                        <div>
-                            <span>DEAL SỐC MỖI NGÀY</span>
-                            <small style="display: block; font-size: 11px; text-transform: none; color: #FEF08A; font-weight: 600;">
-                                Giảm giá sốc giờ vàng · Số lượng có hạn
-                            </small>
-                        </div>
+            <!-- FLASH SALE VÀ NỔI BẬT NẾU CÓ -->
+            <section th:if="${not #lists.isEmpty(bestSellingProducts)}" class="cps-flash-sale" style="margin-top: 24px;">
+                <div class="cps-fs-header">
+                    <div class="cps-fs-title">
+                        <span style="font-size: 1.4rem;">🔥</span>
+                        <span>ĐIỆN MÁY BÁN CHẠY NHẤT</span>
+                    </div>
+                    <div style="font-size: 12px; color: #6B7280; font-weight: 600;">
+                        Cập nhật mỗi ngày · Cam kết chính hãng 100%
                     </div>
                 </div>
 
-                <!-- Product Grid của Flash Sale -->
-                <div class="cps-product-grid" style="margin-bottom: 0;">
-                    <a th:each="item : ${bestSellingProducts}"
-                       th:href="@{/products/{id}(id=${item.productID})}"
+                <div class="cps-product-grid">
+                    <a th:each="product : ${bestSellingProducts}"
+                       th:href="@{/products/{id}(id=${product.productID})}"
                        class="cps-product-card">
                         
-                        <!-- Badges -->
                         <div class="cps-card-badges">
-                            <span class="cps-badge-discount">Bán chạy</span>
-                            <span class="cps-badge-installment">Trả góp 0%</span>
+                            <span class="cps-badge-discount">Bán chạy ★</span>
                         </div>
 
-                        <!-- Ảnh -->
                         <div class="cps-card-img-wrap">
-                            <img th:if="${item.imageURL != null and item.imageURL != ''}"
-                                 th:src="${item.imageURL}"
-                                 th:alt="${item.name}"
+                            <img th:if="${product.imageURL != null and product.imageURL != ''}"
+                                 th:src="${product.imageURL}"
+                                 th:alt="${product.name}"
                                  loading="lazy">
-                            <div th:unless="${item.imageURL != null and item.imageURL != ''}" style="color: #9CA3AF; text-align: center;">
-                                <span style="font-size: 2.5rem; display: block;">📱</span>
-                                <span style="font-size: 11px;">Chưa có ảnh</span>
+                            <div th:unless="${product.imageURL != null and product.imageURL != ''}" style="color: #9CA3AF;">
+                                <span style="font-size: 2.5rem;">📺</span>
                             </div>
                         </div>
 
-                        <!-- Tên sản phẩm -->
-                        <h3 class="cps-card-title" th:text="${item.name}">Tên sản phẩm</h3>
+                        <h3 class="cps-card-title" th:text="${product.name}">Tên sản phẩm</h3>
 
-                        <!-- Giá sản phẩm -->
                         <div class="cps-card-price-wrap">
                             <span class="cps-card-price">
-                                <span th:text="${#numbers.formatDecimal(item.price, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                                <span th:text="${product.variants != null and !product.variants.isEmpty()} ? 'Từ ' : ''"></span>
+                                <span th:text="${#numbers.formatDecimal(product.minPrice, 0, 'POINT', 0, 'COMMA')}"></span> ₫
                             </span>
                         </div>
 
-                        <!-- Footer card -->
                         <div class="cps-card-footer">
                             <div class="cps-card-rating">
-                                <span th:if="${ratings != null and ratings[item.productID] != null}">★</span>
-                                <span th:if="${ratings != null and ratings[item.productID] != null}"
-                                      th:text="${#numbers.formatDecimal(ratings[item.productID].avg, 1, 1)}">5.0</span>
-                                <span th:unless="${ratings != null and ratings[item.productID] != null}" style="color: #9CA3AF; font-size: 11px; font-weight: normal;">Chưa có đánh giá</span>
+                                <span th:if="${ratings != null and ratings[product.productID] != null}">★</span>
+                                <span th:if="${ratings != null and ratings[product.productID] != null}"
+                                      th:text="${#numbers.formatDecimal(ratings[product.productID].avg, 1, 1)}">5.0</span>
+                                <span th:unless="${ratings != null and ratings[product.productID] != null}" style="color: #9CA3AF; font-size: 11px; font-weight: normal;">Chưa có đánh giá</span>
                             </div>
                             <span style="color: var(--cps-red); font-weight: 700;">Xem chi tiết &rarr;</span>
                         </div>
@@ -202,38 +171,28 @@
                 </div>
             </section>
 
-            <!-- TIÊU ĐỀ KHỐI VÀ BỘ LỌC TÌM KIẾM SẢN PHẨM -->
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
-                <h2 style="font-size: 1.4rem; font-weight: 900; text-transform: uppercase; color: #111827; margin: 0; display: flex; align-items: center; gap: 8px;">
-                    <span style="width: 4px; height: 20px; background: var(--cps-red); border-radius: 4px;"></span>
-                    Tất cả sản phẩm công nghệ
-                </h2>
-                <span th:unless="${#lists.isEmpty(products)}" style="font-size: 12.5px; color: #6B7280;">
-                    Hiển thị <strong style="color: #111827;" th:text="${#lists.size(products)}"></strong> sản phẩm chính hãng
-                </span>
-            </div>
-
-            <!-- BỘ LỌC TÌM KIẾM (CHUẨN BẢN LẺ) -->
-            <div class="card" style="padding: 18px; border-radius: var(--cps-radius); margin-bottom: 24px; background: #FFFFFF; border: 1px solid var(--cps-border);">
-                <form th:action="@{/products}" method="get" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) 110px 90px; gap: 12px; align-items: end;">
+            <!-- BỘ LỌC TÌM KIẾM SẢN PHẨM -->
+            <div class="card" style="padding: 16px 20px; background: white; border-radius: var(--cps-radius); margin-top: 24px; margin-bottom: 24px; border: 1px solid var(--cps-border);">
+                <form th:action="@{/products}" method="get" style="display: grid; grid-template-columns: 2fr 1.5fr 1.2fr 1.2fr auto auto; gap: 12px; align-items: flex-end;">
+                    
                     <div>
-                        <label for="filter-keyword" style="font-size: 12px; font-weight: 700; color: #374151;">Tìm theo từ khóa</label>
+                        <label for="filter-kw" style="font-size: 12px; font-weight: 700; color: #374151;">Tìm kiếm thiết bị</label>
                         <input type="text"
-                               id="filter-keyword"
+                               id="filter-kw"
                                name="keyword"
                                th:value="${keyword}"
-                               placeholder="iPhone 16, M3, Sony..."
+                               placeholder="VD: Smart Tivi Samsung, Tủ lạnh LG, Daikin..."
                                style="height: 38px; font-size: 13px;">
                     </div>
 
                     <div>
-                        <label for="filter-category" style="font-size: 12px; font-weight: 700; color: #374151;">Danh mục</label>
-                        <select id="filter-category" name="categoryId" style="height: 38px; font-size: 13px;">
-                            <option value="">-- Tất cả danh mục --</option>
-                            <option th:each="cat : ${categories}"
-                                    th:value="${cat.categoryID}"
-                                    th:text="${cat.categoryName}"
-                                    th:selected="${cat.categoryID == selectedCategoryId}">
+                        <label for="filter-cat" style="font-size: 12px; font-weight: 700; color: #374151;">Danh mục sản phẩm</label>
+                        <select id="filter-cat" name="categoryId" style="height: 38px; font-size: 13px;">
+                            <option value="">Tất cả danh mục</option>
+                            <option th:each="c : ${categories}"
+                                    th:value="${c.categoryID}"
+                                    th:text="${c.categoryName}"
+                                    th:selected="${selectedCategoryId == c.categoryID}">
                             </option>
                         </select>
                     </div>
@@ -308,7 +267,7 @@
                              th:alt="${product.name}"
                              loading="lazy">
                         <div th:unless="${product.imageURL != null and product.imageURL != ''}" style="color: #9CA3AF; text-align: center;">
-                            <span style="font-size: 2.5rem; display: block;">⚡</span>
+                            <span style="font-size: 2.5rem; display: block;">📺</span>
                             <span style="font-size: 11px;">Chưa có ảnh</span>
                         </div>
                     </div>
@@ -316,10 +275,18 @@
                     <!-- Tên sản phẩm -->
                     <h3 class="cps-card-title" th:text="${product.name}">Tên sản phẩm</h3>
 
+                    <!-- Huy hiệu số lượng biến thể nếu có -->
+                    <div th:if="${product.variants != null and !product.variants.isEmpty()}" style="margin-bottom: 6px;">
+                        <span style="background: #e0f2fe; color: #0284c7; font-size: 10.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px;"
+                              th:text="${#lists.size(product.variants)} + ' phiên bản'">
+                        </span>
+                    </div>
+
                     <!-- Giá bán đỏ đậm -->
                     <div class="cps-card-price-wrap">
                         <span class="cps-card-price">
-                            <span th:text="${#numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                            <span th:text="${product.variants != null and !product.variants.isEmpty()} ? 'Từ ' : ''"></span>
+                            <span th:text="${#numbers.formatDecimal(product.minPrice, 0, 'POINT', 0, 'COMMA')}"></span> ₫
                         </span>
                     </div>
 
@@ -342,7 +309,217 @@
         </div>
     </main>
 
+    <!-- POPUP QUẢNG CÁO CHƯƠNG TRÌNH HÃNG PHONG CÁCH CELLPHONES -->
+    <div id="cpsPromoPopup" class="cps-popup-backdrop" role="dialog" aria-modal="true">
+        <div class="cps-popup-modal">
+            <button type="button" class="cps-popup-close-btn" id="cpsPopupCloseBtn" aria-label="Đóng popup">&times;</button>
+            
+            <div class="cps-popup-hero">
+                <div class="cps-popup-brands">
+                    <span>SAMSUNG</span> • <span>LG</span> • <span>SONY</span> • <span>PANASONIC</span> • <span>DAIKIN</span>
+                </div>
+                <h3 class="cps-popup-title">
+                    ĐẠI TIỆC ĐIỆN MÁY CHÍNH HÃNG 2026
+                </h3>
+                <p class="cps-popup-subtitle">
+                    Khuyến mãi bùng nổ — Giảm đến 40% &amp; Trợ giá thu cũ đổi mới đến 2.5 Triệu
+                </p>
+            </div>
+
+            <div class="cps-popup-body">
+                <div class="cps-popup-features">
+                    <div class="cps-popup-feature-item">
+                        <span style="font-size: 1.4rem;">📺</span>
+                        <div>
+                            <strong>Tivi 4K &amp; Loa Thanh</strong>
+                            <span>Giảm sốc từ 4.890.000₫</span>
+                        </div>
+                    </div>
+                    <div class="cps-popup-feature-item">
+                        <span style="font-size: 1.4rem;">🧊</span>
+                        <div>
+                            <strong>Tủ Lạnh Inverter</strong>
+                            <span>Tiết kiệm 40% điện năng</span>
+                        </div>
+                    </div>
+                    <div class="cps-popup-feature-item">
+                        <span style="font-size: 1.4rem;">🧺</span>
+                        <div>
+                            <strong>Máy Giặt AI DD</strong>
+                            <span>Miễn phí giao hàng &amp; lắp 2H</span>
+                        </div>
+                    </div>
+                    <div class="cps-popup-feature-item">
+                        <span style="font-size: 1.4rem;">💳</span>
+                        <div>
+                            <strong>Trả Góp 0% Lãi Suất</strong>
+                            <span>Xét duyệt hồ sơ chỉ 5 phút</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cps-popup-actions">
+                    <a th:href="@{/info/thu-cu-doi-moi}" class="cps-popup-cta-btn">
+                        KHÁM PHÁ CHƯƠNG TRÌNH NGAY 🚀
+                    </a>
+                    <a th:href="@{/info/tra-gop}" style="text-align: center; font-size: 13px; font-weight: 700; color: #2563EB; text-decoration: none; padding: 4px;">
+                        Xem điều kiện duyệt trả góp 0% lãi suất &rarr;
+                    </a>
+                </div>
+
+                <div class="cps-popup-footer">
+                    <label class="cps-popup-checkbox-label">
+                        <input type="checkbox" id="cpsDontShowToday">
+                        <span>Không hiện lại hôm nay</span>
+                    </label>
+                    <span style="color: #9CA3AF; font-size: 11px;">Cam kết 100% chính hãng</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div th:replace="~{layout/footer :: footer}"></div>
     <script th:src="@{/js/app.js}"></script>
+
+    <!-- JAVASCRIPT ĐIỀU KHIỂN SLIDER TAB & POPUP QUẢNG CÁO -->
+    <script th:inline="javascript">
+        // 4 SLIDE BANNER HERO CHÍNH HÃNG TƯƠNG ỨNG VỚI 4 TAB
+        const heroSlides = [
+            {
+                index: 0,
+                img: /*[[@{/uploads/products/tv-samsung-crystal.svg}]]*/ '/uploads/products/tv-samsung-crystal.svg',
+                badge: 'ĐẠI TIỆC ĐIỆN MÁY 2026',
+                title: 'Smart Tivi Samsung Crystal UHD 4K 2024',
+                sub: '🔥 Giảm sốc chỉ từ 8.490.000₫ · Tặng gói bảo hành chính hãng 2 năm & Miễn phí treo tường',
+                link: /*[[@{/products/1}]]*/ '/products/1'
+            },
+            {
+                index: 1,
+                img: /*[[@{/uploads/products/fridge-lg-sidebyside.svg}]]*/ '/uploads/products/fridge-lg-sidebyside.svg',
+                badge: 'TIẾT KIỆM ĐIỆN 40%',
+                title: 'Tủ Lạnh Side By Side Inverter LG 519 Lít',
+                sub: '🔥 Giữ trọn độ tươi ngon LinearCooling · Khử mùi than hoạt tính Nano Carbon chỉ từ 13.990.000₫',
+                link: /*[[@{/products/4}]]*/ '/products/4'
+            },
+            {
+                index: 2,
+                img: /*[[@{/uploads/products/washing-machine-lg.svg}]]*/ '/uploads/products/washing-machine-lg.svg',
+                badge: 'CÔNG NGHỆ AI DD THÔNG MINH',
+                title: 'Máy Giặt Cửa Ngang LG AI DD Inverter 9Kg',
+                sub: '🔥 Động cơ truyền động trực tiếp · Giặt hơi nước diệt khuẩn 99.9% chỉ từ 8.690.000₫',
+                link: /*[[@{/products/6}]]*/ '/products/6'
+            },
+            {
+                index: 3,
+                img: /*[[@{/uploads/products/robot-dreame-l10s.svg}]]*/ '/uploads/products/robot-dreame-l10s.svg',
+                badge: 'TỰ GIẶT GIẺ & SẤY KHÔ',
+                title: 'Robot Dreame L10s Ultra Tự Động Toàn Diện',
+                sub: '🔥 Trạm sạc tự giặt sấy giẻ & hút rác tự động · Lực hút khủng 5300Pa giảm ngay 3 triệu',
+                link: /*[[@{/products/10}]]*/ '/products/10'
+            }
+        ];
+
+        let currentSlideIdx = 0;
+        let slideTimer = null;
+
+        function showSlide(index) {
+            currentSlideIdx = index;
+            const slide = heroSlides[index];
+            if (!slide) return;
+
+            const sliderLink = document.getElementById('cpsSliderLink');
+            const sliderImg = document.getElementById('cpsSliderImg');
+            const sliderBadge = document.getElementById('cpsSliderBadge');
+            const sliderTitle = document.getElementById('cpsSliderTitle');
+            const sliderSub = document.getElementById('cpsSliderSub');
+            const tabs = document.querySelectorAll('.cps-slider-tab');
+
+            // Cập nhật tab active
+            tabs.forEach((tab, i) => {
+                if (i === index) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            // Hiệu ứng chuyển động mượt mà
+            if (sliderLink && sliderImg) {
+                sliderLink.classList.add('fade-out');
+                setTimeout(() => {
+                    sliderImg.src = slide.img;
+                    sliderLink.href = slide.link;
+                    if (sliderBadge) sliderBadge.textContent = slide.badge;
+                    if (sliderTitle) sliderTitle.textContent = slide.title;
+                    if (sliderSub) sliderSub.textContent = slide.sub;
+                    sliderLink.classList.remove('fade-out');
+                }, 160);
+            }
+        }
+
+        function startSlideTimer() {
+            stopSlideTimer();
+            slideTimer = setInterval(() => {
+                let nextIdx = (currentSlideIdx + 1) % heroSlides.length;
+                showSlide(nextIdx);
+            }, 5000);
+        }
+
+        function stopSlideTimer() {
+            if (slideTimer) {
+                clearInterval(slideTimer);
+                slideTimer = null;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Lắng nghe click trên từng tab banner
+            const tabs = document.querySelectorAll('.cps-slider-tab');
+            tabs.forEach((tab, idx) => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showSlide(idx);
+                    startSlideTimer(); // Reset bộ đếm khi người dùng tương tác
+                });
+            });
+
+            // Tạm dừng chạy tự động khi di chuột vào khối slider
+            const sliderBox = document.getElementById('cpsHeroSlider');
+            if (sliderBox) {
+                sliderBox.addEventListener('mouseenter', stopSlideTimer);
+                sliderBox.addEventListener('mouseleave', startSlideTimer);
+            }
+            startSlideTimer();
+
+            // POPUP QUẢNG CÁO HÃNG PHONG CÁCH CELLPHONES
+            const popup = document.getElementById('cpsPromoPopup');
+            const closeBtn = document.getElementById('cpsPopupCloseBtn');
+            const dontShowCheckbox = document.getElementById('cpsDontShowToday');
+
+            const todayKey = 'cps_hide_promo_' + new Date().toISOString().slice(0, 10);
+            const isHiddenToday = localStorage.getItem(todayKey);
+
+            if (!isHiddenToday && popup) {
+                setTimeout(() => {
+                    popup.classList.add('show');
+                }, 600);
+            }
+
+            function closePopup() {
+                if (!popup) return;
+                popup.classList.remove('show');
+                if (dontShowCheckbox && dontShowCheckbox.checked) {
+                    localStorage.setItem(todayKey, 'true');
+                }
+            }
+
+            if (closeBtn) closeBtn.addEventListener('click', closePopup);
+            if (popup) {
+                popup.addEventListener('click', (e) => {
+                    if (e.target === popup) closePopup();
+                });
+            }
+        });
+    </script>
 </body>
 </html>

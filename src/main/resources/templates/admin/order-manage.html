@@ -5,6 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quản lý đơn hàng — FlareHub Admin</title>
     <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <style>
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .filter-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text, #334155);
+            background: white;
+            border: 1px solid var(--border, #e2e8f0);
+            transition: all 0.15s ease;
+        }
+        .filter-tab:hover {
+            border-color: #94a3b8;
+            background: #f8fafc;
+        }
+        .filter-tab.active {
+            background: #1e293b;
+            color: white;
+            border-color: #1e293b;
+        }
+        .filter-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .filter-tab.active .filter-badge {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+        }
+        .filter-badge-pending {
+            background: #fef08a;
+            color: #854d0e;
+        }
+        .priority-row {
+            background-color: #fffbeb !important;
+        }
+        .priority-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            background: #fee2e2;
+            color: #dc2626;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 3px;
+            text-transform: uppercase;
+        }
+        .order-items-list {
+            font-size: 12px;
+            color: #334155;
+            line-height: 1.5;
+            max-width: 250px;
+        }
+        .order-item-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+            padding: 2px 0;
+            border-bottom: 1px dashed #f1f5f9;
+        }
+        .order-item-line:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <body>
 <div class="window">
@@ -16,33 +96,111 @@
             <div class="toolbar">
                 <div>
                     <h1>Quản lý đơn hàng</h1>
-                    <div class="sub">Theo dõi và cập nhật trạng thái đơn hàng của khách</div>
+                    <div class="sub">Theo dõi và cập nhật trạng thái đơn hàng (Đơn chờ xử lý được tự động ưu tiên lên đầu)</div>
                 </div>
             </div>
 
+            <!-- THÔNG BÁO ƯU TIÊN NẾU CÓ ĐƠN CHỜ XỬ LÝ -->
+            <div th:if="${pendingCount > 0}" style="background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">🔔</span>
+                    <div>
+                        <strong style="color: #92400e; font-size: 13.5px;">Có <span th:text="${pendingCount}">1</span> đơn hàng đang chờ xác nhận &amp; xử lý!</strong>
+                        <div style="font-size: 12px; color: #b45309;">Hệ thống đã tự động đẩy các đơn hàng này lên đầu danh sách để bạn xử lý nhanh nhất.</div>
+                    </div>
+                </div>
+                <a th:href="@{/admin/orders(status='PENDING')}" class="btn" style="background: #f59e0b; color: white; font-size: 12px; padding: 6px 12px; border: none;">
+                    Lọc chỉ đơn chờ xử lý
+                </a>
+            </div>
+
             <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="alert alert-success" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 10px 14px; border-radius: 6px; margin-bottom: 16px;" th:text="${successMessage}"></div>
+
+            <!-- TABS LỌC TRẠNG THÁI -->
+            <div class="filter-tabs">
+                <a th:href="@{/admin/orders(status='ALL')}"
+                   class="filter-tab"
+                   th:classappend="${currentStatus == 'ALL'} ? 'active' : ''">
+                    <span>Tất cả đơn</span>
+                    <span class="filter-badge" th:text="${allCount}">0</span>
+                </a>
+                <a th:href="@{/admin/orders(status='PENDING')}"
+                   class="filter-tab"
+                   th:classappend="${currentStatus == 'PENDING'} ? 'active' : ''"
+                   style="border-color: #fde68a;">
+                    <span>⏳ Chờ xử lý</span>
+                    <span class="filter-badge filter-badge-pending" th:text="${pendingCount}">0</span>
+                </a>
+                <a th:href="@{/admin/orders(status='SHIPPING')}"
+                   class="filter-tab"
+                   th:classappend="${currentStatus == 'SHIPPING'} ? 'active' : ''">
+                    <span>🚚 Đang giao</span>
+                    <span class="filter-badge" th:text="${shippingCount}">0</span>
+                </a>
+                <a th:href="@{/admin/orders(status='COMPLETED')}"
+                   class="filter-tab"
+                   th:classappend="${currentStatus == 'COMPLETED'} ? 'active' : ''">
+                    <span>✅ Hoàn thành</span>
+                    <span class="filter-badge" th:text="${completedCount}">0</span>
+                </a>
+                <a th:href="@{/admin/orders(status='CANCELLED')}"
+                   class="filter-tab"
+                   th:classappend="${currentStatus == 'CANCELLED'} ? 'active' : ''">
+                    <span>❌ Đã hủy</span>
+                    <span class="filter-badge" th:text="${cancelledCount}">0</span>
+                </a>
+            </div>
 
             <section class="panel">
                 <div style="overflow-x: auto;">
                     <table>
                         <thead>
                             <tr>
-                                <th style="width: 70px;">Mã đơn</th>
-                                <th>Thời gian đặt</th>
+                                <th style="width: 80px;">Mã đơn</th>
+                                <th style="width: 120px;">Thời gian đặt</th>
                                 <th>Khách hàng</th>
-                                <th>Địa chỉ giao hàng</th>
+                                <th>Chi tiết sản phẩm</th>
+                                <th>Địa chỉ giao</th>
                                 <th>Tổng tiền</th>
                                 <th>Trạng thái hiện tại</th>
-                                <th>Cập nhật trạng thái</th>
+                                <th style="text-align: center; width: 140px;">Cập nhật</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="o : ${orders}">
-                                <td><strong th:text="'#' + ${o.orderID}">#1001</strong></td>
-                                <td th:text="${#temporals.format(o.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</td>
-                                <td th:text="${o.user != null ? o.user.username : 'Khách vãng lai'}">username</td>
-                                <td style="max-width: 200px; font-size: 12px; color: var(--muted);" th:text="${o.shippingAddress}">Địa chỉ</td>
-                                <td class="nowrap" style="font-weight: 700; color: var(--accent);">
+                            <tr th:each="o : ${orders}" th:classappend="${o.status == 'PENDING'} ? 'priority-row' : ''">
+                                <td>
+                                    <a th:href="@{/admin/orders/{id}(id=${o.orderID})}"
+                                       style="color: #2563eb; text-decoration: underline; font-weight: 800; font-size: 13.5px;"
+                                       th:text="'#' + ${o.orderID}">#1001</a>
+                                    <div th:if="${o.status == 'PENDING'}" class="priority-tag">
+                                        🔥 Ưu tiên
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 12.5px; font-weight: 600;" th:text="${#temporals.format(o.orderDate, 'HH:mm')}">14:30</div>
+                                    <div style="font-size: 11px; color: var(--muted);" th:text="${#temporals.format(o.orderDate, 'dd/MM/yyyy')}">22/11/2026</div>
+                                </td>
+                                <td>
+                                    <strong style="color: var(--text-heading);" th:text="${o.user != null ? (o.user.fullName != null and o.user.fullName != '' ? o.user.fullName : o.user.username) : 'Khách vãng lai'}">Tên khách</strong>
+                                    <div style="font-size: 11px; color: var(--muted);" th:text="${o.user != null ? '@' + o.user.username : ''}">@username</div>
+                                </td>
+                                <td>
+                                    <div class="order-items-list" th:if="${o.orderDetails != null and !o.orderDetails.isEmpty()}">
+                                        <div class="order-item-line" th:each="d : ${o.orderDetails}">
+                                            <div>
+                                                <strong th:text="${d.product != null ? d.product.name : 'Sản phẩm'}">Tên SP</strong>
+                                                <div th:if="${d.variantInfo != null and d.variantInfo != ''}" style="color: #0284c7; font-size: 10.5px; font-weight: 700;" th:text="'[' + ${d.variantInfo} + ']'"></div>
+                                            </div>
+                                            <span style="font-weight: 700; white-space: nowrap;" th:text="'x' + ${d.quantity}">x1</span>
+                                        </div>
+                                    </div>
+                                    <div th:unless="${o.orderDetails != null and !o.orderDetails.isEmpty()}" style="font-size: 11.5px; color: var(--muted);">
+                                        (Không có dữ liệu chi tiết)
+                                    </div>
+                                </td>
+                                <td style="max-width: 180px; font-size: 12px; color: var(--muted); line-height: 1.4;" th:text="${o.shippingAddress}">Địa chỉ</td>
+                                <td class="nowrap" style="font-weight: 800; color: var(--cps-red, #dc2626); font-size: 13.5px;">
                                     <span th:text="${#numbers.formatDecimal(o.totalAmount, 0, 'POINT', 0, 'COMMA')}"></span> ₫
                                 </td>
                                 <td>
@@ -57,20 +215,40 @@
                                         </th:block>
                                     </span>
                                 </td>
-                                <td>
-                                    <form class="actions" th:action="@{/admin/orders/update-status/{id}(id=${o.orderID})}" method="post">
-                                        <select name="status" style="padding: 4px 8px; font-size: 12px; border-radius: 6px;">
-                                            <option value="PENDING" th:selected="${o.status == 'PENDING'}">Chờ xử lý</option>
-                                            <option value="SHIPPING" th:selected="${o.status == 'SHIPPING'}">Đang giao</option>
-                                            <option value="COMPLETED" th:selected="${o.status == 'COMPLETED'}">Hoàn thành</option>
-                                            <option value="CANCELLED" th:selected="${o.status == 'CANCELLED'}">Đã hủy</option>
-                                        </select>
-                                        <button type="submit" class="btn btn-plain" style="padding: 4px 10px; font-size: 12px;">Đổi</button>
-                                    </form>
+                                <td style="text-align: center;">
+                                    <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
+                                        <a th:href="@{/admin/orders/{id}(id=${o.orderID})}"
+                                           class="btn btn-secondary btn-sm"
+                                           style="padding: 4px 10px; font-size: 11.5px; text-decoration: none; font-weight: 700; width: fit-content;">
+                                            👁️ Xem chi tiết
+                                        </a>
+                                        <!-- Nút thao tác nhanh theo State Machine hợp lệ -->
+                                        <form th:if="${o.status == 'PENDING'}" th:action="@{/admin/orders/update-status/{id}(id=${o.orderID})}" method="post" style="margin: 0;">
+                                            <input type="hidden" name="currentFilter" th:value="${currentStatus}">
+                                            <input type="hidden" name="status" value="SHIPPING">
+                                            <input type="hidden" name="note" value="Admin chuyển trạng thái sang giao hàng từ danh sách">
+                                            <button type="submit" class="btn btn-plain" style="padding: 3px 8px; font-size: 11px; background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; cursor: pointer;">
+                                                🚚 Bắt đầu giao
+                                            </button>
+                                        </form>
+                                        <form th:if="${o.status == 'SHIPPING'}" th:action="@{/admin/orders/update-status/{id}(id=${o.orderID})}" method="post" style="margin: 0;">
+                                            <input type="hidden" name="currentFilter" th:value="${currentStatus}">
+                                            <input type="hidden" name="status" value="COMPLETED">
+                                            <input type="hidden" name="note" value="Admin xác nhận giao hàng thành công từ danh sách">
+                                            <button type="submit" class="btn btn-plain" style="padding: 3px 8px; font-size: 11px; background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; cursor: pointer;">
+                                                ✅ Hoàn tất
+                                            </button>
+                                        </form>
+                                        <span th:if="${o.status == 'COMPLETED' or o.status == 'CANCELLED'}" style="font-size: 11px; color: #94a3b8; font-weight: 600;">
+                                            🔒 Đã khóa
+                                        </span>
+                                    </div>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(orders)}">
-                                <td colspan="7" class="empty">Chưa có đơn hàng nào trong hệ thống</td>
+                                <td colspan="8" class="empty" style="text-align: center; padding: 30px;">
+                                    Không có đơn hàng nào theo bộ lọc hiện tại
+                                </td>
                             </tr>
                         </tbody>
                     </table>

@@ -17,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import com.example.DATN.repository.UserRepository;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
 @EnableWebSecurity
@@ -48,12 +49,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
             .addFilterBefore(new ActiveUserFilter(userRepository), AuthorizationFilter.class)
             .authorizeHttpRequests(auth -> auth
                 .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
                 .requestMatchers("/error", "/error/**").permitAll()
-                .requestMatchers("/", "/home", "/products/**", "/auth/**", "/css/**", "/js/**", "/images/**", "/assets/**").permitAll()
+                .requestMatchers("/", "/home", "/products/**", "/info/**", "/auth/**", "/css/**", "/js/**", "/images/**", "/assets/**", "/uploads/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/reviews").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/cart/**", "/orders/**").hasAnyRole("CUSTOMER", "ADMIN")

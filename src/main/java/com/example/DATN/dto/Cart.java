@@ -1,8 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 package com.example.DATN.dto;
 
 import java.io.Serializable;
@@ -12,29 +7,42 @@ import java.util.Map;
 
 public class Cart implements Serializable {
 
-    private Map<Integer, CartItem> items = new LinkedHashMap<>();
+    private Map<String, CartItem> items = new LinkedHashMap<>();
 
     public void addItem(CartItem newItem) {
-        if (items.containsKey(newItem.getProductId())) {
-            CartItem existing = items.get(newItem.getProductId());
+        String key = newItem.getItemKey();
+        if (items.containsKey(key)) {
+            CartItem existing = items.get(key);
             existing.setQuantity(existing.getQuantity() + newItem.getQuantity());
         } else {
-            items.put(newItem.getProductId(), newItem);
+            items.put(key, newItem);
         }
     }
 
-    public void updateQuantity(Integer productId, Integer quantity) {
-        if (items.containsKey(productId)) {
+    public void updateQuantity(String key, Integer quantity) {
+        if (items.containsKey(key)) {
             if (quantity <= 0) {
-                items.remove(productId);
+                items.remove(key);
             } else {
-                items.get(productId).setQuantity(quantity);
+                items.get(key).setQuantity(quantity);
             }
         }
     }
 
+    // Tương thích ngược với Integer productId
+    public void updateQuantity(Integer productId, Integer quantity) {
+        updateQuantity(String.valueOf(productId), quantity);
+    }
+
+    public void removeItem(String key) {
+        items.remove(key);
+    }
+
+    // Tương thích ngược với Integer productId
     public void removeItem(Integer productId) {
-        items.remove(productId);
+        // Remove either matching exact key or matching productId
+        items.remove(String.valueOf(productId));
+        items.entrySet().removeIf(e -> e.getValue().getProductId().equals(productId));
     }
 
     public void clear() {
@@ -51,7 +59,7 @@ public class Cart implements Serializable {
         return items.values().stream().mapToInt(CartItem::getQuantity).sum();
     }
 
-    public Map<Integer, CartItem> getItems() {
+    public Map<String, CartItem> getItems() {
         return items;
     }
 }

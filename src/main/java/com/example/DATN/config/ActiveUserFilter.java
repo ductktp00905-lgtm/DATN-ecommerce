@@ -34,7 +34,7 @@ public class ActiveUserFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         return path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/images/")
-                || path.startsWith("/assets/");
+                || path.startsWith("/assets/") || path.startsWith("/uploads/");
     }
 
     @Override

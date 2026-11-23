@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <rect width="600" height="450" fill="#f8fafc"/>
+  <!-- Outer Body -->
+  <rect x="180" y="40" width="240" height="330" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+  <!-- Top Panel -->
+  <rect x="190" y="55" width="220" height="45" rx="4" fill="#f1f5f9"/>
+  <!-- Knob -->
+  <circle cx="300" cy="77" r="14" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>
+  <!-- LED Display -->
+  <rect x="330" y="65" width="65" height="25" rx="3" fill="#0f172a"/>
+  <text x="362" y="82" font-family="monospace" font-size="12" font-weight="bold" fill="#38bdf8" text-anchor="middle">18:00</text>
+  <!-- Circular Door -->
+  <circle cx="300" cy="225" r="90" fill="#0f172a" stroke="#475569" stroke-width="6"/>
+  <circle cx="300" cy="225" r="70" fill="#1e293b"/>
+  <circle cx="300" cy="225" r="50" fill="#0284c7" opacity="0.4"/>
+  <!-- Text -->
+  <text x="300" y="405" font-family="Arial, sans-serif" font-size="18" font-weight="900" fill="#0f172a" text-anchor="middle">LG AI DD INVERTER</text>
+  <text x="300" y="425" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b" text-anchor="middle">Giặt hơi nước Steam diệt khuẩn 99.9%</text>
+</svg>

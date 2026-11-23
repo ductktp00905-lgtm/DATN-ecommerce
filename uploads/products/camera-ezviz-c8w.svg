@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <rect width="600" height="450" fill="#f8fafc"/>
+  <!-- Wall Mount Bracket -->
+  <rect x="270" y="40" width="60" height="50" rx="4" fill="#94a3b8"/>
+  <path d="M290,90 L290,130 L310,130 L310,90 Z" fill="#64748b"/>
+  <!-- Spherical Camera Body -->
+  <circle cx="300" cy="210" r="90" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+  <!-- Rotating Lens Sphere -->
+  <circle cx="300" cy="210" r="60" fill="#0f172a"/>
+  <circle cx="300" cy="210" r="28" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
+  <circle cx="300" cy="210" r="12" fill="#0284c7"/>
+  <!-- Dual Antennas -->
+  <line x1="220" y1="130" x2="250" y2="180" stroke="#64748b" stroke-width="6" stroke-linecap="round"/>
+  <line x1="380" y1="130" x2="350" y2="180" stroke="#64748b" stroke-width="6" stroke-linecap="round"/>
+  <!-- Text -->
+  <text x="300" y="380" font-family="Arial, sans-serif" font-size="18" font-weight="900" fill="#0f172a" text-anchor="middle">CAMERA EZVIZ C8W 4MP 2K+</text>
+  <text x="300" y="405" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b" text-anchor="middle">Xoay 360 độ Ngoài Trời • Ban Đêm Có Màu • Còi Báo Động</text>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sonyScreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="60%" stop-color="#312e81"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="450" fill="#090d16"/>
+  <rect x="60" y="50" width="480" height="290" rx="8" fill="#171717" stroke="#262626" stroke-width="5"/>
+  <rect x="72" y="62" width="456" height="266" rx="4" fill="url(#sonyScreen)"/>
+  <text x="300" y="180" font-family="Arial, sans-serif" font-size="28" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="3">SONY BRAVIA 4K</text>
+  <text x="300" y="215" font-family="Arial, sans-serif" font-size="15" font-weight="600" fill="#cbd5e1" text-anchor="middle">Google TV • X-Reality PRO • Dolby Atmos</text>
+  <!-- Stand legs -->
+  <line x1="140" y1="340" x2="110" y2="395" stroke="#737373" stroke-width="8" stroke-linecap="round"/>
+  <line x1="460" y1="340" x2="490" y2="395" stroke="#737373" stroke-width="8" stroke-linecap="round"/>
+  <rect x="440" y="75" width="75" height="24" rx="4" fill="#000" opacity="0.7"/>
+  <text x="477" y="91" font-family="Arial, sans-serif" font-size="11" font-weight="800" fill="#e2e8f0" text-anchor="middle">google tv</text>
+</svg>

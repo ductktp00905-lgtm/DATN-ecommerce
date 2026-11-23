@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <rect width="600" height="450" fill="#f8fafc"/>
+  <rect x="80" y="130" width="440" height="150" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+  <text x="130" y="165" font-family="Arial, sans-serif" font-size="14" font-weight="900" fill="#1e293b" letter-spacing="2">Panasonic</text>
+  <rect x="420" y="150" width="60" height="26" rx="4" fill="#0284c7"/>
+  <text x="450" y="168" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle">nanoe-X</text>
+  <line x1="85" y1="230" x2="515" y2="230" stroke="#e2e8f0" stroke-width="2"/>
+  <rect x="110" y="240" width="380" height="24" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+  <text x="300" y="390" font-family="Arial, sans-serif" font-size="18" font-weight="900" fill="#0f172a" text-anchor="middle">PANASONIC NANOE-X</text>
+  <text x="300" y="415" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b" text-anchor="middle">Lọc Bụi Mịn PM2.5 • Diệt Khuẩn Suốt 24 Giờ</text>
+</svg>

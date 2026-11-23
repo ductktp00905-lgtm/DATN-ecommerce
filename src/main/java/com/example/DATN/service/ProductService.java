@@ -19,7 +19,9 @@ public interface ProductService {
     Product update(Integer id, Product product);
     void delete(Integer id);
     void reduceStock(Integer productId, Integer quantity);
+    void reduceStock(Integer productId, Integer variantId, Integer quantity);
     void restoreStock(Integer productId, Integer quantity);
+    void restoreStock(Integer productId, Integer variantId, Integer quantity);
     
     List<Product> getRelatedProducts(Integer categoryId, Integer productId);
     List<Product> getBestSellingProducts();

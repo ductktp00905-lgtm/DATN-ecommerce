@@ -83,5 +83,21 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
          + "GROUP BY p.productID, p.name, p.category.categoryName, p.stock "
          + "ORDER BY SUM(od.quantity) DESC")
     List<BestSellerStockDTO> findBestSellerStock(Pageable pageable);
+
+    @Query("SELECT new com.example.DATN.dto.DashboardBestSellerDTO(p.productID, p.name, p.category.categoryName, p.imageURL, "
+         + "SUM(od.quantity), SUM(od.price * od.quantity), p.stock) "
+         + "FROM OrderDetail od JOIN od.product p "
+         + "WHERE od.order.status != 'CANCELLED' "
+         + "GROUP BY p.productID, p.name, p.category.categoryName, p.imageURL, p.stock "
+         + "ORDER BY SUM(od.quantity) DESC, SUM(od.price * od.quantity) DESC")
+    List<com.example.DATN.dto.DashboardBestSellerDTO> findDashboardBestSellers(Pageable pageable);
+
+    @Query("SELECT new com.example.DATN.dto.CategoryRevenueDTO(p.category.categoryName, "
+         + "SUM(od.quantity), SUM(od.price * od.quantity)) "
+         + "FROM OrderDetail od JOIN od.product p "
+         + "WHERE od.order.status != 'CANCELLED' "
+         + "GROUP BY p.category.categoryName "
+         + "ORDER BY SUM(od.price * od.quantity) DESC")
+    List<CategoryRevenueDTO> findActiveRevenueByCategory();
 }
 

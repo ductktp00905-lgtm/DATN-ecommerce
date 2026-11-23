@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <rect width="600" height="450" fill="#f1f5f9"/>
+  <!-- Remote Control -->
+  <rect x="230" y="50" width="140" height="290" rx="14" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+  <rect x="245" y="70" width="110" height="70" rx="4" fill="#0f172a"/>
+  <text x="300" y="110" font-family="monospace" font-size="20" font-weight="bold" fill="#22c55e" text-anchor="middle">COOL 24°</text>
+  <circle cx="300" cy="180" r="18" fill="#ef4444"/>
+  <text x="300" y="185" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#fff" text-anchor="middle">ON/OFF</text>
+  <text x="300" y="380" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="middle">Điều khiển từ xa thông minh</text>
+</svg>

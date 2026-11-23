@@ -22,6 +22,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private com.example.DATN.repository.ProductVariantRepository variantRepository;
+
     @Override
     public List<Product> getAll() {
         return productRepository.findAll();
@@ -82,20 +85,34 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void reduceStock(Integer productId, Integer quantity) {
+        reduceStock(productId, null, quantity);
+    }
+
+    @Override
+    public void reduceStock(Integer productId, Integer variantId, Integer quantity) {
         Product product = getById(productId);
+        if (variantId != null) {
+            com.example.DATN.entity.ProductVariant variant = variantRepository.findById(variantId).orElse(null);
+            if (variant != null) {
+                if (variant.getStock() < quantity) {
+                    throw new IllegalStateException("Phiên bản '" + variant.getVariantName() + "' không đủ số lượng tồn kho");
+                }
+                variant.setStock(variant.getStock() - quantity);
+                variantRepository.save(variant);
+            }
+        }
         if (product.getStock() < quantity) {
             throw new IllegalStateException("Sản phẩm '" + product.getName() + "' không đủ tồn kho");
         }
         product.setStock(product.getStock() - quantity);
         productRepository.save(product);
     }
-    
+
     @Override
     public List<Product> getRelatedProducts(Integer categoryId, Integer productId) {
         return productRepository.findRelatedProducts(categoryId, productId);
     }
-    
-    
+
     @Override
     public List<Product> getBestSellingProducts() {
         return productRepository.findBestSellingProducts(
@@ -103,9 +120,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-public void restoreStock(Integer productId, Integer quantity) {
-    Product product = getById(productId);
-    product.setStock(product.getStock() + quantity);
-    productRepository.save(product);
-}
+    public void restoreStock(Integer productId, Integer quantity) {
+        restoreStock(productId, null, quantity);
+    }
+
+    @Override
+    public void restoreStock(Integer productId, Integer variantId, Integer quantity) {
+        Product product = getById(productId);
+        if (variantId != null) {
+            com.example.DATN.entity.ProductVariant variant = variantRepository.findById(variantId).orElse(null);
+            if (variant != null) {
+                variant.setStock(variant.getStock() + quantity);
+                variantRepository.save(variant);
+            }
+        }
+        product.setStock(product.getStock() + quantity);
+        productRepository.save(product);
+    }
 }

@@ -6,37 +6,37 @@
     <div class="cps-footer-props">
         <div class="container">
             <div class="cps-props-grid">
-                <div class="cps-prop-card">
+                <a th:href="@{/info/chinh-sach-bao-hanh}" class="cps-prop-card" style="text-decoration: none;">
                     <div class="cps-prop-icon">🛡️</div>
                     <div>
                         <strong style="font-size: 13.5px; color: #111827; display: block;">Chính Hãng 100%</strong>
-                        <span style="font-size: 11.5px; color: #6B7280;">Bảo hành 12 - 24 tháng tại hãng</span>
+                        <span style="font-size: 11.5px; color: #6B7280;">Bảo hành 12 - 24 tháng chính hãng</span>
                     </div>
-                </div>
+                </a>
 
-                <div class="cps-prop-card">
+                <a th:href="@{/info/giao-hang-lap-dat}" class="cps-prop-card" style="text-decoration: none;">
                     <div class="cps-prop-icon">⚡</div>
                     <div>
                         <strong style="font-size: 13.5px; color: #111827; display: block;">Giao Siêu Tốc 2H</strong>
-                        <span style="font-size: 11.5px; color: #6B7280;">Nội thành miễn phí từ 500k</span>
+                        <span style="font-size: 11.5px; color: #6B7280;">Miễn phí lắp đặt tận nơi</span>
                     </div>
-                </div>
+                </a>
 
-                <div class="cps-prop-card">
+                <a th:href="@{/info/chinh-sach-doi-tra}" class="cps-prop-card" style="text-decoration: none;">
                     <div class="cps-prop-icon">🔄</div>
                     <div>
                         <strong style="font-size: 13.5px; color: #111827; display: block;">1 Đổi 1 Trong 30 Ngày</strong>
                         <span style="font-size: 11.5px; color: #6B7280;">Lỗi do nhà sản xuất đổi ngay</span>
                     </div>
-                </div>
+                </a>
 
-                <div class="cps-prop-card">
+                <a th:href="@{/info/tra-gop}" class="cps-prop-card" style="text-decoration: none;">
                     <div class="cps-prop-icon">💳</div>
                     <div>
                         <strong style="font-size: 13.5px; color: #111827; display: block;">Trả Góp 0% Lãi Suất</strong>
-                        <span style="font-size: 11.5px; color: #6B7280;">Thủ tục tiện lợi, xét duyệt nhanh</span>
+                        <span style="font-size: 11.5px; color: #6B7280;">Thủ tục tiện lợi duyệt 5 phút</span>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
@@ -53,53 +53,72 @@
                     <span style="font-size: 1.25rem; font-weight: 900; color: #111827;">FLARE<span style="color: #D70018;">HUB</span></span>
                 </div>
                 <p style="font-size: 12px; line-height: 1.6; color: #6B7280; margin-bottom: 14px;">
-                    Hệ thống bán lẻ thiết bị công nghệ, điện thoại, laptop, thiết bị âm thanh và phụ kiện chính hãng 100%.
+                    Hệ thống bán lẻ điện tử, điện lạnh, smart home và thiết bị gia dụng thông minh chính hãng 100%.
                 </p>
 
                 <div style="font-size: 12px; line-height: 1.8;">
-                    <div>Gọi mua hàng: <a href="tel:18002097" style="color: #D70018; font-weight: 800; font-size: 14px;">1800.2097</a> (Miễn phí)</div>
+                    <div>Gọi mua hàng: <a th:href="'tel:' + ${storeSetting.phone}" style="color: #D70018; font-weight: 800; font-size: 14px;" th:text="${storeSetting.phone}">1800.2097</a> (Miễn cước)</div>
                     <div>Khiếu nại, góp ý: <strong>1800.2063</strong></div>
                     <div>Bảo hành &amp; Kỹ thuật: <strong>1800.2064</strong></div>
-                    <div>Email: <strong>cskh@flarehub.vn</strong></div>
+                    <div>Email: <strong th:text="${storeSetting.email}">cskh@flarehub.vn</strong></div>
                 </div>
             </div>
 
-            <!-- Cột 2: Danh mục công nghệ -->
+            <!-- Cột 2: Danh mục điện máy chuẩn 5 ngành hàng -->
             <div class="cps-footer-col">
-                <h4>Danh mục sản phẩm</h4>
+                <h4>Danh mục thiết bị điện máy</h4>
                 <ul>
-                    <li><a th:href="@{/products}">Điện thoại iPhone chính hãng</a></li>
-                    <li><a th:href="@{/products}">Samsung Galaxy AI Series</a></li>
-                    <li><a th:href="@{/products}">Laptop Gaming &amp; Ultrabook</a></li>
-                    <li><a th:href="@{/products}">Máy tính bảng &amp; iPad</a></li>
-                    <li><a th:href="@{/products}">Tai nghe chống ồn Hi-Res</a></li>
-                    <li><a th:href="@{/products}">Đồng hồ thông minh thể thao</a></li>
-                    <li><a th:href="@{/products}">Phụ kiện sạc nhanh GaN</a></li>
+                    <li><a th:href="@{/products(categoryId=1)}">📺 Tivi &amp; Thiết bị nghe nhìn</a></li>
+                    <li><a th:href="@{/products(categoryId=2)}">🧊 Tủ lạnh &amp; Tủ đông Inverter</a></li>
+                    <li><a th:href="@{/products(categoryId=3)}">🧺 Máy giặt &amp; Máy sấy quần áo</a></li>
+                    <li><a th:href="@{/products(categoryId=4)}">❄️ Điều hòa &amp; Làm mát gia đình</a></li>
+                    <li><a th:href="@{/products(categoryId=5)}">🤖 Robot hút bụi &amp; Smart Home</a></li>
+                    <li><a th:href="@{/info/thu-cu-doi-moi}" style="color: #16A34A; font-weight: 700;">🔄 Thu cũ đổi mới trợ giá 2.5tr</a></li>
+                    <li><a th:href="@{/info/tra-gop}" style="color: #2563EB; font-weight: 700;">💳 Mua trả góp 0% lãi suất</a></li>
                 </ul>
             </div>
 
-            <!-- Cột 3: Chính sách & Bảo hành -->
+            <!-- Cột 3: Chính sách & Bảo hành có bài viết riêng -->
             <div class="cps-footer-col">
                 <h4>Chính sách bán hàng</h4>
                 <ul>
-                    <li><a href="javascript:void(0)">Chính sách bảo hành 12 tháng</a></li>
-                    <li><a href="javascript:void(0)">Chính sách 1 đổi 1 30 ngày</a></li>
-                    <li><a href="javascript:void(0)">Chính sách giao hàng siêu tốc 2h</a></li>
-                    <li><a href="javascript:void(0)">Chính sách thanh toán an toàn</a></li>
-                    <li><a href="javascript:void(0)">Chính sách bảo mật thông tin</a></li>
-                    <li><a href="javascript:void(0)">Chương trình thu cũ đổi mới</a></li>
-                    <li><a href="javascript:void(0)">Đặc quyền hội viên Smember</a></li>
+                    <li><a th:href="@{/info/chinh-sach-bao-hanh}">Chính sách bảo hành 12 - 24 tháng</a></li>
+                    <li><a th:href="@{/info/chinh-sach-doi-tra}">Chính sách 1 đổi 1 trong 30 ngày</a></li>
+                    <li><a th:href="@{/info/giao-hang-lap-dat}">Chính sách giao hàng siêu tốc 2h</a></li>
+                    <li><a th:href="@{/info/chinh-sach-thanh-toan}">Chính sách thanh toán an toàn</a></li>
+                    <li><a th:href="@{/info/chinh-sach-bao-mat}">Chính sách bảo mật thông tin</a></li>
+                    <li><a th:href="@{/info/thu-cu-doi-moi}">Chương trình thu cũ đổi mới</a></li>
+                    <li><a th:href="@{/info/tra-gop}">Hướng dẫn mua trả góp duyệt 5 phút</a></li>
                 </ul>
             </div>
 
-            <!-- Cột 4: Hệ thống cửa hàng -->
+            <!-- Cột 4: Hệ thống cửa hàng & Bản đồ Google Maps lấy từ Admin -->
             <div class="cps-footer-col">
-                <h4>Hệ thống cửa hàng</h4>
-                <p style="font-size: 12px; color: #4B5563; line-height: 1.6; margin-bottom: 10px;">
-                    Hệ thống hơn <strong>115 cửa hàng</strong> trên toàn quốc: TP. Hồ Chí Minh, Hà Nội, Đà Nẵng, Cần Thơ, Hải Phòng, Bình Dương.
+                <h4 th:text="${storeSetting.storeName != null and !storeSetting.storeName.isEmpty()} ? ${storeSetting.storeName} : 'Hệ thống cửa hàng'">Hệ thống cửa hàng</h4>
+                <p style="font-size: 12px; color: #374151; line-height: 1.5; margin-bottom: 6px;">
+                    📍 <strong th:text="${storeSetting.address}">Số 134 Nguyễn Thái Học, P. Phạm Ngũ Lão, Q.1, TP.HCM</strong>
                 </p>
-                <a th:href="@{/products}" style="display: inline-block; background: #FFF5F5; border: 1px solid #FECDD3; color: #D70018; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 11.5px; text-decoration: none;">
-                    Tìm cửa hàng gần bạn &rarr;
+                <div style="font-size: 11.5px; color: #6B7280; margin-bottom: 8px;">
+                    ⏰ Giờ mở cửa: <span th:text="${storeSetting.openingHours}">08:00 - 21:30</span>
+                </div>
+
+                <!-- Google Maps Interactive Embed -->
+                <div style="border-radius: 8px; overflow: hidden; border: 1px solid #D1D5DB; box-shadow: 0 1px 4px rgba(0,0,0,0.06); height: 140px; margin-bottom: 8px; background: #F3F4F6;">
+                    <iframe th:src="${storeMapUrl}"
+                            width="100%"
+                            height="140"
+                            style="border:0;"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+
+                <a th:href="@{'https://www.google.com/maps/search/?api=1&query=' + ${#strings.replace(storeSetting.address, ' ', '+')}}"
+                   target="_blank"
+                   style="display: inline-flex; align-items: center; gap: 4px; background: #FFF5F5; border: 1px solid #FECDD3; color: #D70018; padding: 5px 10px; border-radius: 6px; font-weight: 700; font-size: 11px; text-decoration: none;">
+                    <span>🗺️ Xem trên Google Maps</span>
+                    <span>&nearr;</span>
                 </a>
             </div>
 

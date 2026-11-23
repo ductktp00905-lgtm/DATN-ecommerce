@@ -31,6 +31,7 @@ public class Order {
     @Column(nullable = false)
     private String status = "PENDING";
 
+    @Column(name = "shipping_address", columnDefinition = "NVARCHAR(500)")
     private String shippingAddress;
 
     private LocalDateTime orderDate = LocalDateTime.now();
@@ -44,4 +45,8 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt DESC")
+    private List<OrderStatusHistory> histories = new java.util.ArrayList<>();
 }

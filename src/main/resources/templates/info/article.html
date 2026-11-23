@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${article.title} + ' — FlareHub'">Chi tiết thông tin — FlareHub</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/cellphones.css}">
+    <style>
+        .info-container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 20px 16px 60px;
+        }
+        .info-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .info-breadcrumb a {
+            color: #4B5563;
+            text-decoration: none;
+        }
+        .info-breadcrumb a:hover {
+            color: var(--cps-red);
+        }
+        .info-hero {
+            background: linear-gradient(135deg, #FFF1F2 0%, #FFFFFF 100%);
+            border: 1px solid #FECDD3;
+            border-radius: 12px;
+            padding: 28px 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(215, 0, 24, 0.04);
+        }
+        .info-badge {
+            display: inline-block;
+            background: #D70018;
+            color: white;
+            font-size: 11.5px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        .info-title {
+            font-size: 1.85rem;
+            font-weight: 900;
+            color: #111827;
+            line-height: 1.35;
+            margin-bottom: 12px;
+        }
+        .info-summary {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #4B5563;
+            margin-bottom: 20px;
+        }
+        .info-meta-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .info-meta-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            border: 1px solid #E5E7EB;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+        .article-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 36px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .article-sec {
+            margin-bottom: 28px;
+            padding-bottom: 24px;
+            border-bottom: 1px dashed #E5E7EB;
+        }
+        .article-sec:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .article-sec h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .article-sec .sec-body {
+            font-size: 14.5px;
+            line-height: 1.75;
+            color: #374151;
+        }
+        .article-sec .sec-body b, .article-sec .sec-body strong {
+            color: #111827;
+        }
+
+        /* KHỐI SẢN PHẨM LỒNG GHÉP QUẢNG CÁO */
+        .promo-products-box {
+            background: #FFFFFF;
+            border: 2px solid #FCA5A5;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 6px 20px rgba(215, 0, 24, 0.06);
+        }
+        .promo-box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #FEE2E2;
+        }
+        .promo-box-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #D70018;
+            margin: 0;
+        }
+        .promo-box-sub {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        /* KHỐI DANH MỤC 5 NGÀNH HÀNG */
+        .cat-nav-section {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        .cat-nav-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cat-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .cat-nav-item {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 10px;
+            padding: 14px;
+            text-decoration: none;
+            color: #1F2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+        .cat-nav-item:hover {
+            border-color: #D70018;
+            box-shadow: 0 4px 12px rgba(215, 0, 24, 0.08);
+            transform: translateY(-2px);
+        }
+        .cat-nav-icon {
+            font-size: 1.6rem;
+        }
+        .cat-nav-name {
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        /* KHỐI TƯ VẤN HOTLINE */
+        .hotline-cta-box {
+            background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{layout/header :: header}"></div>
+
+    <main class="main-content">
+        <div class="info-container">
+
+            <!-- BREADCRUMB -->
+            <nav class="info-breadcrumb" aria-label="Đường dẫn">
+                <a th:href="@{/products}">Trang chủ</a>
+                <span>&rsaquo;</span>
+                <span style="color: #9CA3AF;">Thông tin &amp; Chính sách</span>
+                <span>&rsaquo;</span>
+                <strong style="color: #111827;" th:text="${article.title}">Tên bài viết</strong>
+            </nav>
+
+            <!-- HERO ARTICLE HEADER -->
+            <header class="info-hero">
+                <span class="info-badge" th:text="${article.badge}">CHƯƠNG TRÌNH</span>
+                <h1 class="info-title" th:text="${article.title}">Tiêu đề bài viết</h1>
+                <p class="info-summary" th:text="${article.summary}">Tóm tắt nội dung chương trình</p>
+
+                <div class="info-meta-chips">
+                    <div class="info-meta-chip">
+                        <span>🛡️</span>
+                        <span>Cam kết chính hãng 100%</span>
+                    </div>
+                    <div class="info-meta-chip">
+                        <span>⚡</span>
+                        <span>Miễn phí giao hàng &amp; Lắp đặt</span>
+                    </div>
+                    <div class="info-meta-chip">
+                        <span>🔄</span>
+                        <span>1 Đổi 1 trong 30 ngày</span>
+                    </div>
+                    <div class="info-meta-chip" style="color: #D70018;">
+                        <span>📞</span>
+                        <span>Hotline: 1800.2097 (Miễn cước)</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- NỘI DUNG CHI TIẾT BÀI VIẾT -->
+            <article class="article-card">
+                <div th:each="sec : ${article.sections}" class="article-sec">
+                    <h3 th:text="${sec.heading}">Tiêu đề phần</h3>
+                    <div class="sec-body" th:utext="${sec.body}">Nội dung phần...</div>
+                </div>
+            </article>
+
+            <!-- KHỐI QUẢNG CÁO & SẢN PHẨM ÁP DỤNG (KHÁCH CÓ THỂ ẤN VÀO MUA NGAY) -->
+            <section class="promo-products-box" th:if="${promoProducts != null and !promoProducts.isEmpty()}">
+                <div class="promo-box-header">
+                    <div>
+                        <h2 class="promo-box-title">
+                            <span>🔥</span>
+                            <span>THIẾT BỊ ĐIỆN MÁY ÁP DỤNG ƯU ĐÃI ĐỘC QUYỀN</span>
+                        </h2>
+                        <div class="promo-box-sub">
+                            Bấm vào từng sản phẩm dưới đây để xem thông số kỹ thuật chi tiết và đặt hàng nhận trọn ưu đãi!
+                        </div>
+                    </div>
+                    <div th:if="${article.promoHighlight != null}">
+                        <span style="background: #FEE2E2; color: #DC2626; padding: 6px 14px; border-radius: 8px; font-weight: 800; font-size: 13px;"
+                              th:text="${article.promoHighlight}">
+                            Trợ giá đến 2.500.000₫
+                        </span>
+                    </div>
+                </div>
+
+                <div class="cps-product-grid">
+                    <a th:each="product : ${promoProducts}"
+                       th:href="@{/products/{id}(id=${product.productID})}"
+                       class="cps-product-card"
+                       style="border: 1px solid #FECDD3; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                        
+                        <div class="cps-card-badges">
+                            <span class="cps-badge-discount">Áp dụng ưu đãi ★</span>
+                        </div>
+
+                        <div class="cps-card-img-wrap">
+                            <img th:if="${product.imageURL != null and product.imageURL != ''}"
+                                 th:src="${product.imageURL}"
+                                 th:alt="${product.name}"
+                                 loading="lazy">
+                            <div th:unless="${product.imageURL != null and product.imageURL != ''}" style="color: #9CA3AF;">
+                                <span style="font-size: 2.5rem;">📺</span>
+                            </div>
+                        </div>
+
+                        <h3 class="cps-card-title" th:text="${product.name}">Tên thiết bị</h3>
+
+                        <div class="cps-card-price-wrap">
+                            <span class="cps-card-price">
+                                <span th:text="${#numbers.formatDecimal(product.minPrice, 0, 'POINT', 0, 'COMMA')}"></span> ₫
+                            </span>
+                        </div>
+
+                        <div style="background: #FFF1F2; color: #BE123C; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; margin-bottom: 8px;">
+                            🎁 Tặng gói công lắp đặt &amp; Trợ giá đặc quyền
+                        </div>
+
+                        <div class="cps-card-footer" style="padding-top: 10px;">
+                            <span style="font-size: 11px; color: #059669; font-weight: 700;">✓ Sẵn hàng giao ngay</span>
+                            <span style="background: #D70018; color: white; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 800;">
+                                Mua Ngay &rarr;
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- KHỐI DANH MỤC ĐIỆN MÁY CHUẨN 5 NGÀNH HÀNG Ở CUỐI BÀI VIẾT -->
+            <section class="cat-nav-section">
+                <div class="cat-nav-title">
+                    <span>⚡</span>
+                    <span>KHÁM PHÁ CÁC DANH MỤC THIẾT BỊ ĐIỆN MÁY TẠI FLAREHUB</span>
+                </div>
+                <div class="cat-nav-grid">
+                    <a th:href="@{/products(categoryId=1)}" class="cat-nav-item">
+                        <span class="cat-nav-icon">📺</span>
+                        <div>
+                            <div class="cat-nav-name">Tivi &amp; Thiết Bị Nghe Nhìn</div>
+                            <small style="color: #6B7280; font-size: 11px;">Samsung, Sony, Soundbar</small>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/products(categoryId=2)}" class="cat-nav-item">
+                        <span class="cat-nav-icon">🧊</span>
+                        <div>
+                            <div class="cat-nav-name">Tủ Lạnh &amp; Tủ Đông Inverter</div>
+                            <small style="color: #6B7280; font-size: 11px;">LG, Panasonic Side by Side</small>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/products(categoryId=3)}" class="cat-nav-item">
+                        <span class="cat-nav-icon">🧺</span>
+                        <div>
+                            <div class="cat-nav-name">Máy Giặt &amp; Máy Sấy</div>
+                            <small style="color: #6B7280; font-size: 11px;">LG AI DD, Electrolux</small>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/products(categoryId=4)}" class="cat-nav-item">
+                        <span class="cat-nav-icon">❄️</span>
+                        <div>
+                            <div class="cat-nav-name">Điều Hòa &amp; Làm Mát</div>
+                            <small style="color: #6B7280; font-size: 11px;">Daikin, Panasonic Inverter</small>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/products(categoryId=5)}" class="cat-nav-item">
+                        <span class="cat-nav-icon">🤖</span>
+                        <div>
+                            <div class="cat-nav-name">Robot &amp; Smart Home</div>
+                            <small style="color: #6B7280; font-size: 11px;">Dreame, Roborock, Kaadas</small>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- KHỐI TƯ VẤN HOTLINE -->
+            <aside class="hotline-cta-box">
+                <div>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; margin: 0 0 6px 0;">
+                        Bạn cần tư vấn chi tiết về chương trình hoặc đặt hàng nhanh?
+                    </h3>
+                    <p style="margin: 0; font-size: 13.5px; color: #94A3B8;">
+                        Chuyên viên kỹ thuật FlareHub sẵn sàng hỗ trợ bạn 24/7 hoàn toàn miễn phí.
+                    </p>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <a href="tel:18002097" style="background: #D70018; color: white; padding: 10px 22px; border-radius: 8px; font-weight: 800; font-size: 14px; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                        <span>📞</span>
+                        <span>1800.2097 (Miễn phí)</span>
+                    </a>
+                    <a th:href="@{/products}" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 13.5px; text-decoration: none;">
+                        Xem tất cả sản phẩm
+                    </a>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

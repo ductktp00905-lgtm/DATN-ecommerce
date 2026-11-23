@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <rect width="600" height="450" fill="#f8fafc"/>
+  <circle cx="300" cy="200" r="120" fill="#cbd5e1" stroke="#64748b" stroke-width="4"/>
+  <circle cx="300" cy="200" r="95" fill="#334155"/>
+  <text x="300" y="195" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">Lồng giặt thép không gỉ</text>
+  <text x="300" y="225" font-family="Arial, sans-serif" font-size="13" fill="#38bdf8" text-anchor="middle">Bảo vệ sợi vải tối ưu 18%</text>
+  <text x="300" y="380" font-family="Arial, sans-serif" font-size="16" font-weight="800" fill="#0f172a" text-anchor="middle">Động cơ truyền động trực tiếp AI DD</text>
+</svg>

@@ -72,13 +72,17 @@
                                                  style="width: 58px; height: 58px; object-fit: contain; border-radius: var(--cps-radius-sm); border: 1px solid var(--cps-border); padding: 4px; background: #F8FAFC; flex-shrink: 0;">
                                             <div th:unless="${entry.value.imageURL != null and entry.value.imageURL != ''}"
                                                  style="width: 58px; height: 58px; background: #F8FAFC; border-radius: var(--cps-radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 1px dashed var(--cps-border); flex-shrink: 0;">
-                                                📱
+                                                📺
                                             </div>
                                             <div>
-                                                <a th:href="@{/products/{id}(id=${entry.key})}" style="font-weight: 700; color: #111827; text-decoration: none; display: block; font-size: 13px; line-height: 1.4;">
+                                                <a th:href="@{/products/{id}(id=${entry.value.productId})}" style="font-weight: 700; color: #111827; text-decoration: none; display: block; font-size: 13px; line-height: 1.4;">
                                                     <span th:text="${entry.value.productName}">Tên sản phẩm</span>
                                                 </a>
-                                                <small style="color: #9CA3AF; font-size: 11px;">Mã: #<span th:text="${entry.key}"></span></small>
+                                                <div th:if="${entry.value.variantName != null and entry.value.variantName != ''}"
+                                                     style="font-size: 11.5px; color: #0284c7; font-weight: 700; margin-top: 2px;">
+                                                    Phiên bản: <span th:text="${entry.value.variantName}"></span>
+                                                </div>
+                                                <small style="color: #9CA3AF; font-size: 11px;">Mã mục: #<span th:text="${entry.key}"></span></small>
                                             </div>
                                         </div>
                                     </td>
@@ -91,7 +95,8 @@
                                     <!-- Cột Số lượng (Form Cập nhật) -->
                                     <td style="padding: 14px 12px; text-align: center;">
                                         <form th:action="@{/cart/update}" method="post" style="display: inline-flex; gap: 4px; align-items: center; margin: 0;">
-                                            <input type="hidden" name="productId" th:value="${entry.key}">
+                                            <input type="hidden" name="cartKey" th:value="${entry.key}">
+                                            <input type="hidden" name="productId" th:value="${entry.value.productId}">
                                             <input type="number"
                                                    name="quantity"
                                                    th:value="${entry.value.quantity}"
@@ -113,7 +118,8 @@
                                     <td style="padding: 14px 12px; text-align: center;">
                                         <form th:action="@{/cart/remove}" method="post" style="display: inline; margin: 0;"
                                               onsubmit="return confirm('Bạn chắc chắn muốn bỏ sản phẩm này khỏi giỏ hàng?');">
-                                            <input type="hidden" name="productId" th:value="${entry.key}">
+                                            <input type="hidden" name="cartKey" th:value="${entry.key}">
+                                            <input type="hidden" name="productId" th:value="${entry.value.productId}">
                                             <button type="submit" class="btn btn-danger-sm btn-sm" title="Xóa" style="background: #FEE2E2; color: #DC2626; border: none; padding: 6px 8px; border-radius: 6px;">
                                                 <span>🗑️</span>
                                             </button>

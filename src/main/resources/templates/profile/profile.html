@@ -81,7 +81,83 @@
                 </form>
             </div>
 
-            <!-- CARD 2: XÁC MINH LIÊN HỆ (FORM 2, 3, 4, 5) -->
+            <!-- CARD 2: SỔ ĐỊA CHỈ NHẬN HÀNG (ADDRESS BOOK - NHIỀU ĐỊA CHỈ) -->
+            <div class="card" style="padding: 28px; margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 14px; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                            <span style="color: var(--danger);">📍</span> Sổ địa chỉ nhận hàng
+                        </h3>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 0;">
+                            Quản lý các địa chỉ giao nhận để đặt hàng nhanh chóng trên FlareHub
+                        </p>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="openAddAddressModal()" style="font-size: 13px; padding: 8px 16px;">
+                        + Thêm địa chỉ mới
+                    </button>
+                </div>
+
+                <!-- Danh sách các địa chỉ -->
+                <div th:if="${addresses != null and !addresses.isEmpty()}" style="display: flex; flex-direction: column; gap: 14px;">
+                    <div th:each="a : ${addresses}"
+                         style="border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; background: #FFFFFF; transition: border-color 0.15s ease;"
+                         th:styleappend="${a.isDefault} ? 'border-color: #D70018; background: #FFFDFD;' : ''">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+                                <strong style="font-size: 14.5px; color: var(--text);" th:text="${a.recipientName}">Trịnh Khắc Hiền</strong>
+                                <span style="color: var(--border);">|</span>
+                                <span style="font-weight: 600; color: var(--text-muted);" th:text="${a.phone}">0989061245</span>
+                                <span th:if="${a.isDefault}"
+                                      style="background: #FEECEE; color: #D70018; border: 1px solid #FCA5A5; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                                    Mặc định
+                                </span>
+                                <span th:if="${a.addressLabel != null and !a.addressLabel.isEmpty()}"
+                                      style="background: #F3F4F6; color: #4B5563; border: 1px solid #E5E7EB; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;"
+                                      th:text="${a.addressLabel}">Nhà riêng</span>
+                            </div>
+                            <div style="font-size: 13.5px; color: var(--text); line-height: 1.5;" th:text="${a.detailAddress}">
+                                Số 125 Cầu Giấy, Phường Quan Hoa, Quận Cầu Giấy, Hà Nội
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-outline" style="font-size: 12px; padding: 5px 10px;"
+                                    th:data-id="${a.addressId}"
+                                    th:data-name="${a.recipientName}"
+                                    th:data-phone="${a.phone}"
+                                    th:data-address="${a.detailAddress}"
+                                    th:data-label="${a.addressLabel}"
+                                    th:data-default="${a.isDefault}"
+                                    onclick="openEditAddressModal(this)">
+                                Sửa
+                            </button>
+
+                            <form th:unless="${a.isDefault}" th:action="@{'/profile/address/set-default/' + ${a.addressId}}" method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-outline" style="font-size: 12px; padding: 5px 10px;">
+                                    Thiết lập mặc định
+                                </button>
+                            </form>
+
+                            <form th:action="@{'/profile/address/delete/' + ${a.addressId}}" method="post" style="display: inline;"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa địa chỉ này?');">
+                                <button type="submit" class="btn btn-danger" style="font-size: 12px; padding: 5px 10px;">
+                                    Xóa
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${addresses == null or addresses.isEmpty()}" style="text-align: center; padding: 32px; color: var(--text-muted); background: var(--card-subtle); border-radius: var(--radius);">
+                    <div style="font-size: 2rem; margin-bottom: 8px;">🏠</div>
+                    <div style="font-weight: 600;">Bạn chưa có địa chỉ nhận hàng nào</div>
+                    <p style="font-size: 12.5px; margin: 4px 0 12px;">Hãy thêm địa chỉ để việc mua sắm thuận tiện và nhanh chóng hơn.</p>
+                    <button type="button" class="btn btn-primary" onclick="openAddAddressModal()" style="font-size: 12.5px;">
+                        + Thêm địa chỉ đầu tiên
+                    </button>
+                </div>
+            </div>
+
+            <!-- CARD 3: XÁC MINH LIÊN HỆ (FORM 2, 3, 4, 5) -->
             <div class="card" style="padding: 28px; margin-bottom: 24px;">
                 <h3 style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
                     Xác minh liên hệ &amp; Bảo mật
@@ -278,5 +354,105 @@
 
     <div th:replace="~{layout/footer :: footer}"></div>
     <script th:src="@{/js/app.js}"></script>
+
+    <!-- MODAL THÊM / SỬA ĐỊA CHỈ NHẬN HÀNG -->
+    <div id="addressModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: white; border-radius: 12px; width: 100%; max-width: 520px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25); overflow: hidden;">
+            <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="addressModalTitle" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #111827;">Thêm địa chỉ mới</h3>
+                <button type="button" onclick="closeAddressModal()" style="background: none; border: none; font-size: 20px; color: #6B7280; cursor: pointer; padding: 0 4px;">✕</button>
+            </div>
+            <form id="addressModalForm" method="post" th:action="@{/profile/address/add}" style="padding: 20px;">
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 700; font-size: 13px; color: #374151; display: block; margin-bottom: 6px;">
+                        Họ và tên người nhận <span style="color: var(--danger);">*</span>
+                    </label>
+                    <input type="text" id="modalRecipientName" name="recipientName" required placeholder="VD: Trịnh Khắc Hiền" style="width: 100%;">
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 700; font-size: 13px; color: #374151; display: block; margin-bottom: 6px;">
+                        Số điện thoại người nhận <span style="color: var(--danger);">*</span>
+                    </label>
+                    <input type="text" id="modalPhone" name="phone" required placeholder="VD: 0989061245" style="width: 100%;">
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 700; font-size: 13px; color: #374151; display: block; margin-bottom: 6px;">
+                        Địa chỉ chi tiết (Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành) <span style="color: var(--danger);">*</span>
+                    </label>
+                    <textarea id="modalDetailAddress" name="detailAddress" required rows="3" placeholder="VD: Số 125 Cầu Giấy, Phường Quan Hoa, Quận Cầu Giấy, Hà Nội" style="width: 100%; font-family: inherit; font-size: 13.5px; line-height: 1.5;"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 700; font-size: 13px; color: #374151; display: block; margin-bottom: 6px;">Loại địa chỉ</label>
+                    <div style="display: flex; gap: 20px;">
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                            <input type="radio" name="addressLabel" id="modalLabelHome" value="Nhà riêng" checked> 🏠 Nhà riêng
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                            <input type="radio" name="addressLabel" id="modalLabelOffice" value="Văn phòng"> 🏢 Văn phòng / Công ty
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #111827;">
+                        <input type="checkbox" id="modalIsDefault" name="isDefault" value="true">
+                        Đặt làm địa chỉ giao hàng mặc định
+                    </label>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border); padding-top: 14px;">
+                    <button type="button" class="btn btn-outline" onclick="closeAddressModal()">Trở lại</button>
+                    <button type="submit" class="btn btn-primary">Lưu địa chỉ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAddAddressModal() {
+            var modal = document.getElementById('addressModal');
+            var form = document.getElementById('addressModalForm');
+            var title = document.getElementById('addressModalTitle');
+            title.textContent = 'Thêm địa chỉ nhận hàng mới';
+            form.action = '/profile/address/add';
+            document.getElementById('modalRecipientName').value = '';
+            document.getElementById('modalPhone').value = '';
+            document.getElementById('modalDetailAddress').value = '';
+            document.getElementById('modalLabelHome').checked = true;
+            document.getElementById('modalIsDefault').checked = false;
+            modal.style.display = 'flex';
+        }
+
+        function openEditAddressModal(btn) {
+            var modal = document.getElementById('addressModal');
+            var form = document.getElementById('addressModalForm');
+            var title = document.getElementById('addressModalTitle');
+            var id = btn.getAttribute('data-id');
+            title.textContent = 'Cập nhật địa chỉ nhận hàng';
+            form.action = '/profile/address/update/' + id;
+            document.getElementById('modalRecipientName').value = btn.getAttribute('data-name') || '';
+            document.getElementById('modalPhone').value = btn.getAttribute('data-phone') || '';
+            document.getElementById('modalDetailAddress').value = btn.getAttribute('data-address') || '';
+            var label = btn.getAttribute('data-label');
+            if (label === 'Văn phòng') {
+                document.getElementById('modalLabelOffice').checked = true;
+            } else {
+                document.getElementById('modalLabelHome').checked = true;
+            }
+            var isDef = btn.getAttribute('data-default') === 'true';
+            document.getElementById('modalIsDefault').checked = isDef;
+            modal.style.display = 'flex';
+        }
+
+        function closeAddressModal() {
+            document.getElementById('addressModal').style.display = 'none';
+        }
+
+        // Đóng modal khi bấm ra ngoài vùng xám
+        window.addEventListener('click', function(e) {
+            var modal = document.getElementById('addressModal');
+            if (e.target === modal) {
+                closeAddressModal();
+            }
+        });
+    </script>
 </body>
 </html>

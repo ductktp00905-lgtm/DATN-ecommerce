@@ -10,17 +10,21 @@ package com.example.DATN.controller;
  */
 
 import com.example.DATN.entity.User;
+import com.example.DATN.entity.UserAddress;
+import com.example.DATN.repository.UserAddressRepository;
 import com.example.DATN.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -34,6 +38,9 @@ public class ProfileController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserAddressRepository userAddressRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -54,8 +61,125 @@ public class ProfileController {
 
     @GetMapping
     public String view(Authentication auth, Model model) {
-        model.addAttribute("user", current(auth));
+        User u = current(auth);
+        model.addAttribute("user", u);
+        model.addAttribute("addresses", userAddressRepository.findByUser_UserIDOrderByIsDefaultDescCreatedAtDesc(u.getUserID()));
         return "profile/profile";
+    }
+
+    // ---------- Quản lý Sổ địa chỉ (Nhiều địa chỉ) ----------
+    @PostMapping("/address/add")
+    @Transactional
+    public String addAddress(@RequestParam String recipientName,
+                             @RequestParam String phone,
+                             @RequestParam String detailAddress,
+                             @RequestParam(defaultValue = "Nhà riêng") String addressLabel,
+                             @RequestParam(defaultValue = "false") boolean isDefault,
+                             Authentication auth, RedirectAttributes ra) {
+        User u = current(auth);
+        recipientName = recipientName.trim();
+        phone = phone.trim();
+        detailAddress = detailAddress.trim();
+
+        if (recipientName.isEmpty()) return fail(ra, "Tên người nhận không được để trống");
+        if (phone.isEmpty()) return fail(ra, "Số điện thoại nhận hàng không được để trống");
+        if (!PHONE.matcher(phone).matches()) return fail(ra, "Số điện thoại nhận hàng không hợp lệ (VD: 0912345678)");
+        if (detailAddress.isEmpty()) return fail(ra, "Địa chỉ chi tiết không được để trống");
+
+        if (isDefault || userAddressRepository.countByUser_UserID(u.getUserID()) == 0) {
+            userAddressRepository.clearDefaultForUser(u.getUserID());
+            isDefault = true;
+        }
+
+        UserAddress addr = new UserAddress();
+        addr.setUser(u);
+        addr.setRecipientName(recipientName);
+        addr.setPhone(phone);
+        addr.setDetailAddress(detailAddress);
+        addr.setAddressLabel(addressLabel != null && !addressLabel.isBlank() ? addressLabel.trim() : "Nhà riêng");
+        addr.setIsDefault(isDefault);
+        addr.setCreatedAt(LocalDateTime.now());
+        userAddressRepository.save(addr);
+
+        return ok(ra, "Đã thêm địa chỉ giao hàng mới thành công");
+    }
+
+    @PostMapping("/address/update/{id}")
+    @Transactional
+    public String updateAddress(@PathVariable Integer id,
+                                @RequestParam String recipientName,
+                                @RequestParam String phone,
+                                @RequestParam String detailAddress,
+                                @RequestParam(defaultValue = "Nhà riêng") String addressLabel,
+                                @RequestParam(defaultValue = "false") boolean isDefault,
+                                Authentication auth, RedirectAttributes ra) {
+        User u = current(auth);
+        UserAddress addr = userAddressRepository.findByAddressIdAndUser_UserID(id, u.getUserID()).orElse(null);
+        if (addr == null) {
+            return fail(ra, "Không tìm thấy địa chỉ cần sửa");
+        }
+
+        recipientName = recipientName.trim();
+        phone = phone.trim();
+        detailAddress = detailAddress.trim();
+
+        if (recipientName.isEmpty()) return fail(ra, "Tên người nhận không được để trống");
+        if (phone.isEmpty()) return fail(ra, "Số điện thoại không được để trống");
+        if (!PHONE.matcher(phone).matches()) return fail(ra, "Số điện thoại không hợp lệ");
+        if (detailAddress.isEmpty()) return fail(ra, "Địa chỉ chi tiết không được để trống");
+
+        if (isDefault) {
+            userAddressRepository.clearDefaultForUser(u.getUserID());
+            addr.setIsDefault(true);
+        }
+
+        addr.setRecipientName(recipientName);
+        addr.setPhone(phone);
+        addr.setDetailAddress(detailAddress);
+        addr.setAddressLabel(addressLabel != null && !addressLabel.isBlank() ? addressLabel.trim() : "Nhà riêng");
+        userAddressRepository.save(addr);
+
+        return ok(ra, "Đã cập nhật thông tin địa chỉ thành công");
+    }
+
+    @PostMapping("/address/delete/{id}")
+    @Transactional
+    public String deleteAddress(@PathVariable Integer id, Authentication auth, RedirectAttributes ra) {
+        User u = current(auth);
+        UserAddress addr = userAddressRepository.findByAddressIdAndUser_UserID(id, u.getUserID()).orElse(null);
+        if (addr == null) {
+            return fail(ra, "Không tìm thấy địa chỉ cần xóa");
+        }
+
+        boolean wasDefault = Boolean.TRUE.equals(addr.getIsDefault());
+        userAddressRepository.delete(addr);
+
+        if (wasDefault) {
+            List<UserAddress> remaining = userAddressRepository.findByUser_UserIDOrderByIsDefaultDescCreatedAtDesc(u.getUserID());
+            if (!remaining.isEmpty()) {
+                UserAddress first = remaining.get(0);
+                first.setIsDefault(true);
+                userAddressRepository.save(first);
+            }
+        }
+
+        return ok(ra, "Đã xóa địa chỉ thành công");
+    }
+
+    @PostMapping("/address/set-default/{id}")
+    @Transactional
+    public String setDefaultAddress(@PathVariable Integer id, Authentication auth, RedirectAttributes ra) {
+        User u = current(auth);
+        UserAddress addr = userAddressRepository.findByAddressIdAndUser_UserID(id, u.getUserID()).orElse(null);
+        if (addr == null) {
+            return fail(ra, "Không tìm thấy địa chỉ");
+        }
+
+        userAddressRepository.clearDefaultForUser(u.getUserID());
+        addr.setIsDefault(true);
+        userAddressRepository.save(addr);
+
+        return ok(ra, "Đã thiết lập làm địa chỉ mặc định");
     }
 
     // ---------- Sửa họ tên, số điện thoại, email ----------

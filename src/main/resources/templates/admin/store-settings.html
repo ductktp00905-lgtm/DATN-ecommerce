@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cài đặt Cửa hàng & Bản đồ — FlareHub Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="window">
+    <div th:replace="~{layout/admin-shell :: titlebar}"></div>
+    <div class="body">
+        <aside th:replace="~{layout/admin-shell :: sidebar('store')}"></aside>
+
+        <main class="content">
+            <div class="toolbar">
+                <div>
+                    <h1>Hệ Thống Cửa Hàng &amp; Bản Đồ Google Maps</h1>
+                    <div class="sub">Tùy chỉnh địa chỉ, hotline và vị trí bản đồ hiển thị ở Footer và trang chi nhánh</div>
+                </div>
+            </div>
+
+            <!-- THÔNG BÁO THÀNH CÔNG -->
+            <div th:if="${successMessage}" class="panel" style="background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; padding: 14px 18px; margin-bottom: 20px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.3rem;">✅</span>
+                <strong th:text="${successMessage}">Thành công</strong>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start;">
+                <!-- CỘT 1: FORM CÀI ĐẶT -->
+                <section class="panel" style="padding: 24px;">
+                    <h2 style="font-size: 1.15rem; margin-top: 0; margin-bottom: 16px; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px;">
+                        🏢 Thông Tin Cửa Hàng
+                    </h2>
+
+                    <form th:action="@{/admin/store-settings}" method="post">
+                        <div style="margin-bottom: 16px;">
+                            <label for="storeName" style="display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 6px;">
+                                Tên chi nhánh / Cửa hàng <span style="color: #DC2626;">*</span>
+                            </label>
+                            <input type="text"
+                                   id="storeName"
+                                   name="storeName"
+                                   th:value="${setting.storeName}"
+                                   required
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px;">
+                        </div>
+
+                        <div style="margin-bottom: 16px;">
+                            <label for="address" style="display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 6px;">
+                                Địa chỉ cửa hàng (dùng định vị bản đồ) <span style="color: #DC2626;">*</span>
+                            </label>
+                            <input type="text"
+                                   id="address"
+                                   name="address"
+                                   th:value="${setting.address}"
+                                   required
+                                   placeholder="VD: Số 134 Nguyễn Thái Học, P. Phạm Ngũ Lão, Q.1, TP.HCM"
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px;">
+                            <small style="display: block; color: #6B7280; font-size: 12px; margin-top: 4px;">
+                                💡 Bản đồ Google Maps dưới footer và trang chi nhánh sẽ tự động lấy và ghim vị trí theo địa chỉ này.
+                            </small>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                            <div>
+                                <label for="phone" style="display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 6px;">
+                                    Hotline bán hàng / CSKH <span style="color: #DC2626;">*</span>
+                                </label>
+                                <input type="text"
+                                       id="phone"
+                                       name="phone"
+                                       th:value="${setting.phone}"
+                                       required
+                                       placeholder="VD: 1800.2097 - 098.123.4567"
+                                       style="width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px;">
+                            </div>
+
+                            <div>
+                                <label for="email" style="display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 6px;">
+                                    Hòm thư hỗ trợ (Email)
+                                </label>
+                                <input type="email"
+                                       id="email"
+                                       name="email"
+                                       th:value="${setting.email}"
+                                       placeholder="cskh@flarehub.vn"
+                                       style="width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px;">
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 16px;">
+                            <label for="openingHours" style="display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 6px;">
+                                Giờ mở cửa hoạt động
+                            </label>
+                            <input type="text"
+                                   id="openingHours"
+                                   name="openingHours"
+                                   th:value="${setting.openingHours}"
+                                   placeholder="08:00 - 21:30 (Cả Thứ 7, CN & Ngày lễ)"
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px;">
+                        </div>
+
+                        <div style="margin-bottom: 24px;">
+                            <label for="mapEmbedUrl" style="display: block; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 6px;">
+                                Tùy chỉnh URL nhúng Google Maps (Tùy chọn)
+                            </label>
+                            <textarea id="mapEmbedUrl"
+                                      name="mapEmbedUrl"
+                                      rows="3"
+                                      placeholder="Để trống nếu muốn hệ thống tự động sinh bản đồ từ địa chỉ ở trên. Hoặc dán mã <iframe src='...'> từ Google Maps vào đây."
+                                      style="width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 13px; font-family: monospace;"
+                                      th:text="${setting.mapEmbedUrl}"></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <button type="submit" class="btn btn-primary" style="background: var(--accent); padding: 10px 24px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; border-radius: 6px; color: white;">
+                                💾 Lưu Thay Đổi Cửa Hàng
+                            </button>
+                            <a th:href="@{/products}" target="_blank" style="font-size: 13px; color: #4B5563; text-decoration: underline;">
+                                Xem hiển thị ở Footer website &nearr;
+                            </a>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- CỘT 2: XEM TRƯỚC BẢN ĐỒ & THÔNG TIN -->
+                <section class="panel" style="padding: 24px;">
+                    <h2 style="font-size: 1.15rem; margin-top: 0; margin-bottom: 16px; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>📍 Xem Trước Trên Bản Đồ</span>
+                        <span style="font-size: 11px; background: #DCFCE7; color: #16A34A; padding: 2px 8px; border-radius: 12px; font-weight: 700;">Live Preview</span>
+                    </h2>
+
+                    <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+                        <div style="font-size: 15px; font-weight: 800; color: #111827; margin-bottom: 6px;" th:text="${setting.storeName}">
+                            Tên cửa hàng
+                        </div>
+                        <div style="font-size: 13px; color: #4B5563; margin-bottom: 4px;">
+                            📍 <strong>Địa chỉ:</strong> <span th:text="${setting.address}">Địa chỉ</span>
+                        </div>
+                        <div style="font-size: 13px; color: #4B5563; margin-bottom: 4px;">
+                            📞 <strong>Hotline:</strong> <span th:text="${setting.phone}">1800.2097</span>
+                        </div>
+                        <div style="font-size: 13px; color: #4B5563;">
+                            ⏰ <strong>Giờ làm việc:</strong> <span th:text="${setting.openingHours}">08:00 - 21:30</span>
+                        </div>
+                    </div>
+
+                    <!-- Khung Google Maps Live -->
+                    <div style="border-radius: 8px; overflow: hidden; border: 1px solid #D1D5DB; box-shadow: 0 2px 6px rgba(0,0,0,0.06); height: 280px; background: #E5E7EB;">
+                        <iframe th:src="${storeMapUrl}"
+                                width="100%"
+                                height="280"
+                                style="border:0;"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+
+                    <div style="margin-top: 12px; text-align: center;">
+                        <a th:href="@{'https://www.google.com/maps/search/?api=1&query=' + ${#strings.replace(setting.address, ' ', '+')}}"
+                           target="_blank"
+                           style="font-size: 12.5px; color: #2563EB; text-decoration: none; font-weight: 600;">
+                            🗺️ Mở trên ứng dụng Google Maps &rarr;
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

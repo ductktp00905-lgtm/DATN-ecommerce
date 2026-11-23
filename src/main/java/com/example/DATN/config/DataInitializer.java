@@ -1,5 +1,7 @@
 package com.example.DATN.config;
 
+import com.example.DATN.entity.StoreSetting;
+import com.example.DATN.repository.StoreSettingRepository;
 import com.example.DATN.entity.Voucher;
 import com.example.DATN.repository.VoucherRepository;
 import java.math.BigDecimal;
@@ -30,7 +32,8 @@ public class DataInitializer {
             }
         };
     }
-        @Bean
+
+    @Bean
     CommandLineRunner createSampleVouchers(VoucherRepository voucherRepository) {
         return args -> {
             if (voucherRepository.count() == 0) {
@@ -54,6 +57,24 @@ public class DataInitializer {
                 v2.setStartDate(LocalDateTime.now());
                 v2.setEndDate(LocalDateTime.now().plusMonths(6));
                 voucherRepository.save(v2);
+            }
+        };
+    }
+
+    @Bean
+    CommandLineRunner createDefaultStoreSetting(StoreSettingRepository storeSettingRepository) {
+        return args -> {
+            if (storeSettingRepository.count() == 0) {
+                StoreSetting setting = new StoreSetting();
+                setting.setStoreName("FlareHub Flagship Store — TP. Hồ Chí Minh");
+                setting.setAddress("Số 134 Nguyễn Thái Học, Phường Phạm Ngũ Lão, Quận 1, TP. Hồ Chí Minh");
+                setting.setPhone("1800.2097 - 098.123.4567");
+                setting.setEmail("cskh@flarehub.vn");
+                setting.setOpeningHours("08:00 - 21:30 (Cả Thứ 7, CN & Ngày lễ)");
+                setting.setMapEmbedUrl("");
+                setting.setUpdatedAt(LocalDateTime.now());
+                storeSettingRepository.save(setting);
+                System.out.println(">>> Da khoi tao thong tin cua hang & ban do FlareHub");
             }
         };
     }

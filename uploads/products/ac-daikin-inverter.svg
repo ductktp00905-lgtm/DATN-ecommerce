@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <rect width="600" height="450" fill="#f8fafc"/>
+  <!-- Indoor AC Unit -->
+  <rect x="80" y="130" width="440" height="150" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+  <!-- Front seam line -->
+  <line x1="85" y1="230" x2="515" y2="230" stroke="#e2e8f0" stroke-width="2"/>
+  <!-- Air vent flap -->
+  <rect x="110" y="240" width="380" height="24" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+  <!-- Brand logo -->
+  <text x="130" y="165" font-family="Arial, sans-serif" font-size="14" font-weight="900" fill="#0284c7" letter-spacing="2">DAIKIN</text>
+  <!-- Display temperature -->
+  <rect x="420" y="150" width="55" height="30" rx="4" fill="#0f172a"/>
+  <text x="447" y="172" font-family="monospace" font-size="16" font-weight="bold" fill="#38bdf8" text-anchor="middle">24°C</text>
+  <!-- Wind breeze effects -->
+  <path d="M140,280 Q200,340 260,320 T380,350 T500,320" fill="none" stroke="#38bdf8" stroke-width="3" stroke-dasharray="6,4"/>
+  <text x="300" y="390" font-family="Arial, sans-serif" font-size="18" font-weight="900" fill="#0f172a" text-anchor="middle">ĐIỀU HÒA DAIKIN INVERTER</text>
+  <text x="300" y="415" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b" text-anchor="middle">Luồng Gió Thoải Mái Coanda • Gas R32</text>
+</svg>

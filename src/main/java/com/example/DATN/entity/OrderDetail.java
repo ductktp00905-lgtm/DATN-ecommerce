@@ -32,4 +32,10 @@ public class OrderDetail {
 
     @Column(nullable = false, precision = 18, scale = 2)
     private BigDecimal price;
+
+    @Column(name = "variantid")
+    private Integer variantID;
+
+    @Column(name = "variant_info", length = 100)
+    private String variantInfo;
 }

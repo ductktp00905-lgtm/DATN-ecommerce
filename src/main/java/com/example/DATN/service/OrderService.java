@@ -1,19 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
-
 package com.example.DATN.service;
 
 import com.example.DATN.dto.Cart;
 import com.example.DATN.entity.Order;
+import com.example.DATN.entity.OrderStatusHistory;
 import java.util.List;
 
 public interface OrderService {
-        Order checkout(Integer userId, Cart cart, String shippingAddress, String paymentMethod, String voucherCode);
+    Order checkout(Integer userId, Cart cart, String shippingAddress, String paymentMethod, String voucherCode);
     List<Order> getOrdersByUser(Integer userId);
     Order getById(Integer orderId);
     Order updateStatus(Integer orderId, String status);
+    Order updateStatus(Integer orderId, String status, String updatedBy, String note);
+    void addOrderNote(Integer orderId, String updatedBy, String note);
+    List<OrderStatusHistory> getOrderHistories(Integer orderId);
     List<Order> getAll();
-        void markPaymentSuccess(Integer orderId, String transactionCode);
+    List<Order> getAllPrioritized();
+    List<Order> getOrdersByStatus(String status);
+    long countByStatus(String status);
+    void markPaymentSuccess(Integer orderId, String transactionCode);
 }
