@@ -3,7 +3,7 @@
         th:fragment="header"
         class="cps-header-wrapper">
     
-    <!-- Dải thông báo trên cùng (CellphoneS Top Announcement Bar) -->
+     Dải thông báo trên cùng (CellphoneS Top Announcement Bar) 
     <div class="cps-topbar">
         <div class="container">
             <div style="display: flex; align-items: center; gap: 16px;">
@@ -22,10 +22,10 @@
         </div>
     </div>
 
-    <!-- Thanh Header Đỏ CellphoneS -->
+     Thanh Header Đỏ CellphoneS 
     <div class="cps-header">
         <div class="container">
-            <!-- Logo FlareHub -->
+             Logo FlareHub 
             <a th:href="@{/products}" class="cps-brand" aria-label="FlareHub Trang chủ">
                 <div class="cps-brand-badge">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -38,7 +38,7 @@
                 </div>
             </a>
 
-            <!-- Thanh tìm kiếm lớn ở giữa -->
+             Thanh tìm kiếm lớn ở giữa 
             <div class="cps-search-wrap">
                 <form th:action="@{/products}" method="get" role="search" style="margin: 0;">
                     <input type="text"
@@ -56,9 +56,9 @@
                 </form>
             </div>
 
-            <!-- Các nút hành động bên phải -->
+             Các nút hành động bên phải 
             <div class="cps-nav-actions">
-                <!-- Tra cứu đơn hàng -->
+                 Tra cứu đơn hàng 
                 <a th:href="@{/orders/history}" class="cps-action-btn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="1" y="3" width="15" height="13"></rect>
@@ -72,7 +72,7 @@
                     </div>
                 </a>
 
-                <!-- Yêu thích -->
+                 Yêu thích 
                 <a th:href="@{/wishlist}" class="cps-action-btn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -80,7 +80,7 @@
                     <span class="cps-hide-md">Yêu thích</span>
                 </a>
 
-                <!-- Giỏ hàng -->
+                 Giỏ hàng 
                 <a th:href="@{/cart}" class="cps-cart-btn" aria-label="Giỏ hàng FlareHub">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="9" cy="21" r="1"></circle>
@@ -92,7 +92,7 @@
                           th:text="${session.cart != null and session.cart.items != null ? session.cart.items.size() : 0}">0</span>
                 </a>
 
-                <!-- Đã đăng nhập: Smember & Menu User -->
+                 Đã đăng nhập: Smember & Menu User 
                 <th:block sec:authorize="isAuthenticated()">
                     <a th:href="@{/profile}" class="cps-user-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -112,7 +112,7 @@
                     </form>
                 </th:block>
 
-                <!-- Chưa đăng nhập -->
+                 Chưa đăng nhập 
                 <th:block sec:authorize="!isAuthenticated()">
                     <a th:href="@{/auth/login}" class="cps-user-btn" style="background: rgba(255,255,255,0.2); font-weight: 700;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
