@@ -1,81 +1,543 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lịch sử đơn hàng của tôi — FlareHub</title>
+    <title>Tra cứu đơn hàng & Hóa đơn — FlareHub</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/cellphones.css}">
+    <style>
+        .order-lookup-header {
+            margin-bottom: 24px;
+        }
+        .order-lookup-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        /* Shopee Tab Navigation */
+        .shopee-tabs {
+            display: flex;
+            background: #FFFFFF;
+            border-radius: 10px;
+            border: 1px solid #E5E7EB;
+            overflow-x: auto;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .shopee-tab-item {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 14px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #4B5563;
+            text-decoration: none !important;
+            border-bottom: 3px solid transparent;
+            transition: all 180ms ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .shopee-tab-item:hover {
+            color: var(--cps-red, #D70018);
+            background: #FFF5F5;
+        }
+        .shopee-tab-item.active {
+            color: var(--cps-red, #D70018);
+            border-bottom-color: var(--cps-red, #D70018);
+            background: #FFF9F9;
+        }
+        .tab-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 12px;
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+        .shopee-tab-item.active .tab-badge {
+            background: #FEE2E2;
+            color: var(--cps-red, #D70018);
+        }
+
+        /* Shopee Search Box */
+        .shopee-search-bar {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .shopee-search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 13.5px;
+            color: #1F2937;
+            padding: 6px 0;
+        }
+        .shopee-search-input::placeholder {
+            color: #9CA3AF;
+        }
+        .shopee-search-btn {
+            background: var(--cps-red, #D70018);
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: opacity 180ms ease;
+        }
+        .shopee-search-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Shopee Order Card */
+        .shopee-order-card {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            overflow: hidden;
+            transition: transform 180ms ease, box-shadow 180ms ease;
+        }
+        .shopee-order-card:hover {
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+        .shopee-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid #F3F4F6;
+            background: #FAFAFA;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .shopee-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+        }
+        .shopee-order-id {
+            font-weight: 900;
+            color: #111827;
+            font-size: 14px;
+        }
+        .shopee-order-date {
+            color: #6B7280;
+            font-size: 12.5px;
+        }
+        .shopee-header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Order Items */
+        .shopee-card-body {
+            padding: 16px 20px;
+        }
+        .shopee-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px dashed #F3F4F6;
+            gap: 16px;
+        }
+        .shopee-item-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .shopee-item-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            min-width: 0;
+        }
+        .shopee-item-thumb {
+            width: 68px;
+            height: 68px;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB;
+            object-fit: contain;
+            background: #F9FAFB;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+        .shopee-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .shopee-item-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #111827;
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+            transition: color 150ms ease;
+        }
+        .shopee-item-name:hover {
+            color: var(--cps-red, #D70018);
+        }
+        .shopee-item-meta {
+            font-size: 12px;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+        .shopee-item-qty {
+            font-size: 13px;
+            color: #4B5563;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .shopee-item-price {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1F2937;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        /* Card Footer */
+        .shopee-card-footer {
+            background: #FFFDFD;
+            border-top: 1px solid #F3F4F6;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .shopee-footer-info {
+            font-size: 12.5px;
+            color: #6B7280;
+            max-width: 480px;
+            line-height: 1.5;
+        }
+        .shopee-footer-total {
+            text-align: right;
+        }
+        .shopee-total-label {
+            font-size: 13px;
+            color: #4B5563;
+        }
+        .shopee-total-amount {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--cps-red, #D70018);
+            margin-left: 6px;
+        }
+        .shopee-footer-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+            justify-content: flex-end;
+            width: 100%;
+        }
+        .btn-view-invoice {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--cps-red, #D70018);
+            color: #FFFFFF !important;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none !important;
+            transition: all 180ms ease;
+            border: 1px solid transparent;
+        }
+        .btn-view-invoice:hover {
+            background: #B30013;
+            box-shadow: 0 2px 8px rgba(215, 0, 24, 0.3);
+        }
+        .btn-reorder {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #FFFFFF;
+            color: #374151;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 180ms ease;
+        }
+        .btn-reorder:hover {
+            background: #F9FAFB;
+            border-color: #9CA3AF;
+        }
+        .admin-scope-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #FEF3C7;
+            border: 1px solid #FCD34D;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #92400E;
+        }
+    </style>
 </head>
 <body>
     <div th:replace="~{layout/header :: header}"></div>
 
     <main class="main-content">
-        <div class="container" style="padding-top: 24px; padding-bottom: 48px;">
+        <div class="container" style="padding-top: 24px; padding-bottom: 60px;">
             
-            <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 8px;">
-                <div>
-                    <h1>📦 Đơn hàng của tôi</h1>
-                    <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">Theo dõi trạng thái và lịch sử tất cả các đơn hàng đã đặt tại FlareHub</p>
+            <!-- HEADER BREADCRUMB & TIÊU ĐỀ -->
+            <div class="order-lookup-header">
+                <div class="order-lookup-title">
+                    <div>
+                        <h1 style="font-size: 1.6rem; font-weight: 900; margin-bottom: 4px; color: #111827;">
+                            📦 Tra cứu Đơn hàng &amp; Hóa đơn chi tiết
+                        </h1>
+                        <p style="color: #6B7280; font-size: 13.5px; margin: 0;">
+                            Theo dõi trạng thái đơn hàng, xem hóa đơn chi tiết hoặc in phiếu bán lẻ chuẩn hệ thống
+                        </p>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <!-- Toggle chuyển chế độ cho Quản trị viên / Nhân viên -->
+                        <div th:if="${isAdmin}" class="admin-scope-toggle">
+                            <span>🛡️ Nhân viên:</span>
+                            <a th:href="@{/orders/history(scope='MY', status=${currentStatus})}" 
+                               class="badge" 
+                               th:style="${scope == 'MY'} ? 'background:#B45309; color:#fff; text-decoration:none;' : 'background:#fff; color:#B45309; text-decoration:none;'">
+                               Đơn của tôi
+                            </a>
+                            <a th:href="@{/orders/history(scope='SYSTEM', status=${currentStatus})}" 
+                               class="badge" 
+                               th:style="${scope == 'SYSTEM'} ? 'background:#B45309; color:#fff; text-decoration:none;' : 'background:#fff; color:#B45309; text-decoration:none;'">
+                               Toàn hệ thống
+                            </a>
+                        </div>
+
+                        <a th:href="@{/products}" class="btn btn-outline btn-sm" style="font-weight: 700;">
+                            <span>+ Tiếp tục mua sắm</span>
+                        </a>
+                    </div>
                 </div>
-                <a th:href="@{/products}" class="btn btn-outline btn-sm">
-                    <span>+ Tiếp tục mua sắm</span>
-                </a>
+
+                <!-- ALERT THÔNG BÁO NẾU CÓ -->
+                <div th:if="${successMessage}" class="alert alert-success" style="margin-bottom: 16px;" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}" class="alert alert-danger" style="margin-bottom: 16px;" th:text="${errorMessage}"></div>
+
+                <!-- TABS LỌC TRẠNG THÁI PHONG CÁCH SHOPEE -->
+                <nav class="shopee-tabs" aria-label="Lọc trạng thái đơn hàng">
+                    <a th:href="@{/orders/history(status='ALL', keyword=${keyword}, scope=${scope})}"
+                       class="shopee-tab-item"
+                       th:classappend="${currentStatus == 'ALL'} ? 'active' : ''">
+                        <span>Tất cả</span>
+                        <span class="tab-badge" th:text="${allCount}">0</span>
+                    </a>
+                    <a th:href="@{/orders/history(status='PENDING', keyword=${keyword}, scope=${scope})}"
+                       class="shopee-tab-item"
+                       th:classappend="${currentStatus == 'PENDING'} ? 'active' : ''">
+                        <span>⏳ Chờ xử lý</span>
+                        <span class="tab-badge" th:text="${pendingCount}">0</span>
+                    </a>
+                    <a th:href="@{/orders/history(status='SHIPPING', keyword=${keyword}, scope=${scope})}"
+                       class="shopee-tab-item"
+                       th:classappend="${currentStatus == 'SHIPPING'} ? 'active' : ''">
+                        <span>🚚 Đang giao</span>
+                        <span class="tab-badge" th:text="${shippingCount}">0</span>
+                    </a>
+                    <a th:href="@{/orders/history(status='COMPLETED', keyword=${keyword}, scope=${scope})}"
+                       class="shopee-tab-item"
+                       th:classappend="${currentStatus == 'COMPLETED'} ? 'active' : ''">
+                        <span>✅ Hoàn thành</span>
+                        <span class="tab-badge" th:text="${completedCount}">0</span>
+                    </a>
+                    <a th:href="@{/orders/history(status='CANCELLED', keyword=${keyword}, scope=${scope})}"
+                       class="shopee-tab-item"
+                       th:classappend="${currentStatus == 'CANCELLED'} ? 'active' : ''">
+                        <span>❌ Đã hủy</span>
+                        <span class="tab-badge" th:text="${cancelledCount}">0</span>
+                    </a>
+                </nav>
+
+                <!-- THANH TÌM KIẾM ĐƠN HÀNG (SHOPEE SEARCH) -->
+                <form th:action="@{/orders/history}" method="get" class="shopee-search-bar" role="search">
+                    <input type="hidden" name="status" th:value="${currentStatus}">
+                    <input type="hidden" name="scope" th:value="${scope}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text"
+                           name="keyword"
+                           th:value="${keyword}"
+                           class="shopee-search-input"
+                           placeholder="Tìm kiếm theo Mã đơn hàng (ví dụ: #1001) hoặc Tên sản phẩm đã mua...">
+                    <button type="submit" class="shopee-search-btn">Tìm đơn hàng</button>
+                    <a th:if="${keyword != null and keyword != ''}"
+                       th:href="@{/orders/history(status=${currentStatus}, scope=${scope})}"
+                       style="color: #6B7280; font-size: 13px; text-decoration: underline; white-space: nowrap;">
+                        Bỏ lọc
+                    </a>
+                </form>
             </div>
 
-            <!-- KHI CHƯA CÓ ĐƠN HÀNG NÀO -->
-            <div th:if="${#lists.isEmpty(orders)}" class="card" style="text-align: center; padding: 60px 20px;">
-                <div style="font-size: 4rem; margin-bottom: 16px;">📦</div>
-                <h2>Bạn chưa có đơn hàng nào</h2>
-                <p style="color: var(--text-muted); max-width: 420px; margin: 0 auto 24px auto;">
-                    Các đơn hàng bạn đặt tại FlareHub sẽ được lưu trữ và hiển thị chi tiết tại đây.
+            <!-- KHI KHÔNG TÌM THẤY ĐƠN HÀNG NÀO -->
+            <div th:if="${#lists.isEmpty(orders)}" class="card" style="text-align: center; padding: 60px 20px; background: #FFFFFF; border-radius: 12px;">
+                <div style="font-size: 4.5rem; margin-bottom: 16px;">📦</div>
+                <h2 style="font-size: 1.3rem; font-weight: 800; color: #1F2937; margin-bottom: 8px;">Chưa tìm thấy đơn hàng nào</h2>
+                <p style="color: #6B7280; max-width: 440px; margin: 0 auto 24px auto; font-size: 13.5px;">
+                    Không có đơn hàng nào khớp với bộ lọc hoặc từ khóa bạn đang tìm. Hãy thử đổi trạng thái hoặc tìm kiếm từ khóa khác.
                 </p>
-                <a th:href="@{/products}" class="btn btn-primary btn-lg">
-                    <span>Mua sắm ngay</span>
+                <a th:href="@{/products}" class="btn btn-primary btn-lg" style="font-weight: 800;">
+                    <span>Khám phá sản phẩm ngay</span>
                 </a>
             </div>
 
-            <!-- BẢNG DANH SÁCH ĐƠN HÀNG -->
-            <div th:unless="${#lists.isEmpty(orders)}" class="card" style="padding: 24px;">
-                <div class="table-responsive" style="margin-bottom: 0;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 120px;">Mã đơn</th>
-                                <th>Thời gian đặt</th>
-                                <th>Tổng tiền</th>
-                                <th style="text-align: center;">Trạng thái đơn</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="order : ${orders}">
-                                <td>
-                                    <strong style="color: var(--text-heading); font-size: 0.95rem;"
-                                            th:text="'#' + ${order.orderID}">#1001</strong>
-                                </td>
-                                <td>
-                                    <span th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm') : '—'}">
-                                        01/01/2026 12:00
-                                    </span>
-                                </td>
-                                <td class="nowrap" style="font-weight: 700; color: var(--primary);">
-                                    <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'POINT', 0, 'COMMA')}"></span> ₫
-                                </td>
-                                <td style="text-align: center;">
-                                    <span class="badge"
-                                          th:classappend="${order.status == 'PENDING'} ? 'badge-pending' : (${order.status == 'SHIPPING'} ? 'badge-shipping' : (${order.status == 'COMPLETED'} ? 'badge-completed' : 'badge-cancelled'))">
-                                        <th:block th:switch="${order.status}">
-                                            <span th:case="'PENDING'">⏳ Chờ xử lý</span>
-                                            <span th:case="'SHIPPING'">🚚 Đang giao</span>
-                                            <span th:case="'COMPLETED'">✅ Hoàn thành</span>
-                                            <span th:case="'CANCELLED'">❌ Đã hủy</span>
-                                            <span th:case="*" th:text="${order.status}"></span>
-                                        </th:block>
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- DANH SÁCH ĐƠN HÀNG DẠNG THẺ (SHOPEE STYLE CARDS) -->
+            <div th:unless="${#lists.isEmpty(orders)}">
+                <div th:each="order : ${orders}" class="shopee-order-card">
+                    
+                    <!-- Card Header -->
+                    <div class="shopee-card-header">
+                        <div class="shopee-header-left">
+                            <span style="font-size: 16px;">🏬</span>
+                            <span class="shopee-order-id" th:text="'Đơn hàng #' + ${order.orderID}">#1001</span>
+                            <span style="color: #D1D5DB;">|</span>
+                            <span class="shopee-order-date"
+                                  th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm') : '—'}">
+                                01/01/2026 12:00
+                            </span>
+                            <span th:if="${order.user != null and isAdmin and scope == 'SYSTEM'}" 
+                                  style="color: #4B5563; font-weight: 600; background: #EEF2F6; padding: 2px 8px; border-radius: 4px; font-size: 11px;"
+                                  th:text="'Khách: ' + ${order.user.fullName != null ? order.user.fullName : order.user.username}">
+                            </span>
+                        </div>
+
+                        <div class="shopee-header-right">
+                            <!-- Trạng thái đơn -->
+                            <span class="badge"
+                                  th:classappend="${order.status == 'PENDING'} ? 'badge-pending' : (${order.status == 'SHIPPING'} ? 'badge-shipping' : (${order.status == 'COMPLETED'} ? 'badge-completed' : 'badge-cancelled'))">
+                                <th:block th:switch="${order.status}">
+                                    <span th:case="'PENDING'">⏳ Chờ xử lý</span>
+                                    <span th:case="'SHIPPING'">🚚 Đang vận chuyển</span>
+                                    <span th:case="'COMPLETED'">✅ Hoàn thành</span>
+                                    <span th:case="'CANCELLED'">❌ Đã hủy</span>
+                                    <span th:case="*" th:text="${order.status}"></span>
+                                </th:block>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Card Body: Danh sách sản phẩm trong đơn -->
+                    <div class="shopee-card-body">
+                        <div th:each="detail : ${order.orderDetails}" class="shopee-item-row">
+                            <div class="shopee-item-left">
+                                <img th:if="${detail.product != null and detail.product.imageURL != null and detail.product.imageURL != ''}"
+                                     th:src="${detail.product.imageURL}"
+                                     th:alt="${detail.product.name}"
+                                     class="shopee-item-thumb">
+                                <div th:unless="${detail.product != null and detail.product.imageURL != null and detail.product.imageURL != ''}"
+                                     class="shopee-item-thumb"
+                                     style="display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #9CA3AF;">
+                                    📺
+                                </div>
+
+                                <div class="shopee-item-info">
+                                    <a th:if="${detail.product != null}"
+                                       th:href="@{/products/{id}(id=${detail.product.productID})}"
+                                       class="shopee-item-name"
+                                       th:text="${detail.product.name}">Tên sản phẩm điện máy</a>
+                                    <div class="shopee-item-meta" th:if="${detail.variantInfo != null and detail.variantInfo != ''}">
+                                        <span>Phân loại hàng: </span>
+                                        <strong th:text="${detail.variantInfo}">Mặc định</strong>
+                                    </div>
+                                    <div class="shopee-item-qty" th:text="'x' + ${detail.quantity}">x1</div>
+                                </div>
+                            </div>
+
+                            <div class="shopee-item-price">
+                                <span th:text="${#numbers.formatDecimal(detail.price, 0, 'POINT', 0, 'COMMA')}">0</span> ₫
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Footer: Tóm tắt tiền & Nút hành động -->
+                    <div class="shopee-card-footer">
+                        <div class="shopee-footer-info">
+                            <div th:if="${order.shippingAddress != null and order.shippingAddress != ''}">
+                                📍 <strong>Địa chỉ nhận: </strong>
+                                <span th:text="${order.shippingAddress}">Địa chỉ</span>
+                            </div>
+                            <div th:if="${order.voucher != null}" style="color: #059669; font-weight: 700; margin-top: 2px;">
+                                🎟️ Voucher đã áp dụng: <span th:text="${order.voucher.code}"></span>
+                                (Giảm <span th:text="${#numbers.formatDecimal(order.discountAmount, 0, 'POINT', 0, 'COMMA')}"></span> ₫)
+                            </div>
+                        </div>
+
+                        <div class="shopee-footer-total">
+                            <span class="shopee-total-label">Thành tiền:</span>
+                            <span class="shopee-total-amount">
+                                <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'POINT', 0, 'COMMA')}">0</span> ₫
+                            </span>
+                        </div>
+
+                        <div class="shopee-footer-actions">
+                            <!-- Nút Xem chi tiết hóa đơn (Chuẩn Shopee) -->
+                            <a th:href="@{/orders/{id}(id=${order.orderID})}" class="btn-view-invoice">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                <span>Xem chi tiết hóa đơn</span>
+                            </a>
+
+                            <!-- Nút Mua lại -->
+                            <form th:action="@{/orders/{id}/reorder(id=${order.orderID})}" method="post" style="margin: 0;">
+                                <button type="submit" class="btn-reorder">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="1 4 1 10 7 10"></polyline>
+                                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                                    </svg>
+                                    <span>Mua lại</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
