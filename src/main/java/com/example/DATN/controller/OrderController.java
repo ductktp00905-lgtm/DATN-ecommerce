@@ -6,11 +6,17 @@
 package com.example.DATN.controller;
 
 import com.example.DATN.dto.Cart;
+import com.example.DATN.dto.CartItem;
 import com.example.DATN.entity.Order;
+import com.example.DATN.entity.OrderDetail;
+import com.example.DATN.entity.OrderStatusHistory;
+import com.example.DATN.entity.Payment;
+import com.example.DATN.entity.Product;
 import com.example.DATN.entity.User;
 import com.example.DATN.entity.UserAddress;
 import com.example.DATN.entity.Voucher;
 import com.example.DATN.exception.ResourceNotFoundException;
+import com.example.DATN.repository.PaymentRepository;
 import com.example.DATN.repository.UserAddressRepository;
 import com.example.DATN.repository.UserRepository;
 import com.example.DATN.service.OrderService;
@@ -50,6 +56,9 @@ public class OrderController {
 
     @Autowired
     private UserAddressRepository userAddressRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     private User getCurrentUser(Authentication authentication) {
         String username = authentication.getName();
@@ -184,10 +193,177 @@ public class OrderController {
     }
     
     @GetMapping("/history")
-    public String history(Authentication authentication, Model model) {
+    public String history(@RequestParam(required = false, defaultValue = "ALL") String status,
+                          @RequestParam(required = false) String keyword,
+                          @RequestParam(required = false, defaultValue = "MY") String scope,
+                          Authentication authentication, Model model) {
         User user = getCurrentUser(authentication);
-        List<Order> orders = orderService.getOrdersByUser(user.getUserID());
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        List<Order> baseOrders;
+        if (isAdmin && "SYSTEM".equalsIgnoreCase(scope)) {
+            baseOrders = orderService.getAllPrioritized();
+        } else {
+            baseOrders = orderService.getOrdersByUser(user.getUserID());
+        }
+
+        List<Order> orders = baseOrders;
+
+        // Lọc theo trạng thái
+        if (status != null && !status.trim().isEmpty() && !"ALL".equalsIgnoreCase(status.trim())) {
+            String s = status.trim().toUpperCase();
+            orders = orders.stream().filter(o -> s.equalsIgnoreCase(o.getStatus())).toList();
+        }
+
+        // Lọc theo từ khóa (Mã đơn hoặc Tên sản phẩm)
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String kw = keyword.trim().toLowerCase();
+            if (kw.startsWith("#")) {
+                kw = kw.substring(1).trim();
+            }
+            final String fKw = kw;
+            orders = orders.stream().filter(o -> {
+                if (String.valueOf(o.getOrderID()).contains(fKw)) {
+                    return true;
+                }
+                if (o.getOrderDetails() != null) {
+                    for (OrderDetail d : o.getOrderDetails()) {
+                        if (d.getProduct() != null && d.getProduct().getName() != null &&
+                                d.getProduct().getName().toLowerCase().contains(fKw)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }).toList();
+        }
+
+        // Đếm số lượng theo trạng thái cho các tab
+        long allCount = baseOrders.size();
+        long pendingCount = baseOrders.stream().filter(o -> "PENDING".equalsIgnoreCase(o.getStatus())).count();
+        long shippingCount = baseOrders.stream().filter(o -> "SHIPPING".equalsIgnoreCase(o.getStatus())).count();
+        long completedCount = baseOrders.stream().filter(o -> "COMPLETED".equalsIgnoreCase(o.getStatus())).count();
+        long cancelledCount = baseOrders.stream().filter(o -> "CANCELLED".equalsIgnoreCase(o.getStatus())).count();
+
         model.addAttribute("orders", orders);
+        model.addAttribute("currentStatus", status != null ? status.toUpperCase() : "ALL");
+        model.addAttribute("keyword", keyword != null ? keyword : "");
+        model.addAttribute("scope", scope != null ? scope.toUpperCase() : "MY");
+        model.addAttribute("isAdmin", isAdmin);
+
+        model.addAttribute("allCount", allCount);
+        model.addAttribute("pendingCount", pendingCount);
+        model.addAttribute("shippingCount", shippingCount);
+        model.addAttribute("completedCount", completedCount);
+        model.addAttribute("cancelledCount", cancelledCount);
+
         return "order/history";
+    }
+
+    @GetMapping("/{id}")
+    public String orderDetail(@PathVariable Integer id,
+                              Authentication authentication,
+                              Model model,
+                              RedirectAttributes ra) {
+        User user = getCurrentUser(authentication);
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        Order order;
+        try {
+            order = orderService.getById(id);
+        } catch (ResourceNotFoundException e) {
+            ra.addFlashAttribute("errorMessage", "Không tìm thấy đơn hàng #" + id);
+            return "redirect:/orders/history";
+        }
+
+        // Kiểm tra quyền hạn: khách hàng chỉ xem đơn của mình; admin/nhân viên xem được tất cả
+        if (!isAdmin && (order.getUser() == null || !order.getUser().getUserID().equals(user.getUserID()))) {
+            ra.addFlashAttribute("errorMessage", "Bạn không có quyền xem hóa đơn của đơn hàng #" + id);
+            return "redirect:/orders/history";
+        }
+
+        Payment payment = paymentRepository.findByOrder_OrderID(id);
+        List<OrderStatusHistory> histories = orderService.getOrderHistories(id);
+
+        BigDecimal subtotal = BigDecimal.ZERO;
+        if (order.getOrderDetails() != null) {
+            for (OrderDetail d : order.getOrderDetails()) {
+                if (d.getPrice() != null && d.getQuantity() != null) {
+                    subtotal = subtotal.add(d.getPrice().multiply(BigDecimal.valueOf(d.getQuantity())));
+                }
+            }
+        }
+
+        model.addAttribute("order", order);
+        model.addAttribute("payment", payment);
+        model.addAttribute("histories", histories);
+        model.addAttribute("subtotal", subtotal);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "order/detail";
+    }
+
+    @PostMapping("/{id}/reorder")
+    public String reorder(@PathVariable Integer id,
+                          Authentication authentication,
+                          HttpSession session,
+                          RedirectAttributes ra) {
+        User user = getCurrentUser(authentication);
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        Order order;
+        try {
+            order = orderService.getById(id);
+        } catch (ResourceNotFoundException e) {
+            ra.addFlashAttribute("errorMessage", "Không tìm thấy đơn hàng #" + id);
+            return "redirect:/orders/history";
+        }
+
+        if (!isAdmin && (order.getUser() == null || !order.getUser().getUserID().equals(user.getUserID()))) {
+            ra.addFlashAttribute("errorMessage", "Bạn không có quyền thao tác với đơn hàng này");
+            return "redirect:/orders/history";
+        }
+
+        Cart cart = (Cart) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new Cart();
+            session.setAttribute("cart", cart);
+        }
+
+        int addedCount = 0;
+        if (order.getOrderDetails() != null) {
+            for (OrderDetail d : order.getOrderDetails()) {
+                Product p = d.getProduct();
+                if (p != null) {
+                    int qty = d.getQuantity() != null && d.getQuantity() > 0 ? d.getQuantity() : 1;
+                    if (p.getStock() != null && p.getStock() > 0) {
+                        qty = Math.min(qty, p.getStock());
+                    }
+                    BigDecimal price = d.getPrice() != null ? d.getPrice() : p.getPrice();
+                    CartItem item = new CartItem(
+                            p.getProductID(),
+                            d.getVariantID(),
+                            p.getName(),
+                            d.getVariantInfo(),
+                            price,
+                            qty,
+                            p.getImageURL()
+                    );
+                    cart.addItem(item);
+                    addedCount++;
+                }
+            }
+        }
+
+        if (addedCount > 0) {
+            ra.addFlashAttribute("successMessage", "Đã thêm " + addedCount + " sản phẩm vào giỏ hàng");
+            return "redirect:/cart";
+        } else {
+            ra.addFlashAttribute("errorMessage", "Không thể thêm sản phẩm vào giỏ hàng do sản phẩm đã hết hàng hoặc không tồn tại");
+            return "redirect:/orders/history";
+        }
     }
 }
