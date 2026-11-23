@@ -135,8 +135,152 @@ body {
     font-weight: 600;
 }
 
-/* Category Dropdown Pill */
+/* ==========================================================================
+   CATEGORY DROPDOWN PILL (CELLPHONES STYLE)
+   ========================================================================== */
+.cps-category-dropdown {
+    position: relative;
+    flex-shrink: 0;
+}
 
+.cps-category-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--cps-radius);
+    color: #FFFFFF;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 180ms ease;
+    white-space: nowrap;
+    user-select: none;
+    outline: none;
+}
+
+.cps-category-btn:hover,
+.cps-category-dropdown.open .cps-category-btn {
+    background: rgba(255, 255, 255, 0.32);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cps-category-btn svg {
+    flex-shrink: 0;
+    transition: transform 180ms ease;
+}
+
+/* Dropdown Menu Popup */
+.cps-category-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 250px;
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 8px 0;
+    z-index: 1200;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+    pointer-events: none;
+}
+
+/* Cầu nối hover */
+.cps-category-menu::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    height: 10px;
+}
+
+/* Hiển thị dropdown khi hover hoặc khi có class .open */
+.cps-category-dropdown:hover .cps-category-menu,
+.cps-category-dropdown.open .cps-category-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.cps-cat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 16px;
+    color: var(--cps-heading) !important;
+    text-decoration: none !important;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 150ms ease;
+    line-height: 1.4;
+}
+
+.cps-cat-item:hover {
+    background: #FEF2F2;
+    color: var(--cps-red) !important;
+    padding-left: 20px;
+}
+
+.cps-cat-item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cps-cat-item-left .cat-icon {
+    font-size: 16px;
+    width: 22px;
+    display: inline-flex;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cps-cat-arrow {
+    color: #9CA3AF;
+    font-size: 14px;
+    font-weight: bold;
+    transition: transform 150ms ease;
+}
+
+.cps-cat-item:hover .cps-cat-arrow {
+    color: var(--cps-red);
+    transform: translateX(3px);
+}
+
+.cps-cat-divider {
+    height: 1px;
+    background: #F3F4F6;
+    margin: 6px 12px;
+}
+
+.cps-cat-badge {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    line-height: 1.2;
+}
+
+@media (max-width: 900px) {
+    .cps-category-btn span {
+        display: none;
+    }
+    .cps-category-btn {
+        padding: 0 10px;
+    }
+}
 
 /* Location Selector */
 
