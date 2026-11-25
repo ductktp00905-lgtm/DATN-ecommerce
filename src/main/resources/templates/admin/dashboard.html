@@ -30,6 +30,63 @@
             margin: 0;
         }
 
+        /* Thanh lọc theo ngày */
+        .date-filter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-card);
+        }
+        .date-filter-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .date-filter-form label {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .date-filter-form input[type="date"] {
+            padding: 6px 10px;
+            font-size: 13px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--field-line);
+        }
+        .date-presets {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .preset-btn {
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--line);
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .preset-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: #FFF1F2;
+        }
+
         /* Thẻ KPI cải tiến */
         .kpi-grid {
             display: grid;
@@ -388,6 +445,29 @@
                 </div>
             </div>
 
+            <!-- THANH LỌC THEO NGÀY -->
+            <div class="date-filter-bar">
+                <form class="date-filter-form" th:action="@{/admin/dashboard}" method="get" id="dashboardDateFilterForm">
+                    <label>
+                        <span>📅 Từ ngày</span>
+                        <input type="date" name="fromDate" id="fromDateInput" th:value="${fromDate}">
+                    </label>
+                    <label>
+                        <span>Đến ngày</span>
+                        <input type="date" name="toDate" id="toDateInput" th:value="${toDate}">
+                    </label>
+                    <button type="submit" class="btn">Lọc dữ liệu</button>
+                    <a th:if="${isFiltered}" th:href="@{/admin/dashboard}" class="btn btn-plain">✕ Xóa lọc</a>
+                </form>
+                <div class="date-presets">
+                    <span style="font-size: 12px; color: var(--muted); font-weight: 600;">Nhanh:</span>
+                    <button type="button" class="preset-btn" onclick="applyDatePreset(0)">Hôm nay</button>
+                    <button type="button" class="preset-btn" onclick="applyDatePreset(6)">7 ngày qua</button>
+                    <button type="button" class="preset-btn" onclick="applyDatePreset(29)">30 ngày qua</button>
+                    <a class="preset-btn" th:href="@{/admin/dashboard}" style="text-decoration: none;">Tất cả</a>
+                </div>
+            </div>
+
             <!-- HÀNG 1: 4 THẺ KPI TÀI CHÍNH & VẬN HÀNH -->
             <div class="kpi-grid">
                 <!-- KPI 1: DOANH THU THỰC TẾ -->
@@ -489,7 +569,7 @@
                     <div class="section-header">
                         <h2>
                             <span style="color: var(--accent);">📈</span>
-                            <span>Biến động Doanh thu 7 ngày gần nhất</span>
+                            <span th:text="${chartTitle != null ? chartTitle : 'Biến động Doanh thu 7 ngày gần nhất'}">Biến động Doanh thu 7 ngày gần nhất</span>
                         </h2>
                         <span style="font-size: 12.5px; color: var(--muted); font-weight: 600;">
                             Đơn vị: VNĐ
@@ -813,6 +893,21 @@
             ctx.style.display = 'none';
         }
     });
+
+    function applyDatePreset(daysAgo) {
+        const to = new Date();
+        const from = new Date();
+        from.setDate(to.getDate() - daysAgo);
+        const fmt = (d) => {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        };
+        document.getElementById('fromDateInput').value = fmt(from);
+        document.getElementById('toDateInput').value = fmt(to);
+        document.getElementById('dashboardDateFilterForm').submit();
+    }
     /*]]>*/
 </script>
 </body>

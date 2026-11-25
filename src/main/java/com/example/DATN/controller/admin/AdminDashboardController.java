@@ -13,10 +13,12 @@ import com.example.DATN.repository.ProductRepository;
 import com.example.DATN.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -50,10 +52,35 @@ public class AdminDashboardController {
         return "redirect:/admin/dashboard";
     }
 
-    /** Trang tổng quan: số liệu thống kê & phân tích doanh số toàn diện. */
+    /** Trang tổng quan: số liệu thống kê & phân tích doanh số toàn diện (hỗ trợ lọc theo ngày). */
     @GetMapping("/dashboard")
-    public String overview(Model model) {
-        List<Order> orders = orderRepository.findAll();
+    public String overview(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            Model model) {
+        if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+            LocalDate tmp = fromDate;
+            fromDate = toDate;
+            toDate = tmp;
+        }
+
+        final LocalDate filterFrom = fromDate;
+        final LocalDate filterTo = toDate;
+        boolean isFiltered = (filterFrom != null || filterTo != null);
+
+        List<Order> allOrders = orderRepository.findAll();
+        List<Order> orders = isFiltered
+                ? allOrders.stream()
+                        .filter(o -> {
+                            if (o.getOrderDate() == null) return false;
+                            LocalDate d = o.getOrderDate().toLocalDate();
+                            if (filterFrom != null && d.isBefore(filterFrom)) return false;
+                            if (filterTo != null && d.isAfter(filterTo)) return false;
+                            return true;
+                        })
+                        .toList()
+                : allOrders;
+
         LocalDate today = LocalDate.now();
 
         // 1. Chỉ số Tài chính
@@ -97,14 +124,24 @@ public class AdminDashboardController {
                 .filter(p -> p.getStock() != null && p.getStock() <= 20)
                 .count();
 
-        // 4. Biến động doanh thu 7 ngày gần nhất (Dành cho Biểu đồ)
+        // 4. Biến động doanh thu theo ngày (mặc định 7 ngày gần nhất, hoặc theo khoảng lọc)
+        LocalDate chartEnd = (filterTo != null) ? filterTo : today;
+        LocalDate chartStart = (filterFrom != null) ? filterFrom : chartEnd.minusDays(6);
+        if (java.time.temporal.ChronoUnit.DAYS.between(chartStart, chartEnd) > 30) {
+            chartStart = chartEnd.minusDays(30);
+        }
+
         List<DailyRevenueDTO> dailyRevenues = new ArrayList<>();
         DateTimeFormatter dFmt = DateTimeFormatter.ofPattern("dd/MM");
         String[] dayNames = {"CN", "T2", "T3", "T4", "T5", "T6", "T7"};
 
+        List<LocalDate> chartDays = new ArrayList<>();
+        for (LocalDate d = chartStart; !d.isAfter(chartEnd); d = d.plusDays(1)) {
+            chartDays.add(d);
+        }
+
         BigDecimal maxDaily = BigDecimal.ONE;
-        for (int i = 6; i >= 0; i--) {
-            LocalDate day = today.minusDays(i);
+        for (LocalDate day : chartDays) {
             BigDecimal dayRev = orders.stream()
                     .filter(o -> o.getOrderDate() != null && o.getOrderDate().toLocalDate().isEqual(day))
                     .filter(o -> !"CANCELLED".equalsIgnoreCase(o.getStatus()))
@@ -115,8 +152,7 @@ public class AdminDashboardController {
             }
         }
 
-        for (int i = 6; i >= 0; i--) {
-            LocalDate day = today.minusDays(i);
+        for (LocalDate day : chartDays) {
             BigDecimal dayRev = orders.stream()
                     .filter(o -> o.getOrderDate() != null && o.getOrderDate().toLocalDate().isEqual(day))
                     .filter(o -> !"CANCELLED".equalsIgnoreCase(o.getStatus()))
@@ -127,13 +163,19 @@ public class AdminDashboardController {
                     .filter(o -> o.getOrderDate() != null && o.getOrderDate().toLocalDate().isEqual(day))
                     .count();
 
-            String label = (i == 0) ? "Hôm nay" : dayNames[day.getDayOfWeek().getValue() % 7];
+            String label = day.isEqual(today)
+                    ? "Hôm nay"
+                    : (chartDays.size() <= 7 ? dayNames[day.getDayOfWeek().getValue() % 7] : day.format(dFmt));
             int heightPct = maxDaily.compareTo(BigDecimal.ZERO) > 0
                     ? Math.max(12, dayRev.multiply(BigDecimal.valueOf(100)).divide(maxDaily, 0, RoundingMode.HALF_UP).intValue())
                     : 12;
 
             dailyRevenues.add(new DailyRevenueDTO(label, day.format(dFmt), day, dayRev, dayCount, heightPct));
         }
+
+        String chartTitle = isFiltered
+                ? "Biến động Doanh thu (" + chartStart.format(dFmt) + " - " + chartEnd.format(dFmt) + ")"
+                : "Biến động Doanh thu 7 ngày gần nhất";
 
         // 5. Phân bổ doanh thu theo Danh mục sản phẩm
         List<CategoryRevenueDTO> catRevenues = productRepository.findActiveRevenueByCategory();
@@ -166,8 +208,18 @@ public class AdminDashboardController {
                 .filter(p -> p.getOrder() != null)
                 .collect(Collectors.toMap(p -> p.getOrder().getOrderID(), p -> p, (p1, p2) -> p1));
 
-        long codOrdersCount = payments.stream().filter(p -> "CASH".equalsIgnoreCase(p.getMethod())).count();
-        long vnpayOrdersCount = payments.stream().filter(p -> "VNPAY".equalsIgnoreCase(p.getMethod())).count();
+        long codOrdersCount = orders.stream()
+                .filter(o -> {
+                    Payment p = paymentMap.get(o.getOrderID());
+                    return p == null || "CASH".equalsIgnoreCase(p.getMethod());
+                })
+                .count();
+        long vnpayOrdersCount = orders.stream()
+                .filter(o -> {
+                    Payment p = paymentMap.get(o.getOrderID());
+                    return p != null && "VNPAY".equalsIgnoreCase(p.getMethod());
+                })
+                .count();
 
         List<Order> sortedOrders = orders.stream()
                 .sorted(Comparator.comparing(Order::getOrderDate, Comparator.nullsLast(Comparator.reverseOrder())))
@@ -225,6 +277,11 @@ public class AdminDashboardController {
 
         model.addAttribute("codOrdersCount", codOrdersCount);
         model.addAttribute("vnpayOrdersCount", vnpayOrdersCount);
+
+        model.addAttribute("fromDate", filterFrom);
+        model.addAttribute("toDate", filterTo);
+        model.addAttribute("isFiltered", isFiltered);
+        model.addAttribute("chartTitle", chartTitle);
 
         return "admin/dashboard";
     }
