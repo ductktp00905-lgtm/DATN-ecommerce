@@ -2,18 +2,26 @@
         xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
         th:fragment="header"
         class="cps-header-wrapper">
-    
-    <!-- Dải thông báo trên cùng (CellphoneS Top Announcement Bar) -->
+
+    <!-- Dải thông báo trên cùng -->
     <div class="cps-topbar">
         <div class="container">
             <div style="display: flex; align-items: center; gap: 16px;">
-                <span>🛡️ Cam kết hàng chính hãng 100% · Bảo hành 12-24 tháng</span>
+                <span>
+                    <!-- Shield icon 3D inline -->
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; filter: drop-shadow(0 1px 2px rgba(255,255,255,0.4));"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Cam kết hàng chính hãng 100% · Bảo hành 12-24 tháng
+                </span>
                 <span style="opacity: 0.6;">|</span>
-                <span>⚡ Giao siêu tốc 2h nội thành</span>
+                <span>
+                    <!-- Lightning bolt 3D -->
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px; filter: drop-shadow(0 1px 3px rgba(255,220,50,0.6));"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Giao siêu tốc 2h nội thành
+                </span>
             </div>
             <div style="display: flex; align-items: center; gap: 14px;">
-                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}" 
-                   style="background: #FDE047; color: #111827; padding: 2px 10px; border-radius: 4px; font-weight: 800; font-size: 11px; text-decoration: none;">
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}"
+                   style="background: #FDE047; color: #111827; padding: 2px 10px; border-radius: 4px; font-weight: 800; font-size: 11px; text-decoration: none; box-shadow: 0 2px 0 #A16207, 0 3px 8px rgba(253,224,71,0.4);">
                     ⚡ VÀO TRANG QUẢN TRỊ ADMIN
                 </a>
                 <span sec:authorize="hasRole('ADMIN')" style="opacity: 0.6;">|</span>
@@ -22,10 +30,10 @@
         </div>
     </div>
 
-    <!-- Thanh Header Đỏ CellphoneS -->
+    <!-- Thanh Header Đỏ FlareHub -->
     <div class="cps-header">
         <div class="container">
-            <!-- Logo FlareHub -->
+            <!-- Logo FlareHub 3D -->
             <a th:href="@{/products}" class="cps-brand" aria-label="FlareHub Trang chủ">
                 <div class="cps-brand-badge">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -38,7 +46,7 @@
                 </div>
             </a>
 
-            <!-- Nút Danh mục chuẩn phong cách CellphoneS -->
+            <!-- Nút Danh mục -->
             <div class="cps-category-dropdown" id="cpsCategoryDropdown">
                 <button type="button" class="cps-category-btn" id="cpsCategoryBtn" aria-expanded="false" aria-label="Danh mục sản phẩm">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -49,39 +57,103 @@
                     <span>Danh mục</span>
                 </button>
                 <div class="cps-category-menu" id="cpsCategoryMenu">
+                    <!-- Tất cả sản phẩm -->
                     <a th:href="@{/products}" class="cps-cat-item" style="color: var(--cps-red) !important; font-weight: 800;">
                         <div class="cps-cat-item-left">
-                            <span class="cat-icon">⚡</span>
+                            <span class="cat-icon cat-all">
+                                <!-- Lightning / All icon -->
+                                <svg viewBox="0 0 24 24" fill="white" style="width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                </svg>
+                            </span>
                             <span>Tất cả sản phẩm</span>
                         </div>
                         <span class="cps-cat-arrow">&rsaquo;</span>
                     </a>
                     <div class="cps-cat-divider"></div>
+
+                    <!-- Dynamic categories with 3D SVG icons -->
                     <th:block th:each="cat : ${globalCategories}">
                         <a th:href="@{/products(categoryId=${cat.categoryID})}" class="cps-cat-item">
                             <div class="cps-cat-item-left">
-                                <span class="cat-icon" th:if="${#strings.containsIgnoreCase(cat.categoryName, 'tivi') or #strings.containsIgnoreCase(cat.categoryName, 'nghe nhìn')}">📺</span>
-                                <span class="cat-icon" th:if="${#strings.containsIgnoreCase(cat.categoryName, 'tủ lạnh') or #strings.containsIgnoreCase(cat.categoryName, 'tủ đông')}">🧊</span>
-                                <span class="cat-icon" th:if="${#strings.containsIgnoreCase(cat.categoryName, 'máy giặt') or #strings.containsIgnoreCase(cat.categoryName, 'máy sấy')}">🧺</span>
-                                <span class="cat-icon" th:if="${#strings.containsIgnoreCase(cat.categoryName, 'điều hòa') or #strings.containsIgnoreCase(cat.categoryName, 'làm mát')}">❄️</span>
-                                <span class="cat-icon" th:if="${#strings.containsIgnoreCase(cat.categoryName, 'robot') or #strings.containsIgnoreCase(cat.categoryName, 'thông minh')}">🤖</span>
-                                <span class="cat-icon" th:unless="${#strings.containsIgnoreCase(cat.categoryName, 'tivi') or #strings.containsIgnoreCase(cat.categoryName, 'nghe nhìn') or #strings.containsIgnoreCase(cat.categoryName, 'tủ lạnh') or #strings.containsIgnoreCase(cat.categoryName, 'tủ đông') or #strings.containsIgnoreCase(cat.categoryName, 'máy giặt') or #strings.containsIgnoreCase(cat.categoryName, 'máy sấy') or #strings.containsIgnoreCase(cat.categoryName, 'điều hòa') or #strings.containsIgnoreCase(cat.categoryName, 'làm mát') or #strings.containsIgnoreCase(cat.categoryName, 'robot') or #strings.containsIgnoreCase(cat.categoryName, 'thông minh')}">🔌</span>
+
+                                <!-- TIVI / NGHE NHÌN -->
+                                <span class="cat-icon cat-tivi"
+                                      th:if="${#strings.containsIgnoreCase(cat.categoryName, 'tivi') or #strings.containsIgnoreCase(cat.categoryName, 'nghe nhìn')}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));">
+                                        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>
+                                    </svg>
+                                </span>
+
+                                <!-- TỦ LẠNH / TỦ ĐÔNG -->
+                                <span class="cat-icon cat-lanh"
+                                      th:if="${#strings.containsIgnoreCase(cat.categoryName, 'tủ lạnh') or #strings.containsIgnoreCase(cat.categoryName, 'tủ đông')}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));">
+                                        <rect x="4" y="2" width="16" height="20" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="6" x2="9" y2="8"/><line x1="9" y1="14" x2="9" y2="18"/>
+                                    </svg>
+                                </span>
+
+                                <!-- MÁY GIẶT / MÁY SẤY -->
+                                <span class="cat-icon cat-giat"
+                                      th:if="${#strings.containsIgnoreCase(cat.categoryName, 'máy giặt') or #strings.containsIgnoreCase(cat.categoryName, 'máy sấy')}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));">
+                                        <rect x="2" y="2" width="20" height="20" rx="2"/><circle cx="12" cy="13" r="4"/><circle cx="8" cy="6" r="1" fill="white"/><circle cx="12" cy="6" r="1" fill="white"/>
+                                    </svg>
+                                </span>
+
+                                <!-- ĐIỀU HÒA / LÀM MÁT -->
+                                <span class="cat-icon cat-dieuhoa"
+                                      th:if="${#strings.containsIgnoreCase(cat.categoryName, 'điều hòa') or #strings.containsIgnoreCase(cat.categoryName, 'làm mát')}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));">
+                                        <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/><circle cx="12" cy="12" r="3" fill="rgba(255,255,255,0.3)" stroke="white"/>
+                                    </svg>
+                                </span>
+
+                                <!-- ROBOT / THÔNG MINH -->
+                                <span class="cat-icon cat-robot"
+                                      th:if="${#strings.containsIgnoreCase(cat.categoryName, 'robot') or #strings.containsIgnoreCase(cat.categoryName, 'thông minh')}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));">
+                                        <rect x="3" y="11" width="18" height="10" rx="2"/><path d="M12 2v4"/><circle cx="12" cy="6" r="2" fill="rgba(255,255,255,0.3)"/><circle cx="8" cy="15" r="1.5" fill="white"/><circle cx="16" cy="15" r="1.5" fill="white"/><path d="M8 21h8"/>
+                                    </svg>
+                                </span>
+
+                                <!-- DEFAULT (không khớp bất kỳ) -->
+                                <span class="cat-icon cat-default"
+                                      th:unless="${#strings.containsIgnoreCase(cat.categoryName, 'tivi') or #strings.containsIgnoreCase(cat.categoryName, 'nghe nhìn') or #strings.containsIgnoreCase(cat.categoryName, 'tủ lạnh') or #strings.containsIgnoreCase(cat.categoryName, 'tủ đông') or #strings.containsIgnoreCase(cat.categoryName, 'máy giặt') or #strings.containsIgnoreCase(cat.categoryName, 'máy sấy') or #strings.containsIgnoreCase(cat.categoryName, 'điều hòa') or #strings.containsIgnoreCase(cat.categoryName, 'làm mát') or #strings.containsIgnoreCase(cat.categoryName, 'robot') or #strings.containsIgnoreCase(cat.categoryName, 'thông minh')}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));">
+                                        <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                                    </svg>
+                                </span>
+
                                 <span th:text="${cat.categoryName}">Danh mục</span>
                             </div>
                             <span class="cps-cat-arrow">&rsaquo;</span>
                         </a>
                     </th:block>
+
                     <div class="cps-cat-divider"></div>
+
+                    <!-- Thu cũ đổi mới -->
                     <a th:href="@{/info/thu-cu-doi-moi}" class="cps-cat-item" style="color: #059669 !important;">
                         <div class="cps-cat-item-left">
-                            <span class="cat-icon">🔄</span>
+                            <span class="cat-icon cat-swap">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));">
+                                    <path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                                </svg>
+                            </span>
                             <span>Thu cũ đổi mới</span>
                         </div>
                         <span class="cps-cat-badge" style="background: #DCFCE7; color: #16A34A;">Trợ giá</span>
                     </a>
+
+                    <!-- Trả góp -->
                     <a th:href="@{/info/tra-gop}" class="cps-cat-item" style="color: #DC2626 !important;">
                         <div class="cps-cat-item-left">
-                            <span class="cat-icon">💳</span>
+                            <span class="cat-icon cat-pay">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4));">
+                                    <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+                                </svg>
+                            </span>
                             <span>Trả góp 0%</span>
                         </div>
                         <span class="cps-cat-badge" style="background: #FEE2E2; color: #DC2626;">Duyệt 5p</span>
@@ -89,7 +161,7 @@
                 </div>
             </div>
 
-            <!-- Thanh tìm kiếm lớn ở giữa -->
+            <!-- Thanh tìm kiếm -->
             <div class="cps-search-wrap">
                 <form th:action="@{/products}" method="get" role="search" style="margin: 0;">
                     <input type="text"
@@ -109,7 +181,7 @@
 
             <!-- Các nút hành động bên phải -->
             <div class="cps-nav-actions">
-                <!-- Tra cứu đơn hàng -->
+                <!-- Tra cứu đơn hàng — 3D Truck icon -->
                 <a th:href="@{/orders/history}" class="cps-action-btn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="1" y="3" width="15" height="13"></rect>
@@ -123,7 +195,7 @@
                     </div>
                 </a>
 
-                <!-- Yêu thích -->
+                <!-- Yêu thích — 3D Heart icon -->
                 <a th:href="@{/wishlist}" class="cps-action-btn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -131,7 +203,7 @@
                     <span class="cps-hide-md">Yêu thích</span>
                 </a>
 
-                <!-- Giỏ hàng -->
+                <!-- Giỏ hàng — 3D Cart icon -->
                 <a th:href="@{/cart}" class="cps-cart-btn" aria-label="Giỏ hàng FlareHub">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="9" cy="21" r="1"></circle>
@@ -143,7 +215,7 @@
                           th:text="${session.cart != null and session.cart.items != null ? session.cart.items.size() : 0}">0</span>
                 </a>
 
-                <!-- Đã đăng nhập: Smember & Menu User -->
+                <!-- Đã đăng nhập -->
                 <th:block sec:authorize="isAuthenticated()">
                     <a th:href="@{/profile}" class="cps-user-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -180,7 +252,7 @@
         </div>
     </div>
 
-    <!-- Script điều khiển Dropdown Danh mục phong cách CellphoneS -->
+    <!-- Script điều khiển Dropdown Danh mục -->
     <script>
         (function () {
             var catDropdown = document.getElementById('cpsCategoryDropdown');

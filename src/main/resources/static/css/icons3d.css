@@ -1,0 +1,437 @@
+/* ==========================================================================
+   FLAREHUB — 3D ICON SYSTEM
+   Hiệu ứng 3D render cho toàn bộ icon cửa hàng + admin
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. BIẾN MÀU & UTILITY
+   -------------------------------------------------------------------------- */
+:root {
+    --icon3d-size: 36px;
+    --icon3d-radius: 10px;
+    --icon3d-transition: 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. CPS CAT-ICON — ICON 3D TRONG DANH MỤC DROPDOWN
+   -------------------------------------------------------------------------- */
+.cat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 17px;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: transform var(--icon3d-transition), box-shadow var(--icon3d-transition);
+    position: relative;
+    text-shadow:
+        0 1px 0 rgba(255,255,255,0.6),
+        0 2px 4px rgba(0,0,0,0.25),
+        0 4px 10px rgba(0,0,0,0.12);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));
+}
+
+/* SVG icon trong cat-icon (khi dùng thẻ svg thay emoji) */
+.cat-icon svg {
+    width: 20px;
+    height: 20px;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+}
+
+/* Mỗi loại icon có màu nền riêng — tạo cảm giác 3D colored tile */
+.cat-icon.cat-tivi    { background: linear-gradient(145deg, #3B82F6 0%, #1D4ED8 60%, #1E3A8A 100%); box-shadow: 0 4px 0 #1E3A8A, 0 6px 12px rgba(29,78,216,0.35), inset 0 1px 0 rgba(255,255,255,0.3); }
+.cat-icon.cat-lanh    { background: linear-gradient(145deg, #67E8F9 0%, #06B6D4 60%, #0E7490 100%); box-shadow: 0 4px 0 #0E7490, 0 6px 12px rgba(6,182,212,0.35), inset 0 1px 0 rgba(255,255,255,0.3); }
+.cat-icon.cat-giat    { background: linear-gradient(145deg, #A78BFA 0%, #7C3AED 60%, #5B21B6 100%); box-shadow: 0 4px 0 #5B21B6, 0 6px 12px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.3); }
+.cat-icon.cat-dieuhoa { background: linear-gradient(145deg, #93C5FD 0%, #3B82F6 60%, #1D4ED8 100%); box-shadow: 0 4px 0 #1D4ED8, 0 6px 12px rgba(59,130,246,0.35), inset 0 1px 0 rgba(255,255,255,0.3); }
+.cat-icon.cat-robot   { background: linear-gradient(145deg, #6EE7B7 0%, #10B981 60%, #065F46 100%); box-shadow: 0 4px 0 #065F46, 0 6px 12px rgba(16,185,129,0.35), inset 0 1px 0 rgba(255,255,255,0.3); }
+.cat-icon.cat-plug    { background: linear-gradient(145deg, #FCA5A5 0%, #EF4444 60%, #991B1B 100%); box-shadow: 0 4px 0 #991B1B, 0 6px 12px rgba(239,68,68,0.35), inset 0 1px 0 rgba(255,255,255,0.3); }
+.cat-icon.cat-all     { background: linear-gradient(145deg, #FDE68A 0%, #F59E0B 60%, #B45309 100%); box-shadow: 0 4px 0 #B45309, 0 6px 12px rgba(245,158,11,0.35), inset 0 1px 0 rgba(255,255,255,0.3); }
+.cat-icon.cat-swap    { background: linear-gradient(145deg, #6EE7B7 0%, #059669 60%, #064E3B 100%); box-shadow: 0 4px 0 #064E3B, 0 6px 12px rgba(5,150,105,0.35), inset 0 1px 0 rgba(255,255,255,0.3); }
+.cat-icon.cat-pay     { background: linear-gradient(145deg, #FCA5A5 0%, #DC2626 60%, #7F1D1D 100%); box-shadow: 0 4px 0 #7F1D1D, 0 6px 12px rgba(220,38,38,0.35), inset 0 1px 0 rgba(255,255,255,0.3); }
+.cat-icon.cat-default { background: linear-gradient(145deg, #E2E8F0 0%, #94A3B8 60%, #475569 100%); box-shadow: 0 4px 0 #475569, 0 6px 12px rgba(71,85,105,0.35), inset 0 1px 0 rgba(255,255,255,0.3); }
+
+.cps-cat-item:hover .cat-icon {
+    transform: translateY(-3px) scale(1.08);
+}
+
+/* --------------------------------------------------------------------------
+   3. NAV ACTION BUTTONS — 3D ICON HEADER (search, cart, heart, truck, user)
+   -------------------------------------------------------------------------- */
+
+/* Container icon trong nút action header */
+.cps-action-btn svg,
+.cps-cart-btn svg,
+.cps-user-btn svg,
+.cps-search-btn svg {
+    filter:
+        drop-shadow(0 1px 0 rgba(255,255,255,0.4))
+        drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+    transition: filter var(--icon3d-transition), transform var(--icon3d-transition);
+}
+
+.cps-action-btn:hover svg,
+.cps-cart-btn:hover svg,
+.cps-user-btn:hover svg {
+    filter:
+        drop-shadow(0 0 6px rgba(255,220,100,0.8))
+        drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+    transform: translateY(-2px) scale(1.1);
+}
+
+/* Search button — 3D glow khi hover */
+.cps-search-btn:hover svg {
+    filter:
+        drop-shadow(0 0 8px rgba(255,255,255,0.9))
+        drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    transform: scale(1.15);
+}
+
+/* Cart badge 3D pill */
+.cps-cart-badge {
+    background: linear-gradient(135deg, #FF6B6B 0%, #DC2626 50%, #991B1B 100%) !important;
+    box-shadow: 0 2px 0 #7F1D1D, 0 3px 8px rgba(220,38,38,0.5), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.3) !important;
+}
+
+/* Category button 3D — hamburger icon */
+.cps-category-btn svg {
+    filter:
+        drop-shadow(0 1px 2px rgba(255,255,255,0.3))
+        drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+    transition: filter var(--icon3d-transition), transform var(--icon3d-transition);
+}
+
+.cps-category-btn:hover svg {
+    filter: drop-shadow(0 2px 8px rgba(255,255,255,0.6));
+    transform: scale(1.1);
+}
+
+/* Logo flame icon 3D */
+.cps-brand-badge svg,
+.tb-badge svg {
+    filter:
+        drop-shadow(0 1px 0 rgba(255,180,0,0.5))
+        drop-shadow(0 2px 6px rgba(255,80,0,0.4));
+    transition: filter var(--icon3d-transition), transform var(--icon3d-transition);
+}
+
+.cps-brand:hover .cps-brand-badge svg,
+.tb-brand:hover .tb-badge svg {
+    filter:
+        drop-shadow(0 0 8px rgba(255,200,0,0.9))
+        drop-shadow(0 2px 8px rgba(255,80,0,0.6));
+    transform: scale(1.15) rotate(-5deg);
+}
+
+/* --------------------------------------------------------------------------
+   4. ADMIN SIDEBAR — NAV-ICO 3D
+   -------------------------------------------------------------------------- */
+.nav-ico {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    transition: filter var(--icon3d-transition), transform var(--icon3d-transition);
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+}
+
+.nav a:hover .nav-ico,
+.nav a.active .nav-ico {
+    filter:
+        drop-shadow(0 0 5px rgba(215,0,24,0.7))
+        drop-shadow(0 2px 4px rgba(215,0,24,0.4));
+    transform: translateX(2px) scale(1.12);
+}
+
+.nav a.active .nav-ico {
+    filter:
+        drop-shadow(0 0 8px rgba(215,0,24,0.9))
+        drop-shadow(0 1px 3px rgba(215,0,24,0.5));
+}
+
+/* --------------------------------------------------------------------------
+   5. ICON WRAPPER — BADGE CONTAINER 3D (dùng chung)
+   -------------------------------------------------------------------------- */
+.icon3d-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--icon3d-radius);
+    position: relative;
+    overflow: visible;
+}
+
+/* Các màu badge 3D */
+.icon3d-wrap.red {
+    background: linear-gradient(145deg, #FCA5A5 0%, #DC2626 55%, #991B1B 100%);
+    box-shadow: 0 4px 0 #7F1D1D, 0 6px 15px rgba(220,38,38,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.icon3d-wrap.blue {
+    background: linear-gradient(145deg, #93C5FD 0%, #2563EB 55%, #1E40AF 100%);
+    box-shadow: 0 4px 0 #1E3A8A, 0 6px 15px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.icon3d-wrap.green {
+    background: linear-gradient(145deg, #6EE7B7 0%, #10B981 55%, #065F46 100%);
+    box-shadow: 0 4px 0 #064E3B, 0 6px 15px rgba(16,185,129,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.icon3d-wrap.amber {
+    background: linear-gradient(145deg, #FDE68A 0%, #F59E0B 55%, #92400E 100%);
+    box-shadow: 0 4px 0 #78350F, 0 6px 15px rgba(245,158,11,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.icon3d-wrap.purple {
+    background: linear-gradient(145deg, #DDD6FE 0%, #7C3AED 55%, #4C1D95 100%);
+    box-shadow: 0 4px 0 #3B0764, 0 6px 15px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+
+/* Hiệu ứng nhấn */
+.icon3d-wrap:active {
+    transform: translateY(3px) !important;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.3) !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. DASHBOARD STAT ICONS — 3D CARD ICONS
+   -------------------------------------------------------------------------- */
+.stat-icon-3d {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform var(--icon3d-transition), box-shadow var(--icon3d-transition);
+}
+
+.stat-icon-3d::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 60%);
+    pointer-events: none;
+}
+
+.stat-icon-3d::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 8px;
+    right: 8px;
+    height: 8px;
+    border-radius: 50%;
+    filter: blur(6px);
+    opacity: 0.5;
+}
+
+.stat-icon-3d:hover {
+    transform: translateY(-4px) scale(1.05);
+}
+
+.stat-icon-3d.red {
+    background: linear-gradient(145deg, #FCA5A5 0%, #EF4444 40%, #DC2626 70%, #991B1B 100%);
+    box-shadow: 0 6px 0 #7F1D1D, 0 10px 20px rgba(220,38,38,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.stat-icon-3d.red::after { background: rgba(220,38,38,0.6); }
+
+.stat-icon-3d.blue {
+    background: linear-gradient(145deg, #BFDBFE 0%, #60A5FA 40%, #2563EB 70%, #1D4ED8 100%);
+    box-shadow: 0 6px 0 #1E40AF, 0 10px 20px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.stat-icon-3d.blue::after { background: rgba(37,99,235,0.6); }
+
+.stat-icon-3d.green {
+    background: linear-gradient(145deg, #A7F3D0 0%, #34D399 40%, #10B981 70%, #059669 100%);
+    box-shadow: 0 6px 0 #065F46, 0 10px 20px rgba(16,185,129,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.stat-icon-3d.green::after { background: rgba(16,185,129,0.6); }
+
+.stat-icon-3d.amber {
+    background: linear-gradient(145deg, #FDE68A 0%, #FCD34D 40%, #F59E0B 70%, #D97706 100%);
+    box-shadow: 0 6px 0 #92400E, 0 10px 20px rgba(245,158,11,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.stat-icon-3d.amber::after { background: rgba(245,158,11,0.6); }
+
+.stat-icon-3d svg {
+    width: 26px;
+    height: 26px;
+    color: #FFFFFF;
+    filter:
+        drop-shadow(0 1px 0 rgba(255,255,255,0.4))
+        drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    position: relative;
+    z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   7. PRODUCT CARD BADGE ICONS (sale, new, hot)
+   -------------------------------------------------------------------------- */
+.badge-3d {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    position: relative;
+}
+
+.badge-3d::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(255,255,255,0));
+    pointer-events: none;
+}
+
+.badge-3d.sale {
+    background: linear-gradient(135deg, #FF6B6B, #DC2626);
+    color: #fff;
+    box-shadow: 0 3px 0 #991B1B, 0 4px 10px rgba(220,38,38,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.badge-3d.hot {
+    background: linear-gradient(135deg, #FDE68A, #F59E0B);
+    color: #78350F;
+    box-shadow: 0 3px 0 #92400E, 0 4px 10px rgba(245,158,11,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.badge-3d.new {
+    background: linear-gradient(135deg, #6EE7B7, #10B981);
+    color: #064E3B;
+    box-shadow: 0 3px 0 #065F46, 0 4px 10px rgba(16,185,129,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+/* --------------------------------------------------------------------------
+   8. RATING STARS 3D
+   -------------------------------------------------------------------------- */
+.star-3d {
+    color: #FCD34D;
+    filter:
+        drop-shadow(0 1px 0 #92400E)
+        drop-shadow(0 2px 4px rgba(245,158,11,0.5));
+    transition: transform var(--icon3d-transition), filter var(--icon3d-transition);
+}
+
+.star-3d:hover {
+    filter:
+        drop-shadow(0 0 6px rgba(252,211,77,0.9))
+        drop-shadow(0 1px 3px rgba(146,64,14,0.6));
+    transform: scale(1.2);
+}
+
+/* --------------------------------------------------------------------------
+   9. BRAND BADGE — LOGO 3D (cả cửa hàng lẫn admin)
+   -------------------------------------------------------------------------- */
+.cps-brand-badge {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #FF8C6B 0%, #E6001A 45%, #B30013 80%, #7F0009 100%);
+    box-shadow:
+        0 5px 0 #5A0007,
+        0 8px 20px rgba(230,0,26,0.5),
+        inset 0 1px 0 rgba(255,180,100,0.4),
+        inset 0 -1px 0 rgba(0,0,0,0.2);
+    transition: transform var(--icon3d-transition), box-shadow var(--icon3d-transition);
+    flex-shrink: 0;
+}
+
+.cps-brand:hover .cps-brand-badge {
+    transform: translateY(-3px) rotate(-8deg);
+    box-shadow:
+        0 8px 0 #5A0007,
+        0 12px 25px rgba(230,0,26,0.6),
+        inset 0 1px 0 rgba(255,200,100,0.5);
+}
+
+.cps-brand-badge svg {
+    width: 24px;
+    height: 24px;
+    fill: #FFFFFF;
+}
+
+/* Admin titlebar brand badge */
+.tb-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #FF8C6B 0%, #E6001A 45%, #B30013 80%, #7F0009 100%);
+    box-shadow:
+        0 4px 0 #5A0007,
+        0 6px 16px rgba(230,0,26,0.5),
+        inset 0 1px 0 rgba(255,180,100,0.4);
+    transition: transform var(--icon3d-transition), box-shadow var(--icon3d-transition);
+    flex-shrink: 0;
+}
+
+.tb-brand:hover .tb-badge {
+    transform: translateY(-2px) rotate(-8deg);
+    box-shadow:
+        0 6px 0 #5A0007,
+        0 10px 22px rgba(230,0,26,0.6),
+        inset 0 1px 0 rgba(255,200,100,0.5);
+}
+
+.tb-badge svg {
+    width: 20px;
+    height: 20px;
+    fill: #FFFFFF;
+}
+
+/* --------------------------------------------------------------------------
+   10. RESPONSIVE — GIẢM HIỆU ỨNG TRÊN MOBILE
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .cat-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 15px;
+        border-radius: 8px;
+    }
+
+    .stat-icon-3d {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+    }
+
+    .stat-icon-3d svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .cps-brand-badge {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   11. ANIMATION — PULSE GLOW (dùng cho icon nổi bật như hot, sale)
+   -------------------------------------------------------------------------- */
+@keyframes icon3d-pulse {
+    0%, 100% { box-shadow: 0 4px 0 #7F1D1D, 0 6px 12px rgba(220,38,38,0.35), inset 0 1px 0 rgba(255,255,255,0.3); }
+    50%       { box-shadow: 0 4px 0 #7F1D1D, 0 8px 20px rgba(220,38,38,0.65), inset 0 1px 0 rgba(255,255,255,0.4); }
+}
+
+@keyframes icon3d-float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-3px); }
+}
+
+.icon3d-pulse { animation: icon3d-pulse 2.5s ease-in-out infinite; }
+.icon3d-float { animation: icon3d-float 3s ease-in-out infinite; }

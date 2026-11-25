@@ -72,13 +72,27 @@
             letter-spacing: 0.03em;
         }
         .kpi-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             display: grid;
             place-items: center;
             font-size: 16px;
             font-weight: 700;
+            position: relative;
+            transition: transform 200ms cubic-bezier(0.34,1.56,0.64,1), box-shadow 200ms ease;
+            flex-shrink: 0;
+        }
+        .kpi-icon::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 55%);
+            pointer-events: none;
+        }
+        .kpi-icon:hover {
+            transform: translateY(-3px) scale(1.08);
         }
         .kpi-value {
             font-size: 1.85rem;
@@ -380,7 +394,11 @@
                 <div class="kpi-card" style="--card-accent: #16A34A;">
                     <div class="kpi-top">
                         <span class="kpi-title">Doanh thu thực tế</span>
-                        <div class="kpi-icon" style="background: #DCFCE7; color: #16A34A;">₫</div>
+                        <div class="kpi-icon" style="background: linear-gradient(145deg,#A7F3D0 0%,#34D399 40%,#10B981 70%,#059669 100%); box-shadow: 0 4px 0 #065F46,0 6px 14px rgba(16,185,129,0.4),inset 0 1px 0 rgba(255,255,255,0.3); color:#fff; border-radius:12px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
+                                <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            </svg>
+                        </div>
                     </div>
                     <div class="kpi-value">
                         <span th:text="${#numbers.formatDecimal(totalRevenue, 0, 'POINT', 0, 'COMMA')}">0</span>
@@ -398,7 +416,11 @@
                 <div class="kpi-card" style="--card-accent: #2563EB;">
                     <div class="kpi-top">
                         <span class="kpi-title">Tổng đơn hàng</span>
-                        <div class="kpi-icon" style="background: #DBEAFE; color: #2563EB;">📦</div>
+                        <div class="kpi-icon" style="background: linear-gradient(145deg,#BFDBFE 0%,#60A5FA 40%,#2563EB 70%,#1D4ED8 100%); box-shadow: 0 4px 0 #1E40AF,0 6px 14px rgba(37,99,235,0.4),inset 0 1px 0 rgba(255,255,255,0.3); color:#fff; border-radius:12px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                            </svg>
+                        </div>
                     </div>
                     <div class="kpi-value">
                         <span th:text="${totalOrders}">0</span>
@@ -419,7 +441,11 @@
                 <div class="kpi-card" style="--card-accent: #EA580C;">
                     <div class="kpi-top">
                         <span class="kpi-title">Giá trị TB / Đơn (AOV)</span>
-                        <div class="kpi-icon" style="background: #FFEDD5; color: #EA580C;">⚡</div>
+                        <div class="kpi-icon" style="background: linear-gradient(145deg,#FED7AA 0%,#FB923C 40%,#EA580C 70%,#C2410C 100%); box-shadow: 0 4px 0 #9A3412,0 6px 14px rgba(234,88,12,0.4),inset 0 1px 0 rgba(255,255,255,0.3); color:#fff; border-radius:12px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                        </div>
                     </div>
                     <div class="kpi-value">
                         <span th:text="${#numbers.formatDecimal(aov, 0, 'POINT', 0, 'COMMA')}">0</span>
@@ -437,7 +463,11 @@
                 <div class="kpi-card" style="--card-accent: #8B5CF6;">
                     <div class="kpi-top">
                         <span class="kpi-title">Sản phẩm &amp; Khách hàng</span>
-                        <div class="kpi-icon" style="background: #EDE9FE; color: #8B5CF6;">👥</div>
+                        <div class="kpi-icon" style="background: linear-gradient(145deg,#DDD6FE 0%,#A78BFA 40%,#7C3AED 70%,#5B21B6 100%); box-shadow: 0 4px 0 #3B0764,0 6px 14px rgba(124,58,237,0.4),inset 0 1px 0 rgba(255,255,255,0.3); color:#fff; border-radius:12px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.3));">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
                     </div>
                     <div class="kpi-value">
                         <span th:text="${totalProducts}">0</span>
